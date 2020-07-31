@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -17,19 +20,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool changing = false;
 
+  int currentTime = 0;
+
+  Timer timer;
 
   @override
   void initState() {
     super.initState();
-    isPlaying().then((_) => fetchCurrentSong());
+    setTimer();
+  }
+
+  void setTimer() {
+    setState(() {
+      timer = Timer.periodic(Duration(milliseconds: 500), (timer) async {
+        try {
+          if (changing) return;
+          await isPlaying();
+          await fetchCurrentSong();
+          Playify myplayify = Playify();
+          var isplaying = await myplayify.isPlaying();
+          if (isplaying == true && !changing) {
+            var res = await myplayify.getPlaybackTime();
+            setState(() {
+              currentTime = res.truncate();
+            });
+          }
+        } catch (e) {
+          print(e);
+        }
+      });
+      print("set timer");
+    });
   }
 
   Future<void> fetchCurrentSong() async {
     try {
       var res = await playify.nowPlaying();
-      setState(() {
-        currentSong = res;
-      });
+      if (currentSong == null) {
+        setState(() {
+          currentSong = res;
+        });
+      } else if (!isEqual(currentSong.song, res.song)) {
+        setState(() {
+          currentSong = res;
+        });
+      }
     } catch (e) {
       print(e);
       setState(() {
@@ -41,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> isPlaying() async {
     try {
       var res = await playify.isPlaying();
-      print(res);
       setState(() {
         playing = res;
       });
@@ -69,17 +103,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                           color: Colors.grey[400],
                           shape: BoxShape.rectangle,
-                          image: DecorationImage(
-                              image: currentSong.album.coverArt.image),
+                          image: DecorationImage(image: currentSong.album.coverArt.image),
                           borderRadius: BorderRadius.circular(8)),
                       height: MediaQuery.of(context).size.height * 0.5,
                       width: MediaQuery.of(context).size.height * 0.5,
                     )
                   else
                     Container(
-                      decoration: BoxDecoration(
-                          color: Colors.grey[400],
-                          borderRadius: BorderRadius.circular(8)),
+                      decoration:
+                          BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
                       height: MediaQuery.of(context).size.height * 0.4,
                       width: MediaQuery.of(context).size.width * 0.95,
                     )
@@ -87,20 +119,96 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Container(
+              child: Column(
+                children: [
+                  Text(currentSong != null ? currentSong.song.title : ""),
+                  Text(currentSong != null ? currentSong.album.title : ""),
+                  Text(currentSong != null ? currentSong.artist.name : ""),
+                ],
+              ),
+            ),
+            Container(
+              child: IgnorePointer(
+                ignoring: currentSong == null || changing,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Container(alignment: Alignment.center, child: Text(formatSongTime(currentTime))),
+                    ),
+                    Expanded(
+                      flex: 8,
+                      child: Slider(
+                        divisions: currentSong != null ? currentSong.song.duration.toInt() : 100,
+                        value: currentTime.toDouble(),
+                        min: 0,
+                        max: currentSong != null ? currentSong.song.duration : 99,
+                        onChangeStart: (val) {
+                          setState(() {
+                            changing = true;
+                            timer.cancel();
+                            print("cancelled timer");
+                          });
+                        },
+                        onChangeEnd: (val) {
+                          setTimer();
+                          setState(() {
+                            changing = false;
+                          });
+                        },
+                        onChanged: (val) async {
+                          try {
+                            setState(() {
+                              currentTime = val.truncate();
+                            });
+                            await playify.setPlaybackTime(val);
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                          alignment: Alignment.center,
+                          child: Text(formatSongTime(currentSong.song.duration.truncate()))),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
               child: Row(
                 children: [
                   Expanded(
                     flex: 3,
-                    child: Wrap(alignment: WrapAlignment.center, children: [
-                      Container(
-                          decoration: BoxDecoration(
-                              color: Colors.grey[400], shape: BoxShape.circle),
-                          padding: EdgeInsets.fromLTRB(12, 16, 16, 16),
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.black,
-                          )),
-                    ]),
+                    child: IgnorePointer(
+                      ignoring: changing,
+                      child: GestureDetector(
+                        onTap: () async {
+                          try {
+                            setState(() {
+                              changing = true;
+                            });
+                            await playify.previous();
+                            setState(() {
+                              playing = !playing;
+                              changing = false;
+                            });
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: Container(
+                            decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
+                            padding: EdgeInsets.fromLTRB(12, 16, 16, 16),
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.black,
+                            )),
+                      ),
+                    ),
                   ),
                   Expanded(
                     flex: 3,
@@ -129,23 +237,37 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         },
                         child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.grey[400],
-                                shape: BoxShape.circle),
+                            decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
                             padding: EdgeInsets.all(16),
-                            child: Icon(
-                                !playing ? Icons.play_arrow : Icons.pause)),
+                            child: Icon(!playing ? Icons.play_arrow : Icons.pause)),
                       ),
                     ),
                   ),
                   Expanded(
                     flex: 3,
-                    child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey[400], shape: BoxShape.circle),
-                        padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
-                        child:
-                            Icon(Icons.arrow_forward_ios, color: Colors.black)),
+                    child: IgnorePointer(
+                      ignoring: changing,
+                      child: GestureDetector(
+                        onTap: () async {
+                          try {
+                            setState(() {
+                              changing = true;
+                            });
+                            await playify.next();
+                            setState(() {
+                              playing = !playing;
+                              changing = false;
+                            });
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                        child: Container(
+                            decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
+                            padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
+                            child: Icon(Icons.arrow_forward_ios, color: Colors.black)),
+                      ),
+                    ),
                   ),
                 ],
               ),
