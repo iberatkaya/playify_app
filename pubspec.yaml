@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   shared_preferences: ^0.5.8
   playify: ^1.0.0+2
+  font_awesome_flutter: ^8.8.1
+
 
 
   # The following adds the Cupertino Icons font to your application.
