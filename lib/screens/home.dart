@@ -121,6 +121,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
     }
   }
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   //Fetch if there is a song currently playing
   Future<void> isPlaying() async {
