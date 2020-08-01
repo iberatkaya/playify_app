@@ -9,6 +9,7 @@ class PlayifyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Playify',
       theme: ThemeData.light().copyWith(
           dividerTheme: DividerThemeData(color: Colors.black54),

@@ -211,19 +211,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  Text(currentSong != null ? currentSong.song.title : ""),
-                  Text(currentSong != null ? currentSong.album.title : ""),
-                  Text(currentSong != null ? currentSong.artist.name : ""),
-                ],
-              ),
-            ),
-            Container(
-              child: IgnorePointer(
-                ignoring: currentSong == null || changing,
-                child: Row(
+            if (currentSong != null)
+              Container(
+                child: Column(
                   children: [
                     Expanded(
                       flex: 2,
@@ -253,7 +243,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         onChanged: (val) async {
                           try {
                             setState(() {
-                              currentTime = val.truncate();
+                              changing = true;
+                              timer.cancel();
+                              print("cancelled timer");
                             });
                             //Set the selected time
                             await playify.setPlaybackTime(val);
@@ -274,7 +266,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-            ),
             Container(
               child: Row(
                 children: [
