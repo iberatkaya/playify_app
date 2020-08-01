@@ -42,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       curve: Curves.fastOutSlowIn,
     ))
       ..addStatusListener((status) {
-        print(status);
         if (status == AnimationStatus.completed) {
           _controllerRight.reverse();
         }
@@ -53,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       curve: Curves.fastOutSlowIn,
     ))
       ..addStatusListener((status) {
-        print(status);
         if (status == AnimationStatus.forward) {
           setState(() {
             changing = true;
@@ -88,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Playify myplayify = Playify();
           if (playing == true && !changing) {
             var res = await myplayify.getPlaybackTime();
-            print(res.truncate());
             setState(() {
               currentTime = res.truncate();
             });
@@ -121,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
     }
   }
-
 
   //Fetch if there is a song currently playing
   Future<void> isPlaying() async {
@@ -212,9 +208,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            if (currentSong != null)
-              Container(
-                child: Column(
+            Container(
+              child: Column(
+                children: [
+                  Text(currentSong != null ? currentSong.song.title : ""),
+                  Text(currentSong != null ? currentSong.album.title : ""),
+                  Text(currentSong != null ? currentSong.artist.name : ""),
+                ],
+              ),
+            ),
+            Container(
+              child: IgnorePointer(
+                ignoring: currentSong == null || changing,
+                child: Row(
                   children: [
                     Expanded(
                       flex: 2,
@@ -267,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ],
                 ),
               ),
+            ),
             Container(
               child: Row(
                 children: [
@@ -293,7 +300,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             padding: EdgeInsets.fromLTRB(12, 16, 16, 16),
                             child: Icon(
                               Icons.arrow_back_ios,
-                              color: Colors.black,
                             )),
                       ),
                     ),
@@ -352,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: Container(
                             decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
                             padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
-                            child: Icon(Icons.arrow_forward_ios, color: Colors.black)),
+                            child: Icon(Icons.arrow_forward_ios)),
                       ),
                     ),
                   ),

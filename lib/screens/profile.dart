@@ -25,8 +25,7 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin {
+class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
   Animation animation;
   AnimationController animationController;
 
@@ -34,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1,milliseconds: 500),
+      duration: Duration(seconds: 1, milliseconds: 500),
     );
     animation = Tween(
       begin: 0.4,
@@ -51,7 +50,6 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    
     /// Animation Controller Repeat
     animationController.repeat(reverse: true);
 
@@ -86,118 +84,118 @@ class _ProfilePageState extends State<ProfilePage>
           ),
         ),
         SafeArea(
-              child: Column(
-                children: <Widget>[
-                  /// Profile Picture Card
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: height * 0.35,
-                      margin: EdgeInsets.only(top: 15),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 1.3,
-                            color: Colors.white60,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(profilePic),
-                          maxRadius: 120 * fontsize,
-                          minRadius: 80 * fontsize,
-                        ),
+          child: Column(
+            children: <Widget>[
+              /// Profile Picture Card
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: height * 0.35,
+                  margin: EdgeInsets.only(top: 15),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        width: 1.3,
+                        color: Colors.white60,
+                        style: BorderStyle.solid,
                       ),
                     ),
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(profilePic),
+                      maxRadius: 120 * fontsize,
+                      minRadius: 80 * fontsize,
+                    ),
                   ),
+                ),
+              ),
 
-                  /// Mood & Most Loved
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Wrap(
-                            children: <Widget>[
-                              Text(
-                                "${happymood.moodText}",
-                                style: TextStyle(
-                                  color: happymood.moodTextColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: fontsize * 28,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 6),
-                                child: happymood.moodIcon,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Text(
-                            "$mostLoved",
-                            textAlign: TextAlign.center,
+              /// Mood & Most Loved
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Wrap(
+                        children: <Widget>[
+                          Text(
+                            "${happymood.moodText}",
                             style: TextStyle(
-                              color: Colors.black54,
-                              fontWeight: FontWeight.w500,
-                              fontSize: fontsize * 18,
+                              color: happymood.moodTextColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: fontsize * 28,
                             ),
                           ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 6),
+                            child: happymood.moodIcon,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        "$mostLoved",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                          fontSize: fontsize * 18,
                         ),
-                      ],
-                    ),
-                  ),
-
-                  /// Recent Musics
-                  // Recent Title
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(
-                      top: 50,
-                      left: 10,
-                      bottom: 12,
-                    ),
-                    child: Text(
-                      "Recently Played",
-                      style: TextStyle(
-                        color: Colors.grey.shade800,
-                        fontWeight: FontWeight.w600,
-                        fontSize: fontsize * 18,
                       ),
                     ),
-                  ),
-                  // Recent List
-                  Container(
-                    height: height * 0.2,
-                    margin: EdgeInsets.only(top: 0),
-                    child: GridView.builder(
-                      itemCount: recentSongs.length,
-                      itemBuilder: (context, index) {
-                        var toPassSongInfo = recentSongs[index];
-
-                        return RecentMusicContainer(songInfo: toPassSongInfo);
-                      },
-                      padding: EdgeInsets.only(left: 10),
-                      scrollDirection: Axis.horizontal,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 1,
-                        childAspectRatio: 1,
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+
+              /// Recent Musics
+              // Recent Title
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: EdgeInsets.only(
+                  top: 50,
+                  left: 10,
+                  bottom: 12,
+                ),
+                child: Text(
+                  "Recently Played",
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w600,
+                    fontSize: fontsize * 18,
+                  ),
+                ),
+              ),
+              // Recent List
+              Container(
+                height: height * 0.2,
+                margin: EdgeInsets.only(top: 0),
+                child: GridView.builder(
+                  itemCount: recentSongs.length,
+                  itemBuilder: (context, index) {
+                    var toPassSongInfo = recentSongs[index];
+
+                    return RecentMusicContainer(songInfo: toPassSongInfo);
+                  },
+                  padding: EdgeInsets.only(left: 10),
+                  scrollDirection: Axis.horizontal,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
