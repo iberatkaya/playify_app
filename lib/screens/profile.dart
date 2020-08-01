@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/classes/mood.dart';
+import 'package:playify_app/components/profile/recentMusic.dart';
+import './../components/profile/moodList.dart';
+
+/// Dummy Data
+
+List<SongInfo> recentSongs = [
+  SongInfo(album: null, song: null, artist: null),
+];
+final happymood = HappyMood();
+
+String profilePic =
+    "https://media1.popsugar-assets.com/files/thumbor/0ebv7kCHr0T-_O3RfQuBoYmUg1k/475x60:1974x1559/fit-in/500x500/filters:format_auto-!!-:strip_icc-!!-/2019/09/09/023/n/1922398/9f849ffa5d76e13d154137.01128738_/i/Taylor-Swift.jpg";
+
+String mostLoved = "Look What You Made Me Do";
+
+/*
+************************/
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key key}) : super(key: key);
@@ -10,13 +28,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
-  List<SongInfo> recentSongs = [];
-  String mood = "Drama";
-  String profilePic =
-      "https://media1.popsugar-assets.com/files/thumbor/0ebv7kCHr0T-_O3RfQuBoYmUg1k/475x60:1974x1559/fit-in/500x500/filters:format_auto-!!-:strip_icc-!!-/2019/09/09/023/n/1922398/9f849ffa5d76e13d154137.01128738_/i/Taylor-Swift.jpg";
-  String mostLoved = "Look What You Made Me Do";
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -51,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 height: height * 0.35,
-                margin: EdgeInsets.only(top:15),
+                margin: EdgeInsets.only(top: 15),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -81,9 +92,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Wrap(
                       children: <Widget>[
                         Text(
-                          "$mood",
+                          "${happymood.moodText}",
                           style: TextStyle(
-                            color: Colors.black,
+                            color: happymood.moodTextColor,
                             fontWeight: FontWeight.w600,
                             fontSize: fontsize * 28,
                           ),
@@ -93,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 6),
-                          child: Icon(FontAwesomeIcons.sadTear),
+                          child: happymood.moodIcon,
                         ),
                       ],
                     ),
@@ -136,7 +147,13 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
               height: height * 0.2,
               margin: EdgeInsets.only(top: 0),
-              child: GridView(
+              child: GridView.builder(
+                itemCount: recentSongs.length,
+                itemBuilder: (context, index) {
+                  var toPassSongInfo = recentSongs[index];
+
+                  return RecentMusicContainer(songInfo: toPassSongInfo);
+                },
                 padding: EdgeInsets.only(left: 10),
                 scrollDirection: Axis.horizontal,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -145,63 +162,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 15,
                 ),
-                children: [
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              "https://m.media-amazon.com/images/I/81PHJvxGZOL._SS500_.jpg"),
-                          fit: BoxFit.cover),
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              "https://m.media-amazon.com/images/I/81mZP6Ud5dL._SS500_.jpg"),
-                          fit: BoxFit.cover),
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.blue,
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              "https://m.media-amazon.com/images/I/71rQfb9i-FL._SS500_.jpg"),
-                          fit: BoxFit.cover),
-                    ),
-                  ),
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.blue,
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              "https://m.media-amazon.com/images/I/81mZP6Ud5dL._SS500_.jpg"),
-                          fit: BoxFit.cover),
-                    ),
-                  ),
-                  Container(
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.blue,
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              "https://m.media-amazon.com/images/I/81mZP6Ud5dL._SS500_.jpg"),
-                          fit: BoxFit.cover),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
