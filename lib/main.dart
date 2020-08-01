@@ -10,8 +10,11 @@ class PlayifyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Playify',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData.light().copyWith(
+          dividerTheme: DividerThemeData(color: Colors.black54),
+          iconTheme: IconThemeData(color: Colors.black)),
+      darkTheme: ThemeData.dark().copyWith(
+          dividerTheme: DividerThemeData(color: Colors.white), iconTheme: IconThemeData(color: Colors.white)),
       home: MainApp(),
     );
   }

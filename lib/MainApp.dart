@@ -36,7 +36,7 @@ class _MainAppState extends State<MainApp> {
           BottomNavigationBarItem(
             title: Text("Home"),
             icon: Icon(
-              Icons.home,
+              Icons.play_circle_outline,
             ),
           ),
           BottomNavigationBarItem(
