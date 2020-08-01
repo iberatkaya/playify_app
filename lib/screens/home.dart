@@ -72,6 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   Future<void> isPlaying() async {
     try {

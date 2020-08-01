@@ -31,6 +31,7 @@ class _MainAppState extends State<MainApp> {
           index = currentIndex;
         }),
         showSelectedLabels: false,
+        selectedItemColor: Colors.indigo.shade600,
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(
