@@ -103,81 +103,92 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                           color: Colors.grey[400],
                           shape: BoxShape.rectangle,
-                          image: DecorationImage(image: currentSong.album.coverArt.image),
+                          image: DecorationImage(
+                              image: currentSong.album.coverArt.image),
                           borderRadius: BorderRadius.circular(8)),
                       height: MediaQuery.of(context).size.height * 0.5,
                       width: MediaQuery.of(context).size.height * 0.5,
                     )
                   else
                     Container(
-                      decoration:
-                          BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(
+                          color: Colors.grey[400],
+                          borderRadius: BorderRadius.circular(8)),
                       height: MediaQuery.of(context).size.height * 0.4,
                       width: MediaQuery.of(context).size.width * 0.95,
                     )
                 ],
               ),
             ),
-            Container(
-              child: Column(
-                children: [
-                  Text(currentSong != null ? currentSong.song.title : ""),
-                  Text(currentSong != null ? currentSong.album.title : ""),
-                  Text(currentSong != null ? currentSong.artist.name : ""),
-                ],
-              ),
-            ),
-            Container(
-              child: IgnorePointer(
-                ignoring: currentSong == null || changing,
-                child: Row(
+            if (currentSong != null)
+              Container(
+                child: Column(
                   children: [
-                    Expanded(
-                      flex: 2,
-                      child: Container(alignment: Alignment.center, child: Text(formatSongTime(currentTime))),
-                    ),
-                    Expanded(
-                      flex: 8,
-                      child: Slider(
-                        divisions: currentSong != null ? currentSong.song.duration.toInt() : 100,
-                        value: currentTime.toDouble(),
-                        min: 0,
-                        max: currentSong != null ? currentSong.song.duration : 99,
-                        onChangeStart: (val) {
-                          setState(() {
-                            changing = true;
-                            timer.cancel();
-                            print("cancelled timer");
-                          });
-                        },
-                        onChangeEnd: (val) {
-                          setTimer();
-                          setState(() {
-                            changing = false;
-                          });
-                        },
-                        onChanged: (val) async {
-                          try {
-                            setState(() {
-                              currentTime = val.truncate();
-                            });
-                            await playify.setPlaybackTime(val);
-                          } catch (e) {
-                            print(e);
-                          }
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                          alignment: Alignment.center,
-                          child: Text(formatSongTime(currentSong.song.duration.truncate()))),
-                    ),
+                    Text(currentSong != null ? currentSong.song.title : ""),
+                    Text(currentSong != null ? currentSong.album.title : ""),
+                    Text(currentSong != null ? currentSong.artist.name : ""),
                   ],
                 ),
               ),
-            ),
+            if (currentSong != null)
+              Container(
+                child: IgnorePointer(
+                  ignoring: currentSong == null || changing,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: Text(formatSongTime(currentTime))),
+                      ),
+                      Expanded(
+                        flex: 8,
+                        child: Slider(
+                          divisions: currentSong != null
+                              ? currentSong.song.duration.toInt()
+                              : 100,
+                          value: currentTime.toDouble(),
+                          min: 0,
+                          max: currentSong != null
+                              ? currentSong.song.duration
+                              : 99,
+                          onChangeStart: (val) {
+                            setState(() {
+                              changing = true;
+                              timer.cancel();
+                              print("cancelled timer");
+                            });
+                          },
+                          onChangeEnd: (val) {
+                            setTimer();
+                            setState(() {
+                              changing = false;
+                            });
+                          },
+                          onChanged: (val) async {
+                            try {
+                              setState(() {
+                                currentTime = val.truncate();
+                              });
+                              await playify.setPlaybackTime(val);
+                            } catch (e) {
+                              print(e);
+                            }
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                            alignment: Alignment.center,
+                            child: Text(formatSongTime(
+                                currentSong.song.duration.truncate()))),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Container(
               child: Row(
                 children: [
@@ -201,7 +212,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         },
                         child: Container(
-                            decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[400],
+                                shape: BoxShape.circle),
                             padding: EdgeInsets.fromLTRB(12, 16, 16, 16),
                             child: Icon(
                               Icons.arrow_back_ios,
@@ -237,9 +250,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         },
                         child: Container(
-                            decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[400],
+                                shape: BoxShape.circle),
                             padding: EdgeInsets.all(16),
-                            child: Icon(!playing ? Icons.play_arrow : Icons.pause)),
+                            child: Icon(
+                                !playing ? Icons.play_arrow : Icons.pause)),
                       ),
                     ),
                   ),
@@ -263,9 +279,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         },
                         child: Container(
-                            decoration: BoxDecoration(color: Colors.grey[400], shape: BoxShape.circle),
+                            decoration: BoxDecoration(
+                                color: Colors.grey[400],
+                                shape: BoxShape.circle),
                             padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
-                            child: Icon(Icons.arrow_forward_ios, color: Colors.black)),
+                            child: Icon(Icons.arrow_forward_ios,
+                                color: Colors.black)),
                       ),
                     ),
                   ),
