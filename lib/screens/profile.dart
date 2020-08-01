@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:playify_app/classes/mood.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/components/profile/MoodBottomSheet.dart';
 import 'package:playify_app/components/profile/recentMusic.dart';
+import 'package:playify_app/utilities/moodUtility.dart';
+import 'package:toast/toast.dart';
 import './../components/profile/moodList.dart';
 
 /// Dummy Data
@@ -10,12 +13,17 @@ import './../components/profile/moodList.dart';
 List<SongInfo> recentSongs = [
   SongInfo(album: null, song: null, artist: null),
 ];
-final happymood = HappyMood();
 
-String profilePic =
-    "https://media1.popsugar-assets.com/files/thumbor/0ebv7kCHr0T-_O3RfQuBoYmUg1k/475x60:1974x1559/fit-in/500x500/filters:format_auto-!!-:strip_icc-!!-/2019/09/09/023/n/1922398/9f849ffa5d76e13d154137.01128738_/i/Taylor-Swift.jpg";
+SongInfo favoriteSong;
 
-String mostLoved = "Look What You Made Me Do";
+Image favoriteSongPic =
+    favoriteSong != null ? favoriteSong.album.coverArt : null;
+
+String mostLoved =
+    favoriteSong != null ? favoriteSong.song.title : "Your Current Fav Song!";
+
+String mostLovedSongArtist =
+    favoriteSong != null ? favoriteSong.song.artistName : "  ";
 
 /*
 ************************/
@@ -27,17 +35,19 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
   Animation animation;
+  dynamic currentMood = HappyMood();
   AnimationController animationController;
 
   @override
   void initState() {
+    getCurrentMood();
     animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1, milliseconds: 500),
     );
     animation = Tween(
       begin: 0.4,
-      end: 0.95,
+      end: 0.8,
     ).animate(animationController);
     super.initState();
   }
@@ -46,6 +56,19 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   void dispose() {
     animationController.dispose();
     super.dispose();
+  }
+
+   getCurrentMood() async {
+    try {
+      var local = await getMood();
+
+      setState(() {
+        currentMood = local;
+      });
+      print("Try To get Mood");
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -79,11 +102,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 ],
               ),
               color: Colors.white54,
-              borderRadius: BorderRadius.circular(12),
             ),
           ),
         ),
         SafeArea(
+<<<<<<< HEAD
           child: Column(
             children: <Widget>[
               /// Profile Picture Card
@@ -91,6 +114,26 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   height: height * 0.35,
+=======
+          child: ListView(
+            children: <Widget>[
+              /// Edit Icon
+              Container(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    showBottomToSaveMood(context, getCurrentMood);
+                  },
+                ),
+              ),
+
+              /// Profile Picture Card
+              Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: Container(
+                  height: height * 0.3,
+>>>>>>> profileUI
                   margin: EdgeInsets.only(top: 15),
                   child: Container(
                     decoration: BoxDecoration(
@@ -101,11 +144,26 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         style: BorderStyle.solid,
                       ),
                     ),
+<<<<<<< HEAD
                     child: CircleAvatar(
                       backgroundImage: NetworkImage(profilePic),
                       maxRadius: 120 * fontsize,
                       minRadius: 80 * fontsize,
                     ),
+=======
+                    child: favoriteSongPic != null
+                        ? CircleAvatar(
+                            /// Uncomment this
+                            backgroundImage: favoriteSongPic != null
+                                ? favoriteSongPic.image
+                                : null,
+                            maxRadius: 120 * fontsize,
+                            minRadius: 80 * fontsize,
+                          )
+                        : CircleAvatar(
+                            child: Text("Fav Album Cover!"),
+                          ),
+>>>>>>> profileUI
                   ),
                 ),
               ),
@@ -121,11 +179,19 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       child: Wrap(
                         children: <Widget>[
                           Text(
+<<<<<<< HEAD
                             "${happymood.moodText}",
                             style: TextStyle(
                               color: happymood.moodTextColor,
                               fontWeight: FontWeight.w600,
                               fontSize: fontsize * 28,
+=======
+                            "${currentMood.moodText}",
+                            style: TextStyle(
+                              color: currentMood.moodTextColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: fontsize * 35,
+>>>>>>> profileUI
                             ),
                           ),
                           SizedBox(
@@ -133,23 +199,54 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 6),
+<<<<<<< HEAD
                             child: happymood.moodIcon,
+=======
+                            child: currentMood.moodIcon,
+>>>>>>> profileUI
                           ),
                         ],
                       ),
                     ),
+<<<<<<< HEAD
                     Padding(
+=======
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+>>>>>>> profileUI
                       padding: const EdgeInsets.all(5.0),
                       child: Text(
                         "$mostLoved",
                         textAlign: TextAlign.center,
                         style: TextStyle(
+<<<<<<< HEAD
                           color: Colors.black54,
+=======
+>>>>>>> profileUI
                           fontWeight: FontWeight.w500,
                           fontSize: fontsize * 18,
                         ),
                       ),
                     ),
+<<<<<<< HEAD
+=======
+                    Container(
+                      alignment: Alignment.topRight,
+                      margin: EdgeInsets.only(right: 15),
+                      padding: const EdgeInsets.all(5.0),
+                      child: Opacity(
+                        opacity: 0.54,
+                        child: Text(
+                          "$mostLovedSongArtist",
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: fontsize * 14,
+                          ),
+                        ),
+                      ),
+                    ),
+>>>>>>> profileUI
                   ],
                 ),
               ),
@@ -159,6 +256,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               Container(
                 alignment: Alignment.centerLeft,
                 margin: EdgeInsets.only(
+<<<<<<< HEAD
                   top: 50,
                   left: 10,
                   bottom: 12,
@@ -193,6 +291,44 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   ),
                 ),
               ),
+=======
+                  top: 15,
+                  left: 10,
+                  bottom: 12,
+                ),
+                child: Opacity(
+                  opacity: 0.6,
+                  child: Text(
+                    "Recently Played",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: fontsize * 18,
+                    ),
+                  ),
+                ),
+              ),
+              // Recent List
+              Container(
+                height: height * 0.2,
+                margin: EdgeInsets.only(top: 0),
+                child: GridView.builder(
+                  itemCount: recentSongs.length,
+                  itemBuilder: (context, index) {
+                    var toPassSongInfo = recentSongs[index];
+
+                    return RecentMusicContainer(songInfo: toPassSongInfo);
+                  },
+                  padding: EdgeInsets.only(left: 10),
+                  scrollDirection: Axis.horizontal,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                  ),
+                ),
+              ),
+>>>>>>> profileUI
             ],
           ),
         ),
