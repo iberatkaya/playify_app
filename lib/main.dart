@@ -15,7 +15,9 @@ class PlayifyApp extends StatelessWidget {
           dividerTheme: DividerThemeData(color: Colors.black54),
           iconTheme: IconThemeData(color: Colors.black)),
       darkTheme: ThemeData.dark().copyWith(
-          dividerTheme: DividerThemeData(color: Colors.white), iconTheme: IconThemeData(color: Colors.white)),
+        dividerTheme: DividerThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
       home: MainApp(),
     );
   }

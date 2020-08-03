@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playify_app/screens/home.dart';
 import 'package:playify_app/screens/profile.dart';
+import 'package:playify_app/utilities/utils.dart';
 
 class MainApp extends StatefulWidget {
   @override
@@ -31,25 +32,29 @@ class _MainAppState extends State<MainApp> {
           index = currentIndex;
         }),
         showSelectedLabels: false,
-        selectedItemColor: Colors.indigo.shade600,
+        selectedItemColor: themeModeColor(
+            MediaQuery.of(context).platformBrightness, Colors.blue[900]),
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(
             title: Text("Home"),
             icon: Icon(
               Icons.play_circle_outline,
+              size: 32,
             ),
           ),
           BottomNavigationBarItem(
             title: Text("Stats"),
             icon: Icon(
               Icons.data_usage,
+              size: 32,
             ),
           ),
           BottomNavigationBarItem(
             title: Text("Profile"),
             icon: Icon(
               Icons.account_circle,
+              size: 32,
             ),
           ),
         ],

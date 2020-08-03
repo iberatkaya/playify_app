@@ -5,7 +5,6 @@ import 'package:playify_app/classes/mood.dart';
 // Mood List
 // Happy, Sad, Sleepy, Energetic, Joyful
 
-
 class HappyMood extends Mood {
   static const String text = "Happy";
   static Color iconColor = Colors.amberAccent;

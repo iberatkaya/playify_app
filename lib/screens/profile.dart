@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage>
     animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1, milliseconds: 500),
-    );
+    )..repeat(reverse: true);
     animation = Tween(
       begin: 0.4,
       end: 0.8,
@@ -58,8 +58,6 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
-  /// To Get Current Moood from SharedPreferences
-  /// Then setState => currentMood
   getCurrentMood() async {
     try {
       var local = await getMood();
@@ -73,9 +71,6 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    /// Animation Controller Repeat
-    animationController.repeat(reverse: true);
-
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final fontsize = MediaQuery.of(context).textScaleFactor;
