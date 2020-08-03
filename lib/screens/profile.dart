@@ -106,15 +106,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           ),
         ),
         SafeArea(
-<<<<<<< HEAD
-          child: Column(
-            children: <Widget>[
-              /// Profile Picture Card
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: height * 0.35,
-=======
           child: ListView(
             children: <Widget>[
               /// Edit Icon
@@ -133,7 +124,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 padding: const EdgeInsets.all(1.0),
                 child: Container(
                   height: height * 0.3,
->>>>>>> profileUI
                   margin: EdgeInsets.only(top: 15),
                   child: Container(
                     decoration: BoxDecoration(
@@ -144,13 +134,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         style: BorderStyle.solid,
                       ),
                     ),
-<<<<<<< HEAD
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(profilePic),
-                      maxRadius: 120 * fontsize,
-                      minRadius: 80 * fontsize,
-                    ),
-=======
                     child: favoriteSongPic != null
                         ? CircleAvatar(
                             /// Uncomment this
@@ -163,7 +146,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         : CircleAvatar(
                             child: Text("Fav Album Cover!"),
                           ),
->>>>>>> profileUI
                   ),
                 ),
               ),
@@ -179,19 +161,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       child: Wrap(
                         children: <Widget>[
                           Text(
-<<<<<<< HEAD
-                            "${happymood.moodText}",
-                            style: TextStyle(
-                              color: happymood.moodTextColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: fontsize * 28,
-=======
                             "${currentMood.moodText}",
                             style: TextStyle(
                               color: currentMood.moodTextColor,
                               fontWeight: FontWeight.w600,
                               fontSize: fontsize * 35,
->>>>>>> profileUI
                             ),
                           ),
                           SizedBox(
@@ -199,37 +173,23 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 6),
-<<<<<<< HEAD
-                            child: happymood.moodIcon,
-=======
                             child: currentMood.moodIcon,
->>>>>>> profileUI
                           ),
                         ],
                       ),
                     ),
-<<<<<<< HEAD
-                    Padding(
-=======
                     Container(
                       margin: EdgeInsets.only(top: 10),
->>>>>>> profileUI
                       padding: const EdgeInsets.all(5.0),
                       child: Text(
                         "$mostLoved",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-<<<<<<< HEAD
-                          color: Colors.black54,
-=======
->>>>>>> profileUI
                           fontWeight: FontWeight.w500,
                           fontSize: fontsize * 18,
                         ),
                       ),
                     ),
-<<<<<<< HEAD
-=======
                     Container(
                       alignment: Alignment.topRight,
                       margin: EdgeInsets.only(right: 15),
@@ -246,7 +206,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                         ),
                       ),
                     ),
->>>>>>> profileUI
                   ],
                 ),
               ),
@@ -256,42 +215,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               Container(
                 alignment: Alignment.centerLeft,
                 margin: EdgeInsets.only(
-<<<<<<< HEAD
-                  top: 50,
-                  left: 10,
-                  bottom: 12,
-                ),
-                child: Text(
-                  "Recently Played",
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontWeight: FontWeight.w600,
-                    fontSize: fontsize * 18,
-                  ),
-                ),
-              ),
-              // Recent List
-              Container(
-                height: height * 0.2,
-                margin: EdgeInsets.only(top: 0),
-                child: GridView.builder(
-                  itemCount: recentSongs.length,
-                  itemBuilder: (context, index) {
-                    var toPassSongInfo = recentSongs[index];
-
-                    return RecentMusicContainer(songInfo: toPassSongInfo);
-                  },
-                  padding: EdgeInsets.only(left: 10),
-                  scrollDirection: Axis.horizontal,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    childAspectRatio: 1,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                  ),
-                ),
-              ),
-=======
                   top: 15,
                   left: 10,
                   bottom: 12,
@@ -328,7 +251,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                   ),
                 ),
               ),
->>>>>>> profileUI
             ],
           ),
         ),
