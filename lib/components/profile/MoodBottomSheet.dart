@@ -64,7 +64,7 @@ Future showBottomToSaveMood(
                       onLongPress: () {
                         Toast.show("Step UPP!", context);
                       },
-                      onTap: () async{
+                      onTap: () async {
                         Toast.show("High Energyy, Love That!", context);
                         await saveMood("Energetic");
                         getCurrentMood();
@@ -80,7 +80,7 @@ Future showBottomToSaveMood(
                       onLongPress: () {
                         Toast.show("Dont Wakeee me Upp!", context);
                       },
-                      onTap: () async{
+                      onTap: () async {
                         Toast.show("Go to Bed!", context);
                         await saveMood("Sleepy");
                         getCurrentMood();
@@ -96,7 +96,7 @@ Future showBottomToSaveMood(
                       onLongPress: () {
                         Toast.show("Wish All Your Days Be Like", context);
                       },
-                      onTap: () async{
+                      onTap: () async {
                         Toast.show("Enjoyying!", context);
                         await saveMood("Joyful");
                         getCurrentMood();

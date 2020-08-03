@@ -11,7 +11,7 @@
 ///      fonts:
 ///       - asset: fonts/PlayifyIcon.ttf
 ///
-/// 
+///
 ///
 import 'package:flutter/widgets.dart';
 
@@ -21,7 +21,10 @@ class PlayifyIcon {
   static const _kFontFam = 'PlayifyIcon';
   static const _kFontPkg = null;
 
-  static const IconData album = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData artist = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData song = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData album =
+      IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData artist =
+      IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData song =
+      IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

@@ -7,7 +7,8 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  TextStyle listTileTextStyle = TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
+  TextStyle listTileTextStyle =
+      TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
 
   Widget item(String title, IconData icon, Function fn) {
     return Container(

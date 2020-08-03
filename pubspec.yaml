@@ -27,6 +27,7 @@ dependencies:
   toast: ^0.1.5  
   playify: ^1.0.0+2
   font_awesome_flutter: ^8.8.1
+  marquee: ^1.5.2
 
 
 
