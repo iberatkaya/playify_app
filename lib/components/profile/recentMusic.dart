@@ -10,18 +10,19 @@ class RecentMusicContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Later Uncomment These Properties
-    // final image = songInfo.album.coverArt;
-    // final title = songInfo.album.title;
-    // final singer = songInfo.artist.name;
+    final image = songInfo.album.coverArt;
+    final title = songInfo.album.title;
+    final singer = songInfo.artist.name;
 
     return Container(
       width: 50,
       decoration: BoxDecoration(
+        color: Colors.blue,
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
-            image: NetworkImage(
-                "https://m.media-amazon.com/images/I/81mZP6Ud5dL._SS500_.jpg"),
-            fit: BoxFit.cover),
+          image: image.image,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
