@@ -58,6 +58,7 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
+
   getCurrentMood() async {
     try {
       var local = await getMood();
