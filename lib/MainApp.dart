@@ -25,15 +25,17 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: mainAppBodySwitch(index),
+      body: IndexedStack(
+        index: index,
+        children: [HomeScreen(), Container(), ProfilePage()],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         onTap: (currentIndex) => setState(() {
           index = currentIndex;
         }),
         showSelectedLabels: false,
-        selectedItemColor: themeModeColor(
-            MediaQuery.of(context).platformBrightness, Colors.blue[900]),
+        selectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.blue[900]),
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(

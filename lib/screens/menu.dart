@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:playify_app/components/profile/itemTile.dart';
 import 'package:playify_app/icons/playify_icon_icons.dart';
+import 'package:playify_app/screens/list.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -7,25 +9,6 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  TextStyle listTileTextStyle =
-      TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
-
-  Widget item(String title, IconData icon, Function fn) {
-    return Container(
-      child: ListTile(
-        title: Text(
-          title,
-          style: listTileTextStyle,
-        ),
-        leading: Icon(
-          icon,
-          size: 24,
-        ),
-        onTap: fn,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +16,32 @@ class _MenuPageState extends State<MenuPage> {
         child: ListView(
           children: [
             Divider(),
-            item("Artists", PlayifyIcon.artist, () {}),
+            ItemTile(
+                title: "Artists",
+                icon: Icon(
+                  PlayifyIcon.artist,
+                  size: 18,
+                ),
+                fn: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.artists)));
+                }),
             Divider(),
-            item("Albums", PlayifyIcon.album, () {}),
+            ItemTile(
+                title: "Albums",
+                icon: Icon(PlayifyIcon.album, size: 18),
+                fn: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.albums)));
+                }),
             Divider(),
-            item("Songs", PlayifyIcon.song, () {}),
+            ItemTile(
+                title: "Songs",
+                icon: Icon(PlayifyIcon.song, size: 18),
+                fn: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.songs)));
+                }),
             Divider(),
           ],
         ),
