@@ -10,9 +10,7 @@ import './../components/profile/moodList.dart';
 
 /// Dummy Data
 
-List<SongInfo> recentSongs = [
-  SongInfo(album: null, song: null, artist: null),
-];
+List<SongInfo> recentSongs = [];
 
 SongInfo favoriteSong;
 
@@ -35,13 +33,14 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
-  Animation animation;
-  dynamic currentMood = HappyMood();
-  AnimationController animationController;
+  Animation animation; // Fading Animation
+  dynamic currentMood =
+      HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
+  AnimationController animationController; // Fading Animation Controller
 
   @override
   void initState() {
-    getCurrentMood();
+    getCurrentMood(); // Initiliaze When Profile Page is shown
     animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1, milliseconds: 500),
@@ -59,13 +58,13 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
+
   getCurrentMood() async {
     try {
       var local = await getMood();
       setState(() {
         currentMood = local;
       });
-      print("Try To get Mood");
     } catch (e) {
       print(e);
     }
@@ -111,6 +110,7 @@ class _ProfilePageState extends State<ProfilePage>
                 child: IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () {
+                    // Bottom Sheet Will Be Shown for Changing Mood
                     showBottomToSaveMood(context, getCurrentMood);
                   },
                 ),
@@ -133,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     child: favoriteSongPic != null
                         ? CircleAvatar(
-                            /// Uncomment this
+                            /// If fav album exists, album cover will be favSongPic
                             backgroundImage: favoriteSongPic != null
                                 ? favoriteSongPic.image
                                 : null,
@@ -179,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage>
                       margin: EdgeInsets.only(top: 10),
                       padding: const EdgeInsets.all(5.0),
                       child: Text(
-                        "$mostLoved",
+                        "$mostLoved", // Favorite Song Title
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
@@ -194,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage>
                       child: Opacity(
                         opacity: 0.54,
                         child: Text(
-                          "$mostLovedSongArtist",
+                          "$mostLovedSongArtist", // Favorite Song Artist
                           textAlign: TextAlign.end,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
@@ -240,11 +240,11 @@ class _ProfilePageState extends State<ProfilePage>
                   },
                   padding: EdgeInsets.only(left: 10),
                   scrollDirection: Axis.horizontal,
+                  physics: ClampingScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1,
                     childAspectRatio: 1,
                     crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
                   ),
                 ),
               ),
