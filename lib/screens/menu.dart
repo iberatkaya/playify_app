@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:playify_app/components/profile/itemTile.dart';
+import 'package:playify_app/components/itemTile.dart';
 import 'package:playify_app/icons/playify_icon_icons.dart';
 import 'package:playify_app/screens/list.dart';
+import 'package:playify_app/screens/settings.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -15,12 +16,11 @@ class _MenuPageState extends State<MenuPage> {
       body: Container(
         child: ListView(
           children: [
-            Divider(),
             ItemTile(
                 title: "Artists",
                 icon: Icon(
                   PlayifyIcon.artist,
-                  size: 18,
+                  size: 24,
                 ),
                 fn: () {
                   Navigator.of(context).push(
@@ -29,7 +29,7 @@ class _MenuPageState extends State<MenuPage> {
             Divider(),
             ItemTile(
                 title: "Albums",
-                icon: Icon(PlayifyIcon.album, size: 18),
+                icon: Icon(PlayifyIcon.album, size: 24),
                 fn: () {
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.albums)));
@@ -37,10 +37,17 @@ class _MenuPageState extends State<MenuPage> {
             Divider(),
             ItemTile(
                 title: "Songs",
-                icon: Icon(PlayifyIcon.song, size: 18),
+                icon: Icon(PlayifyIcon.song, size: 24),
                 fn: () {
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.songs)));
+                }),
+            Divider(),
+            ItemTile(
+                title: "Settings",
+                icon: Icon(Icons.settings, size: 24),
+                fn: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => SettingsScreen()));
                 }),
             Divider(),
           ],

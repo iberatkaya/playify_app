@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:playify/playify.dart';
 import 'package:playify_app/screens/home.dart';
 import 'package:playify_app/screens/profile.dart';
+import 'package:playify_app/screens/statistics.dart';
 import 'package:playify_app/utilities/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainApp extends StatefulWidget {
   @override
@@ -10,24 +15,14 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   int index = 0;
-
-  Widget mainAppBodySwitch(int _index) {
-    if (_index == 0)
-      return HomeScreen();
-    else if (_index == 1)
-      return HomeScreen();
-    else if (_index == 2)
-      return ProfilePage();
-    else
-      return HomeScreen();
-  }
+  bool loading = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: index,
-        children: [HomeScreen(), Container(), ProfilePage()],
+        children: [HomeScreen(), StatisticsScreen(), ProfileScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,

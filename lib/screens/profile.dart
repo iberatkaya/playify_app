@@ -8,34 +8,23 @@ import 'package:playify_app/utilities/moodUtility.dart';
 import 'package:toast/toast.dart';
 import './../components/profile/moodList.dart';
 
-/// Dummy Data
-
 List<SongInfo> recentSongs = [];
-
 SongInfo favoriteSong;
 
-Image favoriteSongPic =
-    favoriteSong != null ? favoriteSong.album.coverArt : null;
+Image favoriteSongPic = favoriteSong != null ? favoriteSong.album.coverArt : null;
 
-String mostLoved =
-    favoriteSong != null ? favoriteSong.song.title : "Your Current Fav Song!";
+String mostLoved = favoriteSong != null ? favoriteSong.song.title : "Your Current Fav Song!";
 
-String mostLovedSongArtist =
-    favoriteSong != null ? favoriteSong.song.artistName : "  ";
+String mostLovedSongArtist = favoriteSong != null ? favoriteSong.song.artistName : "  ";
 
-/*
-************************/
-
-class ProfilePage extends StatefulWidget {
+class ProfileScreen extends StatefulWidget {
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
-    with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
   Animation animation; // Fading Animation
-  dynamic currentMood =
-      HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
+  dynamic currentMood = HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
   AnimationController animationController; // Fading Animation Controller
 
   @override
@@ -57,7 +46,6 @@ class _ProfilePageState extends State<ProfilePage>
     animationController.dispose();
     super.dispose();
   }
-
 
   getCurrentMood() async {
     try {
@@ -134,9 +122,7 @@ class _ProfilePageState extends State<ProfilePage>
                     child: favoriteSongPic != null
                         ? CircleAvatar(
                             /// If fav album exists, album cover will be favSongPic
-                            backgroundImage: favoriteSongPic != null
-                                ? favoriteSongPic.image
-                                : null,
+                            backgroundImage: favoriteSongPic != null ? favoriteSongPic.image : null,
                             maxRadius: 120 * fontsize,
                             minRadius: 80 * fontsize,
                           )

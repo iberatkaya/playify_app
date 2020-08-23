@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/classes/settings.dart';
 import 'package:playify_app/redux/music/action.dart';
+import 'package:playify_app/redux/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/menu.dart';
 import 'package:playify_app/utilities/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -34,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    setStatusBarColor();
     setTimer();
     updateLibrary();
 
@@ -69,10 +74,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
   }
 
+  getSettings() async {
+    try {
+      var prefs = await SharedPreferences.getInstance();
+      String settingsJson = prefs.getString("settings");
+      Settings mysettings = Settings.parseJson(settingsJson);
+      store.dispatch(setSettingsAction(mysettings));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  setStatusBarColor() async {
+    await FlutterStatusbarcolor.setStatusBarColor(Colors.blue[400]);
+    await FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+  }
+
   updateLibrary() async {
     try {
       var res = await playify.getAllSongs(coverArtSize: 400);
-      print(res);
       store.dispatch(setMusicLibraryAction(res));
     } catch (e) {
       print(e);
@@ -106,7 +126,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           print(e);
         }
       });
-      print("set timer");
     });
   }
 
@@ -371,6 +390,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             print(e);
                           }
                         },
+                        behavior: HitTestBehavior.opaque,
                         child: Container(
                             decoration: BoxDecoration(
                                 color: themeModeColor(
@@ -409,6 +429,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             });
                           }
                         },
+                        behavior: HitTestBehavior.opaque,
                         child: Container(
                             decoration: BoxDecoration(
                                 color: themeModeColor(
@@ -437,6 +458,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             print(e);
                           }
                         },
+                        behavior: HitTestBehavior.opaque,
                         child: Container(
                             decoration: BoxDecoration(
                                 color: themeModeColor(

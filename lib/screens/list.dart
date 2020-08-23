@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify/playify.dart';
-import 'package:playify_app/components/profile/itemTile.dart';
+import 'package:playify_app/components/itemTile.dart';
 import 'package:playify_app/redux/store.dart';
 
 enum MusicListType { artists, albums, songs, artist, album }
@@ -47,28 +47,41 @@ class _ListScreenState extends State<ListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(listTypeTitle()),
       ),
-      body: StoreProvider(
-        store: store,
-        child: Container(
+      body: Container(
+        child: StoreProvider(
+          store: store,
           child: StoreConnector<AppState, List<Artist>>(
               converter: (appstate) => appstate.state.artists,
               builder: (BuildContext storeContext, List<Artist> artists) {
                 if (widget.listType == MusicListType.artists) {
                   var myartists = [...artists];
                   myartists.sort((a, b) => a.name[0].compareTo(b.name[0]));
-                  return ListView.builder(
+                  return ListView.separated(
+                      padding: EdgeInsets.symmetric(vertical: 6),
                       itemCount: myartists.length,
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
-                            title: myartists[index].name,
-                            icon: myartists[index].albums[0].coverArt,
-                            fn: () => Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ListScreen(
-                                      listType: MusicListType.artist,
-                                      artist: myartists[index],
-                                    ))));
+                          padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
+                          title: myartists[index].name,
+                          brightness: MediaQuery.of(context).platformBrightness,
+                          subtitle: myartists[index].albums.length.toString() +
+                              ((myartists[index].albums.length == 1) ? " Album" : " Albums"),
+                          icon: myartists[index].albums[0].coverArt,
+                          fn: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ListScreen(
+                                listType: MusicListType.artist,
+                                artist: myartists[index],
+                              ),
+                            ),
+                          ),
+                        );
                       });
                 } else if (widget.listType == MusicListType.albums) {
                   List<Album> albums = [];
@@ -78,17 +91,27 @@ class _ListScreenState extends State<ListScreen> {
                     }
                   }
                   albums.sort((a, b) => a.title[0].compareTo(b.title[0]));
-                  return ListView.builder(
+                  return ListView.separated(
                       itemCount: albums.length,
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
-                            title: albums[index].title,
-                            icon: albums[index].coverArt,
-                            fn: () => Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ListScreen(
-                                      listType: MusicListType.album,
-                                      album: albums[index],
-                                    ))));
+                          title: albums[index].title,
+                          icon: albums[index].coverArt,
+                          subtitle: albums[index].artistName,
+                          brightness: MediaQuery.of(context).platformBrightness,
+                          fn: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ListScreen(
+                                listType: MusicListType.album,
+                                album: albums[index],
+                              ),
+                            ),
+                          ),
+                        );
                       });
                 } else if (widget.listType == MusicListType.songs) {
                   List<Song> songs = [];
@@ -100,8 +123,12 @@ class _ListScreenState extends State<ListScreen> {
                     }
                   }
                   songs.sort((a, b) => a.title[0].compareTo(b.title[0]));
-                  return ListView.builder(
+                  return ListView.separated(
                       itemCount: songs.length,
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
                       itemBuilder: (BuildContext listContext, int index) {
                         var iconArt = artists
                             .firstWhere((element) => element.name == songs[index].artistName)
@@ -111,11 +138,14 @@ class _ListScreenState extends State<ListScreen> {
                         return ItemTile(
                             title: songs[index].title,
                             icon: iconArt,
+                            brightness: MediaQuery.of(context).platformBrightness,
+                            subtitle: songs[index].artistName,
                             fn: () async {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                    songIDs: songs.sublist(index).map((e) => e.iOSSongID).toList());
+                                    songIDs: songs.sublist(index).map((e) => e.iOSSongID).toList(),
+                                    startIndex: index);
                                 Navigator.of(context).popUntil((route) => route.isFirst);
                                 ;
                               } catch (e) {
@@ -124,11 +154,16 @@ class _ListScreenState extends State<ListScreen> {
                             });
                       });
                 } else if (widget.listType == MusicListType.artist) {
-                  return ListView.builder(
+                  return ListView.separated(
                       itemCount: widget.artist.albums.length,
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
                             title: widget.artist.albums[index].title,
+                            brightness: MediaQuery.of(context).platformBrightness,
                             icon: widget.artist.albums[index].coverArt,
                             fn: () => Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => ListScreen(
@@ -137,18 +172,24 @@ class _ListScreenState extends State<ListScreen> {
                                     ))));
                       });
                 } else if (widget.listType == MusicListType.album) {
-                  return ListView.builder(
+                  return ListView.separated(
                       itemCount: widget.album.songs.length,
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
                             title: widget.album.songs[index].title,
                             icon: widget.album.coverArt,
+                            brightness: MediaQuery.of(context).platformBrightness,
                             fn: () async {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                    songIDs:
-                                        widget.album.songs.sublist(index).map((e) => e.iOSSongID).toList());
+                                    songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
+                                    startIndex: index);
+                                //widget.album.songs.sublist(index).map((e) => e.iOSSongID).toList());
                                 Navigator.of(context).popUntil((route) => route.isFirst);
                                 ;
                               } catch (e) {
