@@ -19,7 +19,9 @@ Future showBottomToSaveMood(
                   textScaleFactor: 2,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontWeight: FontWeight.w500, fontStyle: FontStyle.italic),
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ),
               Expanded(

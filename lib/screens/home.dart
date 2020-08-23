@@ -93,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   updateLibrary() async {
     try {
       var res = await playify.getAllSongs(coverArtSize: 400);
+      print(res);
       store.dispatch(setMusicLibraryAction(res));
     } catch (e) {
       print(e);
