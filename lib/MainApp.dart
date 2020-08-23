@@ -30,7 +30,8 @@ class _MainAppState extends State<MainApp> {
           index = currentIndex;
         }),
         showSelectedLabels: false,
-        selectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.blue[900]),
+        selectedItemColor: themeModeColor(
+            MediaQuery.of(context).platformBrightness, Colors.blue[900]),
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(

@@ -16,8 +16,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String Function(int) fontSizeToString = (i) => (i == 15) ? "Small" : (i == 17) ? "Medium" : "Large";
-  int Function(String) stringToFontSize = (i) => (i == "Small") ? 15 : (i == "Medium") ? 17 : 19;
+  String Function(int) fontSizeToString =
+      (i) => (i == 15) ? "Small" : (i == 17) ? "Medium" : "Large";
+  int Function(String) stringToFontSize =
+      (i) => (i == "Small") ? 15 : (i == "Medium") ? 17 : 19;
   bool scanning = false;
 
   Map<String, dynamic> songToMap(Song song) => {
@@ -40,8 +42,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         "title": album.title,
       };
 
-  Map<String, dynamic> artistToMap(Artist artist) =>
-      {"name": artist.name, "album": artist.albums.map((e) => albumToMap(e)).toList()};
+  Map<String, dynamic> artistToMap(Artist artist) => {
+        "name": artist.name,
+        "album": artist.albums.map((e) => albumToMap(e)).toList()
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       title: Text(
                         "Font Size",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<String>(
                         value: fontSizeToString(settings.listTileFontSize),
@@ -74,7 +79,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onChanged: (val) async {
                           try {
                             var newsettings = Settings.copy(settings);
-                            newsettings.listTileFontSize = stringToFontSize(val);
+                            newsettings.listTileFontSize =
+                                stringToFontSize(val);
                             store.dispatch(setSettingsAction(newsettings));
                             var prefs = await SharedPreferences.getInstance();
                             prefs.setString("settings", newsettings.toJson());
@@ -87,7 +93,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       title: Text(
                         "Artist Statistics Number",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<int>(
                         value: settings.statisticNumberArtist,
@@ -113,7 +120,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       title: Text(
                         "Album Statistics Number",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<int>(
                         value: settings.statisticNumberAlbum,
@@ -139,7 +147,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       title: Text(
                         "Song Statistics Number",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<int>(
                         value: settings.statisticNumberSong,

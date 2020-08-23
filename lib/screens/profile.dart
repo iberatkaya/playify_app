@@ -8,23 +8,31 @@ import 'package:playify_app/utilities/moodUtility.dart';
 import 'package:toast/toast.dart';
 import './../components/profile/moodList.dart';
 
+/* Dummy Data */
 List<SongInfo> recentSongs = [];
 SongInfo favoriteSong;
 
-Image favoriteSongPic = favoriteSong != null ? favoriteSong.album.coverArt : null;
+Image favoriteSongPic =
+    favoriteSong != null ? favoriteSong.album.coverArt : null;
 
-String mostLoved = favoriteSong != null ? favoriteSong.song.title : "Your Current Fav Song!";
+String mostLoved =
+    favoriteSong != null ? favoriteSong.song.title : "Your Current Fav Song!";
 
-String mostLovedSongArtist = favoriteSong != null ? favoriteSong.song.artistName : "  ";
+String mostLovedSongArtist =
+    favoriteSong != null ? favoriteSong.song.artistName : "  ";
+
+/* ***************** */
 
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   Animation animation; // Fading Animation
-  dynamic currentMood = HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
+  dynamic currentMood =
+      HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
   AnimationController animationController; // Fading Animation Controller
 
   @override
@@ -32,7 +40,10 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     getCurrentMood(); // Initiliaze When Profile Page is shown
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1, milliseconds: 500),
+      duration: Duration(
+        seconds: 1,
+        milliseconds: 500,
+      ),
     )..repeat(reverse: true);
     animation = Tween(
       begin: 0.4,
@@ -47,6 +58,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     super.dispose();
   }
 
+
+
+/// Function Returns Current Mood
   getCurrentMood() async {
     try {
       var local = await getMood();
@@ -66,6 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
     return Stack(
       children: <Widget>[
+        /// Background animation 
         FadeTransition(
           opacity: animation,
           child: Container(
@@ -89,6 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             ),
           ),
         ),
+        /// All Profile UI
         SafeArea(
           child: ListView(
             children: <Widget>[
@@ -122,7 +138,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     child: favoriteSongPic != null
                         ? CircleAvatar(
                             /// If fav album exists, album cover will be favSongPic
-                            backgroundImage: favoriteSongPic != null ? favoriteSongPic.image : null,
+                            backgroundImage: favoriteSongPic != null
+                                ? favoriteSongPic.image
+                                : null,
                             maxRadius: 120 * fontsize,
                             minRadius: 80 * fontsize,
                           )

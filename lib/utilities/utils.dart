@@ -17,8 +17,9 @@ Duration intToDuration(int totalSeconds) {
 }
 
 ///Return a string of the duration. Ex: 03:45, 01:03:45
-printDuration(Duration d) =>
-    d.inHours != 0 ? d.toString().split('.').first.padLeft(8, "0") : d.toString().substring(2, 7);
+printDuration(Duration d) => d.inHours != 0
+    ? d.toString().split('.').first.padLeft(8, "0")
+    : d.toString().substring(2, 7);
 
 ///Convert seconds to a string representation of a duration
 formatSongTime(int seconds) {
