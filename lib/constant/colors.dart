@@ -1,0 +1,18 @@
+const List<String> colors = [
+  "#fff93f5c",
+  "#ff89cb7c",
+  "#fff9e191",
+  "#ffa95195",
+  "#ffd4d087",
+  "#fffcfd6a",
+  "#ffff7c43",
+  "#ffffaf00",
+  "#ff817DD4",
+  "#ffC28Be7",
+  "#ff9FDFA7",
+  "#ffDf75C6",
+  "#ff94e537",
+  "#ff5fc5cF",
+  "#ffC7C957",
+  "#ff37A497",
+];

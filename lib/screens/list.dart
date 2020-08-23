@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/components/itemTile.dart';
+import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/store.dart';
 
 enum MusicListType { artists, albums, songs, artist, album }
@@ -15,8 +16,7 @@ class ListScreen extends StatefulWidget {
   ///Use if an artist's content will be displayed
   final Artist artist;
 
-  const ListScreen({Key key, @required this.listType, this.album, this.artist})
-      : super(key: key);
+  const ListScreen({Key key, @required this.listType, this.album, this.artist}) : super(key: key);
   @override
   _ListScreenState createState() => _ListScreenState();
 }
@@ -43,8 +43,7 @@ class _ListScreenState extends State<ListScreen> {
     super.initState();
     if (widget.listType == MusicListType.artist && widget.artist == null)
       throw "Artist cannot be empty";
-    else if (widget.listType == MusicListType.album && widget.album == null)
-      throw "Artist cannot be empty";
+    else if (widget.listType == MusicListType.album && widget.album == null) throw "Artist cannot be empty";
   }
 
   @override
@@ -75,9 +74,7 @@ class _ListScreenState extends State<ListScreen> {
                           title: myartists[index].name,
                           brightness: MediaQuery.of(context).platformBrightness,
                           subtitle: myartists[index].albums.length.toString() +
-                              ((myartists[index].albums.length == 1)
-                                  ? " Album"
-                                  : " Albums"),
+                              ((myartists[index].albums.length == 1) ? " Album" : " Albums"),
                           icon: myartists[index].albums[0].coverArt,
                           fn: () => Navigator.of(context).push(
                             MaterialPageRoute(
@@ -123,9 +120,7 @@ class _ListScreenState extends State<ListScreen> {
                   List<Song> songs = [];
                   for (var i = 0; i < artists.length; i++) {
                     for (var j = 0; j < artists[i].albums.length; j++) {
-                      for (var k = 0;
-                          k < artists[i].albums[j].songs.length;
-                          k++) {
+                      for (var k = 0; k < artists[i].albums[j].songs.length; k++) {
                         songs.add(artists[i].albums[j].songs[k]);
                       }
                     }
@@ -139,30 +134,35 @@ class _ListScreenState extends State<ListScreen> {
                       },
                       itemBuilder: (BuildContext listContext, int index) {
                         var iconArt = artists
-                            .firstWhere((element) =>
-                                element.name == songs[index].artistName)
+                            .firstWhere((element) => element.name == songs[index].artistName)
                             .albums
-                            .firstWhere((element) =>
-                                element.title == songs[index].albumTitle)
+                            .firstWhere((element) => element.title == songs[index].albumTitle)
                             .coverArt;
                         return ItemTile(
                             title: songs[index].title,
                             icon: iconArt,
-                            brightness:
-                                MediaQuery.of(context).platformBrightness,
+                            brightness: MediaQuery.of(context).platformBrightness,
                             subtitle: songs[index].artistName,
                             fn: () async {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                    songIDs: songs
-                                        .sublist(index)
-                                        .map((e) => e.iOSSongID)
-                                        .toList(),
-                                    startIndex: index);
-                                Navigator.of(context)
-                                    .popUntil((route) => route.isFirst);
-                                ;
+                                    songIDs: songs.map((e) => e.iOSSongID).toList(), startIndex: index);
+                                List<Artist> newartists = [...artists];
+                                //Increment the song play count in redux
+                                newartists
+                                    .where((element) => element.name == songs[index].artistName)
+                                    .toList()[0]
+                                    .albums
+                                    .where((element) => element.title == songs[index].albumTitle)
+                                    .toList()[0]
+                                    .songs
+                                    .where((element) => element.iOSSongID == songs[index].iOSSongID)
+                                    .toList()[0]
+                                    .playCount++;
+                                store.dispatch(setMusicLibraryAction(newartists));
+
+                                Navigator.of(context).popUntil((route) => route.isFirst);
                               } catch (e) {
                                 print(e);
                               }
@@ -178,15 +178,13 @@ class _ListScreenState extends State<ListScreen> {
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
                             title: widget.artist.albums[index].title,
-                            brightness:
-                                MediaQuery.of(context).platformBrightness,
+                            brightness: MediaQuery.of(context).platformBrightness,
                             icon: widget.artist.albums[index].coverArt,
-                            fn: () =>
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => ListScreen(
-                                          listType: MusicListType.album,
-                                          album: widget.artist.albums[index],
-                                        ))));
+                            fn: () => Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ListScreen(
+                                      listType: MusicListType.album,
+                                      album: widget.artist.albums[index],
+                                    ))));
                       });
                 } else if (widget.listType == MusicListType.album) {
                   return ListView.separated(
@@ -199,20 +197,29 @@ class _ListScreenState extends State<ListScreen> {
                         return ItemTile(
                             title: widget.album.songs[index].title,
                             icon: widget.album.coverArt,
-                            brightness:
-                                MediaQuery.of(context).platformBrightness,
+                            brightness: MediaQuery.of(context).platformBrightness,
                             fn: () async {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                    songIDs: widget.album.songs
-                                        .map((e) => e.iOSSongID)
-                                        .toList(),
+                                    songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
                                     startIndex: index);
-                                //widget.album.songs.sublist(index).map((e) => e.iOSSongID).toList());
-                                Navigator.of(context)
-                                    .popUntil((route) => route.isFirst);
-                                ;
+                                List<Artist> newartists = [...artists];
+                                //Increment the song play count in redux
+                                newartists
+                                    .where((element) => element.name == widget.album.songs[index].artistName)
+                                    .toList()[0]
+                                    .albums
+                                    .where((element) => element.title == widget.album.songs[index].albumTitle)
+                                    .toList()[0]
+                                    .songs
+                                    .where(
+                                        (element) => element.iOSSongID == widget.album.songs[index].iOSSongID)
+                                    .toList()[0]
+                                    .playCount++;
+                                store.dispatch(setMusicLibraryAction(newartists));
+
+                                Navigator.of(context).popUntil((route) => route.isFirst);
                               } catch (e) {
                                 print(e);
                               }

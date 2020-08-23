@@ -1,7 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/classes/settings.dart';
+import 'package:playify_app/redux/music/action.dart';
+import 'package:playify_app/redux/settings/action.dart';
+import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/home.dart';
 import 'package:playify_app/screens/profile.dart';
 import 'package:playify_app/screens/statistics.dart';
@@ -16,13 +21,51 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int index = 0;
   bool loading = true;
+  Playify playify = Playify();
+
+  @override
+  initState() {
+    super.initState();
+    updateLibrary().then(
+        (_) => getSettings().then((_) => setStatusBarColor().then((_) => setState(() => loading = false))));
+  }
+
+  Future<void> updateLibrary() async {
+    try {
+      var res = await playify.getAllSongs(coverArtSize: 400);
+      store.dispatch(setMusicLibraryAction(res));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> getSettings() async {
+    try {
+      var prefs = await SharedPreferences.getInstance();
+      String settingsJson = prefs.getString("settings");
+      if (settingsJson == null) return;
+      Settings mysettings = Settings.parseJson(settingsJson);
+      store.dispatch(setSettingsAction(mysettings));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> setStatusBarColor() async {
+    try {
+      await FlutterStatusbarcolor.setStatusBarColor(Colors.blue[400]);
+      await FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: index,
-        children: [HomeScreen(), StatisticsScreen(), ProfileScreen()],
+        children: (loading) ? [Container()] : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
@@ -30,8 +73,7 @@ class _MainAppState extends State<MainApp> {
           index = currentIndex;
         }),
         showSelectedLabels: false,
-        selectedItemColor: themeModeColor(
-            MediaQuery.of(context).platformBrightness, Colors.blue[900]),
+        selectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.blue[900]),
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(
