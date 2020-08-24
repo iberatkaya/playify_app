@@ -6,6 +6,7 @@ import 'package:playify/playify.dart';
 import 'package:playify_app/components/profile/MoodBottomSheet.dart';
 import 'package:playify_app/components/profile/recentMusic.dart';
 import 'package:playify_app/redux/store.dart';
+import 'package:playify_app/utilities/animation/backgroundColorFromAlbum.dart';
 import 'package:playify_app/utilities/moodUtility.dart';
 import 'package:playify_app/utilities/mostListened/mostListenedAlbum.dart';
 import 'package:toast/toast.dart';
@@ -21,9 +22,11 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   Animation animation; // Fading Animation
-  dynamic currentMood = HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
+  dynamic currentMood =
+      HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
   AnimationController animationController; // Fading Animation Controller
 
   @override
@@ -131,14 +134,16 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                 style: BorderStyle.solid,
                               ),
                             ),
-                            child: favAlbum.coverArt != null
+                            child: favAlbum != null
                                 ? CircleAvatar(
                                     child: ClipOval(
                                       child: favAlbum.coverArt,
                                     ),
                                   )
                                 : CircleAvatar(
-                                    child: Text(favAlbum.title.substring(0, 2)),
+                                    child: Text(favAlbum != null
+                                        ? favAlbum.title.substring(0, 2)
+                                        : "Favorite Album Cover"),
                                   ),
                           ),
                         ),
@@ -176,7 +181,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               margin: EdgeInsets.only(top: 10),
                               padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                favAlbum.title, // Favorite Album Title
+                                favAlbum != null
+                                    ? favAlbum.title
+                                    : "", // Favorite Album Title
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -191,7 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               child: Opacity(
                                 opacity: 0.54,
                                 child: Text(
-                                  favAlbum.artistName, // Favorite Song Artist
+                                  favAlbum != null
+                                      ? favAlbum.artistName
+                                      : "", // Favorite Song Artist
                                   textAlign: TextAlign.end,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -233,12 +242,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                           itemBuilder: (context, index) {
                             var toPassSongInfo = recentSongs[index];
 
-                            return RecentMusicContainer(songInfo: toPassSongInfo);
+                            return RecentMusicContainer(
+                                songInfo: toPassSongInfo);
                           },
                           padding: EdgeInsets.only(left: 10),
                           scrollDirection: Axis.horizontal,
                           physics: ClampingScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 1,
                             childAspectRatio: 1,
                             crossAxisSpacing: 15,
