@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Timer timer;
 
   double spaceRatioPlayerAndTop = 0.15;
-  double topBarContainerHeightRatio = 0.1;
+  double topBarContainerHeightRatio = 0.11;
 
   @override
   void initState() {
@@ -360,7 +360,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Expanded(
                           flex: 2,
                           child: Container(
-                              alignment: Alignment.center, child: Text(formatSongTime(currentTime))),
+                            alignment: Alignment.center,
+                            child: Text(
+                              formatSongTime(currentTime),
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
                         ),
                         Expanded(
                           flex: 8,
@@ -400,10 +405,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Expanded(
                           flex: 2,
                           child: Container(
-                              alignment: Alignment.center,
-                              child: Text(currentSong != null
+                            alignment: Alignment.center,
+                            child: Text(
+                              currentSong != null
                                   ? formatSongTime(currentSong.song.duration.truncate())
-                                  : "00:00")),
+                                  : "00:00",
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
                         ),
                       ],
                     ),
