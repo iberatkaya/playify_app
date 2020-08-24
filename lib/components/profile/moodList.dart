@@ -84,7 +84,7 @@ class SleepyMood extends Mood {
 class JoyfulMood extends Mood {
   static Color iconColor = Colors.red.shade500;
   static Color color = Colors.redAccent;
-  static String text = "JoyFul";
+  static String text = "Joyful";
   static Icon icon = Icon(
     Icons.insert_emoticon,
     color: iconColor,

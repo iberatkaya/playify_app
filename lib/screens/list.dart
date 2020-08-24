@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/classes/recentPlayedSong.dart';
 import 'package:playify_app/components/itemTile.dart';
 import 'package:playify_app/redux/music/action.dart';
+import 'package:playify_app/redux/recentplayedsongs/action.dart';
 import 'package:playify_app/redux/store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum MusicListType { artists, albums, songs, artist, album }
 
@@ -22,6 +25,34 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  updateRecentSongs(Song selectedSong) async {
+    var prefs = await SharedPreferences.getInstance();
+    List<String> recentlist =
+        prefs.getStringList("recentPlayed") != null ? prefs.getStringList("recentPlayed") : [];
+    recentlist.insert(0, selectedSong.iOSSongID);
+    if (recentlist.length > 6) {
+      recentlist.removeAt(recentlist.length - 1);
+    }
+    List<RecentPlayedSong> recentSongs = [];
+    recentlist.forEach(
+      (i) => store.state.artists.forEach(
+        (j) => j.albums.forEach(
+          (k) => k.songs.forEach((l) => (l.iOSSongID == i)
+              ? recentSongs.add(RecentPlayedSong(
+                  albumName: k.title,
+                  iosSongId: i,
+                  coverArt: k.coverArt,
+                  artistName: j.name,
+                  songName: l.title,
+                ))
+              : null),
+        ),
+      ),
+    );
+    store.dispatch(setRecentPlayedSongsAction(recentSongs));
+    await prefs.setStringList("recentPlayed", recentlist);
+  }
+
   String listTypeTitle() {
     if (widget.listType == MusicListType.albums) {
       return "Albums";
@@ -150,20 +181,7 @@ class _ListScreenState extends State<ListScreen> {
                                 var playify = Playify();
                                 await playify.setQueue(
                                     songIDs: songs.map((e) => e.iOSSongID).toList(), startIndex: index);
-                                List<Artist> newartists = [...artists];
-                                //Increment the song play count in redux
-                                newartists
-                                    .where((element) => element.name == songs[index].artistName)
-                                    .toList()[0]
-                                    .albums
-                                    .where((element) => element.title == songs[index].albumTitle)
-                                    .toList()[0]
-                                    .songs
-                                    .where((element) => element.iOSSongID == songs[index].iOSSongID)
-                                    .toList()[0]
-                                    .playCount++;
-                                store.dispatch(setMusicLibraryAction(newartists));
-
+                                updateRecentSongs(songs[index]);
                                 Navigator.of(context).popUntil((route) => route.isFirst);
                               } catch (e) {
                                 print(e);
@@ -208,20 +226,7 @@ class _ListScreenState extends State<ListScreen> {
                                 await playify.setQueue(
                                     songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
                                     startIndex: index);
-                                List<Artist> newartists = [...artists];
-                                //Increment the song play count in redux
-                                newartists
-                                    .where((element) => element.name == widget.album.songs[index].artistName)
-                                    .toList()[0]
-                                    .albums
-                                    .where((element) => element.title == widget.album.songs[index].albumTitle)
-                                    .toList()[0]
-                                    .songs
-                                    .where(
-                                        (element) => element.iOSSongID == widget.album.songs[index].iOSSongID)
-                                    .toList()[0]
-                                    .playCount++;
-                                store.dispatch(setMusicLibraryAction(newartists));
+                                updateRecentSongs(widget.album.songs[index]);
 
                                 Navigator.of(context).popUntil((route) => route.isFirst);
                               } catch (e) {

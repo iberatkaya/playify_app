@@ -1,11 +1,18 @@
 import 'dart:async';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/classes/recentPlayedSong.dart';
 import 'package:playify_app/components/transitionbackground.dart';
 import 'package:playify_app/constant/animationAmount.dart';
+import 'package:playify_app/redux/recentplayedsongs/action.dart';
+import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/menu.dart';
+import 'package:playify_app/screens/profile.dart';
 import 'package:playify_app/utilities/animation/backgroundColorFromAlbum.dart';
 import 'package:playify_app/utilities/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -21,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Animation<Offset> _animationOffsetLeft;
   Animation animation; // Fading Animation
   AnimationController animationController; // Fading Animation Controller
+  PermissionStatus permissionStatus = PermissionStatus.undetermined;
 
   SongInfo currentSong;
 
@@ -39,8 +47,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    setTimer();
     initAnimation();
+    var perm = Permission.mediaLibrary.request();
+    perm.then((value) {
+      if (value == PermissionStatus.granted) {
+        setTimer();
+        getRecentSongs();
+      }
+      setState(() {
+        permissionStatus = value;
+      });
+    });
 
     //Set the swipe right and left animation controllers. The offset determines how much left or right the animation will go, and the duration determines the speed of the animation
     _controllerRight = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
@@ -81,6 +98,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  ///Get recently played songs
+  getRecentSongs() async {
+    var prefs = await SharedPreferences.getInstance();
+    List<String> recentlist =
+        prefs.getStringList("recentPlayed") != null ? prefs.getStringList("recentPlayed") : [];
+    List<RecentPlayedSong> recentSongs = [];
+    recentlist.forEach(
+      (i) => store.state.artists.forEach(
+        (j) => j.albums.forEach(
+          (k) => k.songs.forEach((l) => (l.iOSSongID == i)
+              ? recentSongs.add(RecentPlayedSong(
+                  albumName: k.title,
+                  iosSongId: i,
+                  coverArt: k.coverArt,
+                  artistName: j.name,
+                  songName: l.title,
+                ))
+              : null),
+        ),
+      ),
+    );
+    store.dispatch(setRecentPlayedSongsAction(recentSongs));
+    await prefs.setStringList("recentPlayed", recentlist);
+  }
+
   ///Create an animation for the background
   void initAnimation() {
     animationController = AnimationController(
@@ -101,15 +143,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       //The event loop where the song and the playback time is checked
       timer = Timer.periodic(Duration(milliseconds: 350), (timer) async {
         try {
-          //Don't check if the user is changing the time via the slider
+          //Check if the user is changing the time via the slider
           if (changing) return;
-          var isplaying = await isPlaying();
           await fetchCurrentSong();
+          var isplaying = await isPlaying();
           Playify myplayify = Playify();
-          if (isplaying == true && !changing) {
+          if (!changing) {
             var res = await myplayify.getPlaybackTime();
             setState(() {
               currentTime = res.truncate();
+              playing = isplaying;
             });
           }
         } catch (e) {
@@ -144,15 +187,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<bool> isPlaying() async {
     try {
       var res = await playify.isPlaying();
-      setState(() {
-        playing = res;
-      });
       return res;
     } catch (e) {
       print(e);
-      setState(() {
-        playing = false;
-      });
       return false;
     }
   }
@@ -161,6 +198,66 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final _width = MediaQuery.of(context).size.width;
     final _height = MediaQuery.of(context).size.height;
+
+    if (permissionStatus == PermissionStatus.undetermined) {
+      return Container(
+        child: Stack(
+          children: [
+            TransitionBackground(
+              opacity: animation,
+              color1: Colors.indigo[400],
+              color2: Colors.deepPurple[400],
+            ),
+            Positioned.fill(
+              child: Container(
+                child: CircularProgressIndicator(),
+                alignment: Alignment.center,
+              ),
+            )
+          ],
+        ),
+      );
+    } else if (permissionStatus == PermissionStatus.denied) {
+      return Container(
+        child: Stack(
+          children: [
+            TransitionBackground(
+              opacity: animation,
+              color1: Colors.indigo[400],
+              color2: Colors.deepPurple[400],
+            ),
+            Positioned.fill(
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        "Permission was denied!",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    FlatButton(
+                        onPressed: () async {
+                          await AppSettings.openAppSettings();
+                          var perm = await Permission.mediaLibrary.request();
+                          setState(() {
+                            permissionStatus = perm;
+                          });
+                        },
+                        color: Colors.purple[300],
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: Text("Give Permission"))
+                  ],
+                ),
+                alignment: Alignment.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Container(
       child: Stack(
@@ -244,14 +341,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             child: Text(
                                               currentSong.song.title,
                                               textAlign: TextAlign.center,
+                                              style: TextStyle(color: Colors.black),
                                             ),
                                           ),
                                           content: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Text("Album: " + currentSong.album.title),
-                                              Text("Artist: " + currentSong.artist.name),
+                                              Text(
+                                                "Album: " + currentSong.album.title,
+                                                style: TextStyle(color: Colors.black),
+                                              ),
+                                              Text(
+                                                "Artist: " + currentSong.artist.name,
+                                                style: TextStyle(color: Colors.black),
+                                              ),
                                             ],
                                           ),
                                         );
@@ -373,6 +477,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             divisions: currentSong != null ? currentSong.song.duration.toInt() : 100,
                             value: currentTime.toDouble(),
                             min: 0,
+                            activeColor: Theme.of(context).primaryColor,
                             max: currentSong != null ? currentSong.song.duration : 99,
                             onChangeStart: (val) {
                               setState(() {
@@ -435,6 +540,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 await playify.previous();
                                 setState(() {
                                   changing = false;
+                                  currentTime = 0;
                                 });
                               } catch (e) {
                                 print(e);
@@ -502,6 +608,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 await playify.next();
                                 setState(() {
                                   changing = false;
+                                  currentTime = 0;
                                 });
                               } catch (e) {
                                 print(e);

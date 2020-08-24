@@ -4,7 +4,7 @@ const List<String> colors = [
   "#fff9e191",
   "#ffa95195",
   "#ffd4d087",
-  "#fffcfd6a",
+  "#ff1cad8a",
   "#ffff7c43",
   "#ffffaf00",
   "#ff817DD4",

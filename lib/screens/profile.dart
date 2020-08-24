@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:playify_app/classes/mood.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/classes/recentPlayedSong.dart';
 import 'package:playify_app/components/profile/MoodBottomSheet.dart';
 import 'package:playify_app/components/profile/recentMusic.dart';
 import 'package:playify_app/components/transitionbackground.dart';
@@ -216,26 +217,29 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                         ),
                       ),
                       // Recent List
-                      Container(
-                        height: height * 0.2,
-                        margin: EdgeInsets.only(top: 0),
-                        child: GridView.builder(
-                          itemCount: recentSongs.length,
-                          itemBuilder: (context, index) {
-                            var toPassSongInfo = recentSongs[index];
-
-                            return RecentMusicContainer(songInfo: toPassSongInfo);
-                          },
-                          padding: EdgeInsets.only(left: 10),
-                          scrollDirection: Axis.horizontal,
-                          physics: ClampingScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 1,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 15,
-                          ),
-                        ),
-                      ),
+                      StoreConnector<AppState, List<RecentPlayedSong>>(
+                          converter: (appstate) => appstate.state.recentPlayedSongs,
+                          builder: (storeContext, recentPlayedSongs) {
+                            return Container(
+                              height: height * 0.25,
+                              margin: EdgeInsets.only(top: 0),
+                              child: GridView.builder(
+                                itemCount: recentPlayedSongs.length,
+                                itemBuilder: (context, index) {
+                                  var toPassSongInfo = recentPlayedSongs[index];
+                                  return RecentMusicContainer(songInfo: toPassSongInfo);
+                                },
+                                padding: EdgeInsets.only(left: 10),
+                                scrollDirection: Axis.horizontal,
+                                physics: ClampingScrollPhysics(),
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 1,
+                                  childAspectRatio: 1,
+                                  crossAxisSpacing: 15,
+                                ),
+                              ),
+                            );
+                          }),
                     ],
                   ),
                 ),
