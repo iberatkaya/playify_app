@@ -26,8 +26,8 @@ class _MainAppState extends State<MainApp> {
   @override
   initState() {
     super.initState();
-    updateLibrary().then((_) => getSettings().then((_) =>
-        setStatusBarColor().then((_) => setState(() => loading = false))));
+    updateLibrary().then(
+        (_) => getSettings().then((_) => setStatusBarColor().then((_) => setState(() => loading = false))));
   }
 
   Future<void> updateLibrary() async {
@@ -55,7 +55,6 @@ class _MainAppState extends State<MainApp> {
     try {
       await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
       await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-
     } catch (e) {
       print(e);
     }
@@ -66,9 +65,7 @@ class _MainAppState extends State<MainApp> {
     return Scaffold(
       body: IndexedStack(
         index: index,
-        children: (loading)
-            ? [Container()]
-            : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
+        children: (loading) ? [Container()] : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
@@ -76,9 +73,10 @@ class _MainAppState extends State<MainApp> {
           index = currentIndex;
         }),
         showSelectedLabels: false,
-        selectedItemColor: themeModeColor(
-            MediaQuery.of(context).platformBrightness, Colors.blue[900]),
+        selectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.white),
+        unselectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.white38),
         showUnselectedLabels: false,
+        backgroundColor: Colors.deepPurple[300],
         items: [
           BottomNavigationBarItem(
             title: Text("Home"),

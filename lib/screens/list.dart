@@ -61,7 +61,7 @@ class _ListScreenState extends State<ListScreen> {
               builder: (BuildContext storeContext, List<Artist> artists) {
                 if (widget.listType == MusicListType.artists) {
                   var myartists = [...artists];
-                  myartists.sort((a, b) => a.name[0].compareTo(b.name[0]));
+                  myartists.sort((a, b) => a.name[0].toUpperCase().compareTo(b.name[0].toUpperCase()));
                   return ListView.separated(
                       padding: EdgeInsets.symmetric(vertical: 6),
                       itemCount: myartists.length,
@@ -75,7 +75,9 @@ class _ListScreenState extends State<ListScreen> {
                           brightness: MediaQuery.of(context).platformBrightness,
                           subtitle: myartists[index].albums.length.toString() +
                               ((myartists[index].albums.length == 1) ? " Album" : " Albums"),
-                          icon: myartists[index].albums[0].coverArt,
+                          icon: myartists[index].albums[0].coverArt != null
+                              ? Image.memory(myartists[index].albums[0].coverArt)
+                              : null,
                           fn: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ListScreen(
@@ -93,7 +95,7 @@ class _ListScreenState extends State<ListScreen> {
                       albums.add(artists[i].albums[j]);
                     }
                   }
-                  albums.sort((a, b) => a.title[0].compareTo(b.title[0]));
+                  albums.sort((a, b) => a.title[0].toUpperCase().compareTo(b.title[0].toUpperCase()));
                   return ListView.separated(
                       itemCount: albums.length,
                       padding: EdgeInsets.symmetric(vertical: 6),
@@ -103,7 +105,7 @@ class _ListScreenState extends State<ListScreen> {
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
                           title: albums[index].title,
-                          icon: albums[index].coverArt,
+                          icon: albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
                           subtitle: albums[index].artistName,
                           brightness: MediaQuery.of(context).platformBrightness,
                           fn: () => Navigator.of(context).push(
@@ -125,7 +127,7 @@ class _ListScreenState extends State<ListScreen> {
                       }
                     }
                   }
-                  songs.sort((a, b) => a.title[0].compareTo(b.title[0]));
+                  songs.sort((a, b) => a.title[0].toUpperCase().compareTo(b.title[0].toUpperCase()));
                   return ListView.separated(
                       itemCount: songs.length,
                       padding: EdgeInsets.symmetric(vertical: 6),
@@ -140,7 +142,7 @@ class _ListScreenState extends State<ListScreen> {
                             .coverArt;
                         return ItemTile(
                             title: songs[index].title,
-                            icon: iconArt,
+                            icon: iconArt != null ? Image.memory(iconArt) : null,
                             brightness: MediaQuery.of(context).platformBrightness,
                             subtitle: songs[index].artistName,
                             fn: () async {
@@ -179,7 +181,9 @@ class _ListScreenState extends State<ListScreen> {
                         return ItemTile(
                             title: widget.artist.albums[index].title,
                             brightness: MediaQuery.of(context).platformBrightness,
-                            icon: widget.artist.albums[index].coverArt,
+                            icon: widget.artist.albums[index].coverArt != null
+                                ? Image.memory(widget.artist.albums[index].coverArt)
+                                : null,
                             fn: () => Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => ListScreen(
                                       listType: MusicListType.album,
@@ -196,7 +200,7 @@ class _ListScreenState extends State<ListScreen> {
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
                             title: widget.album.songs[index].title,
-                            icon: widget.album.coverArt,
+                            icon: widget.album.coverArt != null ? Image.memory(widget.album.coverArt) : null,
                             brightness: MediaQuery.of(context).platformBrightness,
                             fn: () async {
                               try {

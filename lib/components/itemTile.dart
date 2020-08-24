@@ -37,7 +37,7 @@ class ItemTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
-          title.substring(0, 2),
+          title.substring(0, 2).toUpperCase(),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       );
@@ -59,8 +59,9 @@ class ItemTile extends StatelessWidget {
                   title: Text(
                     title,
                     style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: settings.listTileFontSize.toDouble()),
+                      fontWeight: FontWeight.w500,
+                      fontSize: settings.listTileFontSize.toDouble(),
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   leading: iconBuilder(),
@@ -73,9 +74,8 @@ class ItemTile extends StatelessWidget {
               child: ListTile(
                 title: Text(
                   title,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: settings.listTileFontSize.toDouble()),
+                  style:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: settings.listTileFontSize.toDouble()),
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(subtitle),

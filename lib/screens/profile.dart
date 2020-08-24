@@ -5,6 +5,8 @@ import 'package:playify_app/classes/mood.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/components/profile/MoodBottomSheet.dart';
 import 'package:playify_app/components/profile/recentMusic.dart';
+import 'package:playify_app/components/transitionbackground.dart';
+import 'package:playify_app/constant/animationAmount.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/utilities/animation/backgroundColorFromAlbum.dart';
 import 'package:playify_app/utilities/moodUtility.dart';
@@ -22,27 +24,15 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>
-    with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
   Animation animation; // Fading Animation
-  dynamic currentMood =
-      HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
+  dynamic currentMood = HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
   AnimationController animationController; // Fading Animation Controller
 
   @override
   void initState() {
     getCurrentMood(); // Initiliaze When Profile Page is shown
-    animationController = AnimationController(
-      vsync: this,
-      duration: Duration(
-        seconds: 1,
-        milliseconds: 500,
-      ),
-    )..repeat(reverse: true);
-    animation = Tween(
-      begin: 0.4,
-      end: 0.8,
-    ).animate(animationController);
+    initAnimation();
     super.initState();
   }
 
@@ -50,6 +40,21 @@ class _ProfileScreenState extends State<ProfileScreen>
   void dispose() {
     animationController.dispose();
     super.dispose();
+  }
+
+  ///Create an animation for the background
+  void initAnimation() {
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        seconds: 2,
+      ),
+    )..repeat(reverse: true);
+
+    animation = Tween(
+      begin: beginAmount,
+      end: endAmount,
+    ).animate(animationController);
   }
 
   /// Function Returns Current Mood
@@ -78,29 +83,10 @@ class _ProfileScreenState extends State<ProfileScreen>
             var favAlbum = mostListenedAlbum(artists);
             return Stack(
               children: <Widget>[
-                /// Background animation
-                FadeTransition(
+                TransitionBackground(
                   opacity: animation,
-                  child: Container(
-                    /// Background Theme
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.2),
-                          spreadRadius: 10,
-                          blurRadius: 15,
-                          offset: Offset(10, 15), // changes position of shadow
-                        ),
-                      ],
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.blue.shade700,
-                          Colors.purple.shade700,
-                        ],
-                      ),
-                      color: Colors.white54,
-                    ),
-                  ),
+                  color1: Colors.indigo[400],
+                  color2: Colors.deepPurple[400],
                 ),
 
                 /// All Profile UI
@@ -137,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             child: favAlbum != null
                                 ? CircleAvatar(
                                     child: ClipOval(
-                                      child: favAlbum.coverArt,
+                                      child: Image.memory(favAlbum.coverArt),
                                     ),
                                   )
                                 : CircleAvatar(
@@ -181,9 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               margin: EdgeInsets.only(top: 10),
                               padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                favAlbum != null
-                                    ? favAlbum.title
-                                    : "", // Favorite Album Title
+                                favAlbum != null ? favAlbum.title : "", // Favorite Album Title
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -198,9 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               child: Opacity(
                                 opacity: 0.54,
                                 child: Text(
-                                  favAlbum != null
-                                      ? favAlbum.artistName
-                                      : "", // Favorite Song Artist
+                                  favAlbum != null ? favAlbum.artistName : "", // Favorite Song Artist
                                   textAlign: TextAlign.end,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -242,14 +224,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                           itemBuilder: (context, index) {
                             var toPassSongInfo = recentSongs[index];
 
-                            return RecentMusicContainer(
-                                songInfo: toPassSongInfo);
+                            return RecentMusicContainer(songInfo: toPassSongInfo);
                           },
                           padding: EdgeInsets.only(left: 10),
                           scrollDirection: Axis.horizontal,
                           physics: ClampingScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 1,
                             childAspectRatio: 1,
                             crossAxisSpacing: 15,
