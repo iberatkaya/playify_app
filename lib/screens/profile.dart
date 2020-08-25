@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   child: ListView(
                     children: <Widget>[
                       /// Edit Icon
-                      Container(
+                      /*Container(
                         alignment: Alignment.centerRight,
                         child: IconButton(
                           icon: Icon(Icons.edit),
@@ -104,14 +104,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                             showBottomToSaveMood(context, getCurrentMood);
                           },
                         ),
-                      ),
+                      ),*/
 
                       /// Profile Picture Card
                       Padding(
                         padding: const EdgeInsets.all(1.0),
                         child: Container(
-                          height: height * 0.3,
-                          margin: EdgeInsets.only(top: 15),
+                          height: height * 0.35,
+                          margin: EdgeInsets.only(top: 25),
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Padding(
+                            /*Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: Wrap(
                                 children: <Widget>[
@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                   ),
                                 ],
                               ),
-                            ),
+                            ),*/
                             Container(
                               margin: EdgeInsets.only(top: 10),
                               padding: const EdgeInsets.all(5.0),

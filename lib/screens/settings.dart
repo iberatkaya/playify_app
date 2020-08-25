@@ -16,8 +16,29 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String Function(int) fontSizeToString = (i) => (i == 15) ? "Small" : (i == 17) ? "Medium" : "Large";
-  int Function(String) stringToFontSize = (i) => (i == "Small") ? 15 : (i == "Medium") ? 17 : 19;
+  String Function(int) fontSizeToString = (int i) {
+    if (i == 15) return "Smallest";
+    if (i == 16)
+      return "Small";
+    else if (i == 17)
+      return "Medium";
+    else if (i == 18)
+      return "Large";
+    else
+      return "Largest";
+  };
+  int Function(String) stringToFontSize = (String i) {
+    if (i == "Smallest")
+      return 15;
+    else if (i == "Small")
+      return 16;
+    else if (i == "Medium")
+      return 17;
+    else if (i == "Large")
+      return 18;
+    else
+      return 19;
+  };
   bool scanning = false;
 
   Map<String, dynamic> songToMap(Song song) => {
@@ -65,7 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       trailing: DropdownButton<String>(
                         value: fontSizeToString(settings.listTileFontSize),
-                        items: ["Small", "Medium", "Large"]
+                        items: ["Smallest", "Small", "Medium", "Large", "Largest"]
                             .map((i) => DropdownMenuItem(
                                   child: Text(i),
                                   value: i,

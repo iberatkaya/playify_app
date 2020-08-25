@@ -12,7 +12,7 @@ class PlayifyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Playify',
       theme: ThemeData.light().copyWith(
-          primaryColor: Colors.purple,
+          primaryColor: Colors.purple[400],
           dividerTheme: DividerThemeData(color: Colors.black54),
           iconTheme: IconThemeData(color: Colors.black)),
       darkTheme: ThemeData.dark().copyWith(

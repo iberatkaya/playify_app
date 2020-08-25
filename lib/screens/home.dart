@@ -41,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Timer timer;
 
-  double spaceRatioPlayerAndTop = 0.15;
-  double topBarContainerHeightRatio = 0.11;
+  double spaceRatioPlayerAndTop = 0.12;
+  double topBarContainerHeightRatio = 0.25;
 
   @override
   void initState() {
@@ -285,6 +285,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ],
             ),
+            padding: EdgeInsets.only(top: _height * 0.05),
+            alignment: Alignment.topCenter,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -302,105 +304,116 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
 
           Container(
-            padding: EdgeInsets.only(top: (_height * topBarContainerHeightRatio + 20)),
+            padding: EdgeInsets.only(top: (_height * spaceRatioPlayerAndTop)),
             child: Column(
               children: <Widget>[
                 Container(
                   child: Column(
                     children: [
-                      if (currentSong != null)
-                        IgnorePointer(
-                          ignoring: changing,
+                      IgnorePointer(
+                        ignoring: changing,
+                        child: SlideTransition(
+                          position: _animationOffsetLeft,
                           child: SlideTransition(
-                            position: _animationOffsetLeft,
-                            child: SlideTransition(
-                              position: _animationOffsetRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => MenuPage()));
-                                },
-                                onLongPress: () async {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          actions: [
-                                            FlatButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Text("OK"))
-                                          ],
-                                          shape:
-                                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                          backgroundColor: Colors.white,
-                                          titleTextStyle: TextStyle(
-                                              fontWeight: FontWeight.w400, fontSize: 16, color: Colors.black),
-                                          title: Container(
-                                            child: Text(
-                                              currentSong.song.title,
-                                              textAlign: TextAlign.center,
+                            position: _animationOffsetRight,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) => MenuPage()));
+                              },
+                              onLongPress: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        actions: [
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text("OK"))
+                                        ],
+                                        shape:
+                                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        backgroundColor: Colors.white,
+                                        titleTextStyle: TextStyle(
+                                            fontWeight: FontWeight.w400, fontSize: 16, color: Colors.black),
+                                        title: Container(
+                                          child: Text(
+                                            currentSong.song.title,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(color: Colors.black),
+                                          ),
+                                        ),
+                                        content: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "Album: " + currentSong.album.title,
                                               style: TextStyle(color: Colors.black),
                                             ),
-                                          ),
-                                          content: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "Album: " + currentSong.album.title,
-                                                style: TextStyle(color: Colors.black),
-                                              ),
-                                              Text(
-                                                "Artist: " + currentSong.artist.name,
-                                                style: TextStyle(color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      });
-                                },
-                                onHorizontalDragEnd: (details) async {
-                                  try {
-                                    setState(() {
-                                      changing = true;
+                                            Text(
+                                              "Artist: " + currentSong.artist.name,
+                                              style: TextStyle(color: Colors.black),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     });
-                                    const int sensitivity = 300;
-                                    if (details.primaryVelocity > sensitivity) {
-                                      _controllerRight.forward();
-                                      await playify.previous();
-                                      setState(() {
-                                        currentTime = 0;
-                                      });
-                                    } else if (details.primaryVelocity < -sensitivity) {
-                                      _controllerLeft.forward();
-                                      await playify.next();
-                                      setState(() {
-                                        currentTime = 0;
-                                      });
-                                    }
+                              },
+                              onHorizontalDragEnd: (details) async {
+                                try {
+                                  setState(() {
+                                    changing = true;
+                                  });
+                                  const int sensitivity = 300;
+                                  if (details.primaryVelocity > sensitivity) {
+                                    _controllerRight.forward();
+                                    await playify.previous();
                                     setState(() {
-                                      changing = false;
+                                      currentTime = 0;
                                     });
-                                  } catch (e) {
-                                    print(e);
+                                  } else if (details.primaryVelocity < -sensitivity) {
+                                    _controllerLeft.forward();
+                                    await playify.next();
                                     setState(() {
-                                      changing = false;
+                                      currentTime = 0;
                                     });
                                   }
-                                },
-                                child: Stack(children: [
+                                  setState(() {
+                                    changing = false;
+                                  });
+                                } catch (e) {
+                                  print(e);
+                                  setState(() {
+                                    changing = false;
+                                  });
+                                }
+                              },
+                              child: Stack(children: [
+                                if (currentSong != null)
                                   Container(
                                     decoration: BoxDecoration(
                                         color: Colors.grey[400],
                                         shape: BoxShape.rectangle,
-                                        image: DecorationImage(
-                                            image: Image.memory(currentSong.album.coverArt).image),
+                                        image: currentSong.album.coverArt != null
+                                            ? DecorationImage(
+                                                image: Image.memory(currentSong.album.coverArt).image)
+                                            : null,
                                         borderRadius: BorderRadius.circular(8)),
                                     height: MediaQuery.of(context).size.height * 0.5,
                                     width: MediaQuery.of(context).size.height * 0.5,
+                                  )
+                                else
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    width: MediaQuery.of(context).size.height * 0.5,
                                   ),
+                                if (currentSong != null)
                                   Positioned(
                                       left: 10,
                                       bottom: 35,
@@ -416,6 +429,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 18)),
                                       )),
+                                if (currentSong != null)
                                   Positioned(
                                     left: 10,
                                     bottom: 10,
@@ -441,18 +455,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       ),
                                     ),
                                   ),
-                                ]),
-                              ),
+                              ]),
                             ),
                           ),
-                        )
-                      else
-                        Container(
-                          decoration:
-                              BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          width: MediaQuery.of(context).size.width * 0.95,
-                        )
+                        ),
+                      )
                     ],
                   ),
                 ),

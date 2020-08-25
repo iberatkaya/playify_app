@@ -137,7 +137,10 @@ class _ListScreenState extends State<ListScreen> {
                         return ItemTile(
                           title: albums[index].title,
                           icon: albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
-                          subtitle: albums[index].artistName,
+                          subtitle: albums[index].artistName +
+                              ((albums[index].songs[0].releaseDate.millisecondsSinceEpoch != 0)
+                                  ? (" - " + albums[index].songs[0].releaseDate.year.toString())
+                                  : ""),
                           brightness: MediaQuery.of(context).platformBrightness,
                           fn: () => Navigator.of(context).push(
                             MaterialPageRoute(
@@ -196,16 +199,20 @@ class _ListScreenState extends State<ListScreen> {
                         return Divider();
                       },
                       itemBuilder: (BuildContext listContext, int index) {
+                        List<Album> albums = [...widget.artist.albums];
+                        albums.sort((a, b) => -1 * a.songs[0].releaseDate.compareTo(b.songs[0].releaseDate));
                         return ItemTile(
-                            title: widget.artist.albums[index].title,
+                            title: albums[index].title,
                             brightness: MediaQuery.of(context).platformBrightness,
-                            icon: widget.artist.albums[index].coverArt != null
-                                ? Image.memory(widget.artist.albums[index].coverArt)
+                            icon:
+                                albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
+                            subtitle: albums[index].songs[0].releaseDate.millisecondsSinceEpoch != 0
+                                ? albums[index].songs[0].releaseDate.year.toString()
                                 : null,
                             fn: () => Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => ListScreen(
                                       listType: MusicListType.album,
-                                      album: widget.artist.albums[index],
+                                      album: albums[index],
                                     ))));
                       });
                 } else if (widget.listType == MusicListType.album) {
@@ -217,7 +224,9 @@ class _ListScreenState extends State<ListScreen> {
                       },
                       itemBuilder: (BuildContext listContext, int index) {
                         return ItemTile(
-                            title: widget.album.songs[index].title,
+                            title: widget.album.songs[index].trackNumber.toString() +
+                                ". " +
+                                widget.album.songs[index].title,
                             icon: widget.album.coverArt != null ? Image.memory(widget.album.coverArt) : null,
                             brightness: MediaQuery.of(context).platformBrightness,
                             fn: () async {
