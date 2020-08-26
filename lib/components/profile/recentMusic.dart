@@ -43,16 +43,19 @@ class RecentMusicContainer extends StatelessWidget {
                             image,
                             fit: BoxFit.contain,
                           )
-                        : Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color:
-                                  themeModeColor(MediaQuery.of(context).platformBrightness, Colors.black12),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              albumTitle.substring(0, 2).toUpperCase(),
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        : AspectRatio(
+                            aspectRatio: 1.0,
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color:
+                                    themeModeColor(MediaQuery.of(context).platformBrightness, Colors.black12),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                albumTitle.substring(0, 2).toUpperCase(),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
                             ),
                           ),
                   ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -6,11 +7,13 @@ import 'package:playify/playify.dart';
 import 'package:playify_app/classes/recentPlayedSong.dart';
 import 'package:playify_app/components/transitionbackground.dart';
 import 'package:playify_app/constant/animationAmount.dart';
+import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/recentplayedsongs/action.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/menu.dart';
 import 'package:playify_app/screens/profile.dart';
 import 'package:playify_app/utilities/animation/backgroundColorFromAlbum.dart';
+import 'package:playify_app/utilities/jsonify.dart';
 import 'package:playify_app/utilities/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Animation animation; // Fading Animation
   AnimationController animationController; // Fading Animation Controller
   PermissionStatus permissionStatus = PermissionStatus.undetermined;
+  bool updatedLibrary = false;
 
   SongInfo currentSong;
 
@@ -52,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     perm.then((value) {
       if (value == PermissionStatus.granted) {
         setTimer();
-        getRecentSongs();
+        fetchLibraryFromSP().then((value) => getRecentSongs());
       }
       setState(() {
         permissionStatus = value;
@@ -98,8 +102,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> fetchLibraryFromSP() async {
+    try {
+      setState(() {
+        updatedLibrary = false;
+      });
+      //final stopwatch = Stopwatch()..start();
+      var prefs = await SharedPreferences.getInstance();
+      var res = prefs.getString("artists");
+      if (res == null) {
+        await updateLibrary();
+      }
+      List<dynamic> artistsMap = json.decode(res);
+      List<Artist> artists = List<Artist>.from(artistsMap.map((e) => mapToArist(e)).toList());
+      store.dispatch(setMusicLibraryAction(artists));
+      //print('executed in ${stopwatch.elapsed.inMilliseconds}ms');
+      setState(() {
+        updatedLibrary = true;
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        updatedLibrary = true;
+      });
+    }
+  }
+
+  Future<void> updateLibrary() async {
+    try {
+      //final stopwatch = Stopwatch()..start();
+      var res = await playify.getAllSongs(coverArtSize: 400);
+      List<Map<String, dynamic>> artistsMap = res.map((e) => artistToMap(e)).toList();
+      var prefs = await SharedPreferences.getInstance();
+      await prefs.setString("artists", json.encode(artistsMap));
+      store.dispatch(setMusicLibraryAction(res));
+      //print('executed in ${stopwatch.elapsed.inMilliseconds}ms');
+      setState(() {
+        updatedLibrary = true;
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        updatedLibrary = false;
+      });
+    }
+  }
+
   ///Get recently played songs
-  getRecentSongs() async {
+  Future<void> getRecentSongs() async {
     var prefs = await SharedPreferences.getInstance();
     List<String> recentlist =
         prefs.getStringList("recentPlayed") != null ? prefs.getStringList("recentPlayed") : [];
@@ -165,12 +215,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //Fetch info about the current playing song
   Future<void> fetchCurrentSong() async {
     try {
-      var res = await playify.nowPlaying();
       if (currentSong == null) {
+        var res = await playify.nowPlaying();
         setState(() {
           currentSong = res;
         });
-      } else if (!isEqual(currentSong.song, res.song)) {
+        return;
+      }
+      //Check if the song is not the same, if not request a new version with a high res cover
+      //This is done in order to speed up the periodic timer
+      var res = await playify.nowPlaying(coverArtSize: 1);
+      if (!isEqual(currentSong.song, res.song)) {
+        res = await playify.nowPlaying();
         setState(() {
           currentSong = res;
         });
@@ -319,8 +375,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             child: GestureDetector(
                               behavior: HitTestBehavior.opaque,
                               onTap: () {
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) => MenuPage()));
+                                if (updatedLibrary)
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(builder: (context) => MenuPage()));
                               },
                               onLongPress: () async {
                                 await showDialog(

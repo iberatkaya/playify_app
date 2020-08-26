@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:playify/playify.dart';
@@ -26,17 +24,7 @@ class _MainAppState extends State<MainApp> {
   @override
   initState() {
     super.initState();
-    updateLibrary().then(
-        (_) => getSettings().then((_) => setStatusBarColor().then((_) => setState(() => loading = false))));
-  }
-
-  Future<void> updateLibrary() async {
-    try {
-      var res = await playify.getAllSongs(coverArtSize: 400);
-      store.dispatch(setMusicLibraryAction(res));
-    } catch (e) {
-      print(e);
-    }
+    getSettings().then((_) => setStatusBarColor().then((_) => setState(() => loading = false)));
   }
 
   Future<void> getSettings() async {

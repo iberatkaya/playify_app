@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
-import 'package:playify_app/components/itemTile.dart';
 import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
+import 'package:playify_app/utilities/jsonify.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -16,6 +16,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool updatingLibrary = false;
   String Function(int) fontSizeToString = (int i) {
     if (i == 15) return "Smallest";
     if (i == 16)
@@ -39,30 +40,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     else
       return 19;
   };
-  bool scanning = false;
 
-  Map<String, dynamic> songToMap(Song song) => {
-        "albumTitle": song.albumTitle,
-        "artistName": song.artistName,
-        "discNumber": song.discNumber,
-        "duration": song.duration,
-        "iOSSongID": song.iOSSongID,
-        "isExplicit": song.isExplicit,
-        "playCount": song.playCount,
-        "title": song.title,
-        "trackNumber": song.trackNumber,
-      };
-
-  Map<String, dynamic> albumToMap(Album album) => {
-        "albumTrackCount": album.albumTrackCount,
-        "artistName": album.artistName,
-        "diskCount": album.diskCount,
-        "songs": album.songs.map((element) => songToMap(element)).toList(),
-        "title": album.title,
-      };
-
-  Map<String, dynamic> artistToMap(Artist artist) =>
-      {"name": artist.name, "album": artist.albums.map((e) => albumToMap(e)).toList()};
+  Future<void> updateLibrary() async {
+    try {
+      setState(() {
+        updatingLibrary = true;
+      });
+      var playify = Playify();
+      var res = await playify.getAllSongs(coverArtSize: 400);
+      List<Map<String, dynamic>> artistsMap = res.map((e) => artistToMap(e)).toList();
+      var prefs = await SharedPreferences.getInstance();
+      await prefs.setString("artists", json.encode(artistsMap));
+      store.dispatch(setMusicLibraryAction(res));
+      setState(() {
+        updatingLibrary = false;
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        updatingLibrary = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +78,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               builder: (storeContext, settings) {
                 return ListView(
                   children: [
+                    ListTile(
+                      title: Text(
+                        "Update Library",
+                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                      ),
+                      trailing: updatingLibrary ? CircularProgressIndicator() : null,
+                      onTap: () async {
+                        await updateLibrary();
+                      },
+                    ),
                     ListTile(
                       title: Text(
                         "Font Size",
