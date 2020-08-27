@@ -80,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     ListTile(
                       title: Text(
-                        "Update Library",
+                        "Scan Library",
                         style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: updatingLibrary ? CircularProgressIndicator() : null,

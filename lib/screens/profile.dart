@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:playify_app/classes/mood.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/recentPlayedSong.dart';
-import 'package:playify_app/components/profile/MoodBottomSheet.dart';
-import 'package:playify_app/components/profile/recentMusic.dart';
+import 'package:playify_app/components/gridItemTile.dart';
 import 'package:playify_app/components/transitionbackground.dart';
 import 'package:playify_app/constant/animationAmount.dart';
 import 'package:playify_app/redux/store.dart';
-import 'package:playify_app/utilities/animation/backgroundColorFromAlbum.dart';
+import 'package:playify_app/screens/list.dart';
+import 'package:playify_app/screens/settings.dart';
 import 'package:playify_app/utilities/moodUtility.dart';
 import 'package:playify_app/utilities/mostListened/mostListenedAlbum.dart';
-import 'package:toast/toast.dart';
 import './../components/profile/moodList.dart';
-
-/* Dummy Data */
-List<SongInfo> recentSongs = [];
-
-/* ***************** */
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -226,8 +218,23 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               child: GridView.builder(
                                 itemCount: recentPlayedSongs.length,
                                 itemBuilder: (context, index) {
-                                  var toPassSongInfo = recentPlayedSongs[index];
-                                  return RecentMusicContainer(songInfo: toPassSongInfo);
+                                  var songInfo = recentPlayedSongs[index];
+                                  var album = artists
+                                      .where((element) => element.name == songInfo.artistName)
+                                      .toList()[0]
+                                      .albums
+                                      .where((element) => element.title == songInfo.albumName)
+                                      .toList()[0];
+                                  return GridItemTile(
+                                    title: album.title,
+                                    icon: album.coverArt != null ? Image.memory(album.coverArt) : null,
+                                    fn: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ListScreen(listType: MusicListType.album, album: album),
+                                      ),
+                                    ),
+                                  );
                                 },
                                 padding: EdgeInsets.only(left: 10),
                                 scrollDirection: Axis.horizontal,
@@ -242,6 +249,17 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                           }),
                     ],
                   ),
+                ),
+
+                Positioned(
+                  right: 0,
+                  top: 25,
+                  child: IconButton(
+                      iconSize: 28,
+                      icon: Icon(Icons.settings),
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SettingsScreen()));
+                      }),
                 ),
               ],
             );

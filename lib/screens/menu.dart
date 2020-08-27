@@ -26,36 +26,29 @@ class _MenuPageState extends State<MenuPage> {
                   PlayifyIcon.artist,
                   size: 24,
                 ),
+                padding: EdgeInsets.only(top: 4),
+                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          ListScreen(listType: MusicListType.artists)));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.artists)));
                 }),
             Divider(),
             ItemTile(
                 title: "Albums",
                 icon: Icon(PlayifyIcon.album, size: 24),
+                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          ListScreen(listType: MusicListType.albums)));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.albums)));
                 }),
             Divider(),
             ItemTile(
                 title: "Songs",
                 icon: Icon(PlayifyIcon.song, size: 24),
+                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          ListScreen(listType: MusicListType.songs)));
-                }),
-            Divider(),
-            ItemTile(
-                title: "Settings",
-                icon: Icon(Icons.settings, size: 24),
-                fn: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SettingsScreen()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.songs)));
                 }),
             Divider(),
           ],

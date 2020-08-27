@@ -28,14 +28,13 @@ class _TransitionBackgroundState extends State<TransitionBackground> {
             ),
           ],
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
             colors: [
               widget.color1,
               widget.color2,
             ],
           ),
-          color: Colors.white,
         ),
       ),
     );

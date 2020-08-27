@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/recentPlayedSong.dart';
@@ -33,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   AnimationController animationController; // Fading Animation Controller
   PermissionStatus permissionStatus = PermissionStatus.undetermined;
   bool updatedLibrary = false;
+  Color firstColor = Colors.indigo[400];
+  Color secondColor = Colors.deepPurple[400];
 
   SongInfo currentSong;
 
@@ -99,6 +104,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void setState(fn) {
     if (this.mounted) {
       super.setState(fn);
+    }
+  }
+
+  int boundTo0and255(int val) {
+    if (val > 255)
+      return 255;
+    else if (val < 0)
+      return 0;
+    else
+      return val;
+  }
+
+  Future<void> updateBackgroundColor() async {
+    try {
+      var paletteGenerator = await PaletteGenerator.fromImageProvider(
+        Image.memory(currentSong.album.coverArt).image,
+        maximumColorCount: 3,
+      );
+      if (paletteGenerator.colors.toList().length > 0) {
+        Color tempColor1 = paletteGenerator.colors.toList()[0].withOpacity(0.3);
+        Color tempColor2 = paletteGenerator.colors.toList()[1].withOpacity(0.3);
+        var rnd = Random();
+        const randomness = 8;
+        Color newColor1 = Color.fromRGBO(
+          boundTo0and255(tempColor1.red + rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+          boundTo0and255(tempColor1.green + rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+          boundTo0and255(tempColor1.blue + rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+          1,
+        );
+        Color newColor2 = Color.fromRGBO(
+          boundTo0and255(tempColor2.red + rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+          boundTo0and255(tempColor2.green + rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+          boundTo0and255(tempColor2.blue + rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+          1,
+        );
+        setState(() {
+          firstColor = newColor1;
+          secondColor = newColor2;
+        });
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -219,6 +266,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         var res = await playify.nowPlaying();
         setState(() {
           currentSong = res;
+          updateBackgroundColor();
         });
         return;
       }
@@ -229,6 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         res = await playify.nowPlaying();
         setState(() {
           currentSong = res;
+          updateBackgroundColor();
         });
       }
     } catch (e) {
@@ -264,12 +313,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               color1: Colors.indigo[400],
               color2: Colors.deepPurple[400],
             ),
-            Positioned.fill(
-              child: Container(
-                child: CircularProgressIndicator(),
-                alignment: Alignment.center,
-              ),
-            )
           ],
         ),
       );
@@ -320,8 +363,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         children: [
           TransitionBackground(
             opacity: animation,
-            color1: Colors.indigo[400],
-            color2: Colors.deepPurple[400],
+            color1: firstColor,
+            color2: secondColor,
           ),
 
           /// Top Container
@@ -538,8 +581,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Expanded(
                           flex: 8,
                           child: Slider(
+                            label: formatSongTime(currentTime),
                             divisions: currentSong != null ? currentSong.song.duration.toInt() : 100,
-                            value: currentTime.toDouble(),
+                            value: (currentSong != null)
+                                ? ((currentTime.toDouble() < currentSong.song.duration)
+                                    ? currentTime.toDouble()
+                                    : 0)
+                                : 0,
                             min: 0,
                             activeColor: Theme.of(context).primaryColor,
                             max: currentSong != null ? currentSong.song.duration : 99,
