@@ -40,6 +40,8 @@ Color themeModeColor(Brightness brightness, Color color) {
       return Colors.white38;
     } else if (color == Colors.purple[600]) {
       return Colors.white;
+    } else if (color == Colors.black87) {
+      return Colors.white70;
     }
   }
   return color;

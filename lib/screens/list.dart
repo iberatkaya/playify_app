@@ -255,6 +255,125 @@ class _ListScreenState extends State<ListScreen> {
                         );
                       });
                 } else if (widget.listType == MusicListType.album) {
+                  return CustomScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverAppBar(
+                        actions: [
+                          IconButton(
+                            color: Colors.purple[500],
+                            onPressed: () async {
+                              try {
+                                var playify = Playify();
+                                await playify.setQueue(
+                                  songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
+                                  startIndex: 0,
+                                );
+                                //Navigator.of(context).popUntil((route) => route.isFirst);
+                              } catch (e) {
+                                print(e);
+                              }
+                            },
+                            icon: Icon(Icons.play_circle_filled),
+                            iconSize: 32,
+                          ),
+                        ],
+                        backgroundColor: color,
+                        stretch: true,
+                        leading: Container(),
+                        expandedHeight: MediaQuery.of(context).size.height * 0.32,
+                        flexibleSpace: FlexibleSpaceBar(
+                          titlePadding: EdgeInsets.only(bottom: 6),
+                          stretchModes: [StretchMode.zoomBackground],
+                          title: Container(
+                            decoration: BoxDecoration(
+                                color: themeModeColor(
+                                  MediaQuery.of(context).platformBrightness,
+                                  Colors.black87,
+                                ),
+                                borderRadius: BorderRadius.circular(4)),
+                            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(children: [
+                                TextSpan(
+                                  text: substring(widget.album.title, 35) + "\n",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: themeModeColor(
+                                      MediaQuery.of(context).platformBrightness,
+                                      Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: widget.album.artistName,
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    color: themeModeColor(
+                                      MediaQuery.of(context).platformBrightness,
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              ]),
+                            ),
+                          ),
+                          centerTitle: true,
+                          background: widget.album.coverArt != null
+                              ? Image.memory(widget.album.coverArt)
+                              : AspectRatio(
+                                  aspectRatio: 1,
+                                  child: Container(
+                                    color: themeModeColor(
+                                        MediaQuery.of(context).platformBrightness, Colors.black12),
+                                    alignment: Alignment.center,
+                                    child: ClipRRect(
+                                      child: Text(
+                                        widget.album.title.substring(0, 2).toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ),
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate((sliverContext, index) {
+                          final int itemIndex = index ~/ 2;
+                          if (index.isOdd) {
+                            return Divider(height: 0, color: Colors.grey);
+                          }
+                          return ItemTile(
+                            title: widget.album.songs[itemIndex].trackNumber.toString() +
+                                ". " +
+                                widget.album.songs[itemIndex].title,
+                            icon: widget.album.coverArt != null ? Image.memory(widget.album.coverArt) : null,
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            brightness: MediaQuery.of(context).platformBrightness,
+                            hasLeadingIcon: false,
+                            fn: () async {
+                              try {
+                                var playify = Playify();
+                                await playify.setQueue(
+                                    songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
+                                    startIndex: itemIndex);
+                                updateRecentSongs(widget.album.songs[itemIndex]);
+
+                                Navigator.of(context).popUntil((route) => route.isFirst);
+                              } catch (e) {
+                                print(e);
+                              }
+                            },
+                          );
+                        }, childCount: max(0, widget.album.songs.length * 2 - 1)),
+                      )
+                    ],
+                  );
                   return Center(
                     child: Column(
                       children: [
