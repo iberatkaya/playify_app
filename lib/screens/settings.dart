@@ -46,8 +46,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         updatingLibrary = true;
       });
+      int desiredWidth =
+          ((MediaQuery.of(context).size.width / 2) < 400) ? (MediaQuery.of(context).size.width ~/ 2) : 400;
       var playify = Playify();
-      var res = await playify.getAllSongs(coverArtSize: 400);
+      var res = await playify.getAllSongs(coverArtSize: desiredWidth);
       List<Map<String, dynamic>> artistsMap = res.map((e) => artistToMap(e)).toList();
       var prefs = await SharedPreferences.getInstance();
       await prefs.setString("artists", json.encode(artistsMap));

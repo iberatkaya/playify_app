@@ -24,8 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   @override
   void initState() {
-    getCurrentMood(); // Initiliaze When Profile Page is shown
     initAnimation();
+    getCurrentMood(); // Initiliaze When Profile Page is shown
     super.initState();
   }
 
@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     ).animate(animationController);
   }
 
-  /// Function Returns Current Mood
+  ///Function that returns current mood
   getCurrentMood() async {
     try {
       var local = await getMood();
@@ -65,7 +65,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     final fontsize = MediaQuery.of(context).textScaleFactor;
 
     return StoreProvider(
@@ -82,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   color2: Colors.deepPurple[400],
                 ),
 
-                /// All Profile UI
+                ///All Profile UI
                 SafeArea(
                   child: ListView(
                     children: <Widget>[
@@ -98,30 +97,25 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                         ),
                       ),*/
 
-                      /// Profile Picture Card
-                      Padding(
-                        padding: const EdgeInsets.all(1.0),
+                      ///Profile Picture Card
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ListScreen(listType: MusicListType.album, album: favAlbum),
+                            ),
+                          );
+                        },
                         child: Container(
                           height: height * 0.35,
                           margin: EdgeInsets.only(top: 25),
                           child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 1.3,
-                                color: Colors.white60,
-                                style: BorderStyle.solid,
-                              ),
-                            ),
                             child: favAlbum != null
-                                ? CircleAvatar(
-                                    child: ClipOval(
-                                      child: Image.memory(favAlbum.coverArt),
-                                    ),
-                                  )
+                                ? Image.memory(favAlbum.coverArt)
                                 : CircleAvatar(
                                     child: Text(favAlbum != null
-                                        ? favAlbum.title.substring(0, 2)
+                                        ? favAlbum.title.substring(0, 2).toUpperCase()
                                         : "Favorite Album Cover"),
                                   ),
                           ),
@@ -230,8 +224,10 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                     icon: album.coverArt != null ? Image.memory(album.coverArt) : null,
                                     fn: () => Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            ListScreen(listType: MusicListType.album, album: album),
+                                        builder: (context) => ListScreen(
+                                          listType: MusicListType.album,
+                                          album: album,
+                                        ),
                                       ),
                                     ),
                                   );

@@ -178,7 +178,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> updateLibrary() async {
     try {
       //final stopwatch = Stopwatch()..start();
-      var res = await playify.getAllSongs(coverArtSize: 400);
+      int desiredWidth =
+          ((MediaQuery.of(context).size.width / 2) < 400) ? (MediaQuery.of(context).size.width ~/ 2) : 400;
+      var res = await playify.getAllSongs(coverArtSize: desiredWidth);
       List<Map<String, dynamic>> artistsMap = res.map((e) => artistToMap(e)).toList();
       var prefs = await SharedPreferences.getInstance();
       await prefs.setString("artists", json.encode(artistsMap));
@@ -263,7 +265,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> fetchCurrentSong() async {
     try {
       if (currentSong == null) {
-        var res = await playify.nowPlaying();
+        int desiredWidth = (MediaQuery.of(context).size.width.toInt() < 800)
+            ? MediaQuery.of(context).size.width.toInt()
+            : 800;
+        var res = await playify.nowPlaying(coverArtSize: desiredWidth);
         setState(() {
           currentSong = res;
           updateBackgroundColor();
@@ -274,7 +279,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       //This is done in order to speed up the periodic timer
       var res = await playify.nowPlaying(coverArtSize: 1);
       if (!isEqual(currentSong.song, res.song)) {
-        res = await playify.nowPlaying();
+        int desiredWidth = (MediaQuery.of(context).size.width.toInt() < 800)
+            ? MediaQuery.of(context).size.width.toInt()
+            : 800;
+
+        res = await playify.nowPlaying(coverArtSize: desiredWidth);
         setState(() {
           currentSong = res;
           updateBackgroundColor();
@@ -496,7 +505,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 if (currentSong != null)
                                   Container(
                                     decoration: BoxDecoration(
-                                        color: Colors.grey[400],
                                         shape: BoxShape.rectangle,
                                         image: currentSong.album.coverArt != null
                                             ? DecorationImage(
@@ -512,6 +520,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
                                     height: MediaQuery.of(context).size.height * 0.5,
                                     width: MediaQuery.of(context).size.height * 0.5,
+                                    alignment: Alignment.center,
+                                    child: CircularProgressIndicator(),
                                   ),
                                 if (currentSong != null)
                                   Positioned(
