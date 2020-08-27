@@ -176,6 +176,7 @@ class _ListScreenState extends State<ListScreen> {
                       itemBuilder: (BuildContext listContext, int index) {
                         return GridItemTile(
                           title: albums[index].title,
+                          subtitle: albums[index].songs[0].releaseDate.year.toString(),
                           padding: EdgeInsets.only(bottom: 12),
                           icon: albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
                           brightness: MediaQuery.of(context).platformBrightness,
@@ -228,22 +229,18 @@ class _ListScreenState extends State<ListScreen> {
                             });
                       });
                 } else if (widget.listType == MusicListType.artist) {
-                  return ListView.separated(
-                      itemCount: widget.artist.albums.length,
+                  var albums = widget.artist.albums;
+                  return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                      itemCount: albums.length,
                       padding: EdgeInsets.symmetric(vertical: 6),
-                      separatorBuilder: (context, index) {
-                        return Divider();
-                      },
                       itemBuilder: (BuildContext listContext, int index) {
-                        List<Album> albums = [...widget.artist.albums];
-                        albums.sort((a, b) => -1 * a.songs[0].releaseDate.compareTo(b.songs[0].releaseDate));
-                        return ItemTile(
+                        return GridItemTile(
                           title: albums[index].title,
-                          brightness: MediaQuery.of(context).platformBrightness,
+                          subtitle: albums[index].songs[0].releaseDate.year.toString(),
+                          padding: EdgeInsets.only(bottom: 12),
                           icon: albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
-                          subtitle: albums[index].songs[0].releaseDate.millisecondsSinceEpoch != 0
-                              ? albums[index].songs[0].releaseDate.year.toString()
-                              : null,
+                          brightness: MediaQuery.of(context).platformBrightness,
                           fn: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ListScreen(
@@ -307,7 +304,7 @@ class _ListScreenState extends State<ListScreen> {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: widget.album.artistName,
+                                  text: substring(widget.album.artistName, 30) + " - ",
                                   style: TextStyle(
                                     fontSize: 9,
                                     color: themeModeColor(
@@ -315,7 +312,16 @@ class _ListScreenState extends State<ListScreen> {
                                       Colors.white,
                                     ),
                                   ),
-                                )
+                                ),
+                                TextSpan(
+                                    text: widget.album.songs[0].releaseDate.year.toString(),
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      color: themeModeColor(
+                                        MediaQuery.of(context).platformBrightness,
+                                        Colors.grey[500],
+                                      ),
+                                    ))
                               ]),
                             ),
                           ),

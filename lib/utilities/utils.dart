@@ -42,6 +42,10 @@ Color themeModeColor(Brightness brightness, Color color) {
       return Colors.white;
     } else if (color == Colors.black87) {
       return Colors.white70;
+    } else if (color == Colors.grey[500]) {
+      return Colors.grey[600];
+    } else if (color == Colors.grey[600]) {
+      return Colors.grey[400];
     }
   }
   return color;

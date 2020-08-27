@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify_app/classes/settings.dart';
@@ -9,10 +11,12 @@ class GridItemTile extends StatelessWidget {
     @required this.title,
     @required this.icon,
     @required this.fn,
+    this.subtitle,
     this.padding,
     this.brightness,
   });
   final String title;
+  final String subtitle;
   final Widget icon;
   final Function fn;
   final Brightness brightness;
@@ -64,12 +68,12 @@ class GridItemTile extends StatelessWidget {
                 padding: padding,
                 child: Column(
                   children: [
-                    Expanded(flex: 20, child: iconBuilder()),
+                    Expanded(flex: 35, child: iconBuilder()),
                     Spacer(
                       flex: 1,
                     ),
                     Expanded(
-                      flex: 2,
+                      flex: 4,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,7 +87,7 @@ class GridItemTile extends StatelessWidget {
                               title,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                fontSize: (settings.listTileFontSize - 5).toDouble(),
+                                fontSize: (settings.listTileFontSize - 4).toDouble(),
                               ),
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
@@ -94,7 +98,14 @@ class GridItemTile extends StatelessWidget {
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                            fontSize: (settings.listTileFontSize - 7).toDouble(),
+                            color: themeModeColor(brightness, Colors.grey[600])),
+                      ),
                   ],
                 ),
               ),
