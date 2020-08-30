@@ -14,8 +14,6 @@ import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/recentplayedsongs/action.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/menu.dart';
-import 'package:playify_app/screens/profile.dart';
-import 'package:playify_app/utilities/animation/backgroundColorFromAlbum.dart';
 import 'package:playify_app/utilities/jsonify.dart';
 import 'package:playify_app/utilities/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,6 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> updateBackgroundColor() async {
     try {
+      if (currentSong == null) return;
       var paletteGenerator = await PaletteGenerator.fromImageProvider(
         Image.memory(currentSong.album.coverArt).image,
         maximumColorCount: 3,
@@ -521,7 +520,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     height: MediaQuery.of(context).size.height * 0.5,
                                     width: MediaQuery.of(context).size.height * 0.5,
                                     alignment: Alignment.center,
-                                    child: CircularProgressIndicator(),
                                   ),
                                 if (currentSong != null)
                                   Positioned(

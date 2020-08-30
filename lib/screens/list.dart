@@ -176,7 +176,9 @@ class _ListScreenState extends State<ListScreen> {
                       itemBuilder: (BuildContext listContext, int index) {
                         return GridItemTile(
                           title: albums[index].title,
-                          subtitle: albums[index].songs[0].releaseDate.year.toString(),
+                          subtitle: albums[index].songs[0].releaseDate.millisecondsSinceEpoch == 0
+                              ? null
+                              : albums[index].songs[0].releaseDate.year.toString(),
                           padding: EdgeInsets.only(bottom: 12),
                           icon: albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
                           brightness: MediaQuery.of(context).platformBrightness,
@@ -230,6 +232,10 @@ class _ListScreenState extends State<ListScreen> {
                       });
                 } else if (widget.listType == MusicListType.artist) {
                   var albums = widget.artist.albums;
+                  albums.sort((a, b) =>
+                      -1 *
+                      (a.songs[0].releaseDate.millisecondsSinceEpoch -
+                          b.songs[0].releaseDate.millisecondsSinceEpoch));
                   return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                       itemCount: albums.length,
@@ -237,7 +243,9 @@ class _ListScreenState extends State<ListScreen> {
                       itemBuilder: (BuildContext listContext, int index) {
                         return GridItemTile(
                           title: albums[index].title,
-                          subtitle: albums[index].songs[0].releaseDate.year.toString(),
+                          subtitle: albums[index].songs[0].releaseDate.millisecondsSinceEpoch == 0
+                              ? null
+                              : albums[index].songs[0].releaseDate.year.toString(),
                           padding: EdgeInsets.only(bottom: 12),
                           icon: albums[index].coverArt != null ? Image.memory(albums[index].coverArt) : null,
                           brightness: MediaQuery.of(context).platformBrightness,
@@ -379,173 +387,6 @@ class _ListScreenState extends State<ListScreen> {
                         }, childCount: max(0, widget.album.songs.length * 2 - 1)),
                       )
                     ],
-                  );
-                  return Center(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            color: color,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 15,
-                          child: Container(
-                            color: color,
-                            child: Row(
-                              children: [
-                                Spacer(flex: 1),
-                                Expanded(
-                                  flex: 10,
-                                  child: Container(
-                                    child: widget.album.coverArt != null
-                                        ? Image.memory(widget.album.coverArt)
-                                        : AspectRatio(
-                                            aspectRatio: 1,
-                                            child: Container(
-                                              color: themeModeColor(
-                                                  MediaQuery.of(context).platformBrightness, Colors.black12),
-                                              alignment: Alignment.center,
-                                              child: ClipRRect(
-                                                child: Text(
-                                                  widget.album.title.substring(0, 2).toUpperCase(),
-                                                  style: TextStyle(
-                                                      fontSize: 24,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: themeModeColor(
-                                                        MediaQuery.of(context).platformBrightness,
-                                                        Colors.black,
-                                                      )),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                  ),
-                                ),
-                                Spacer(flex: 1),
-                                Expanded(
-                                  flex: 10,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: 3),
-                                        child: Text(
-                                          widget.album.title,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: 3),
-                                        child: Text(
-                                          widget.album.artistName,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        widget.album.songs[0].releaseDate.year.toString(),
-                                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Spacer(flex: 1),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            color: color,
-                            child: Divider(color: Colors.grey[300]),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: Container(
-                            color: color,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FlatButton(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  color: Colors.purple[500],
-                                  onPressed: () async {
-                                    try {
-                                      var playify = Playify();
-                                      await playify.setQueue(
-                                        songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
-                                        startIndex: 0,
-                                      );
-                                      Navigator.of(context).popUntil((route) => route.isFirst);
-                                    } catch (e) {
-                                      print(e);
-                                    }
-                                  },
-                                  child: Text("Play",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      )),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            color: color,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 40,
-                          child: ListView.separated(
-                              itemCount: widget.album.songs.length,
-                              padding: EdgeInsets.symmetric(vertical: 6),
-                              separatorBuilder: (context, index) {
-                                return Divider();
-                              },
-                              itemBuilder: (BuildContext listContext, int index) {
-                                return ItemTile(
-                                    title: widget.album.songs[index].trackNumber.toString() +
-                                        ". " +
-                                        widget.album.songs[index].title,
-                                    icon: widget.album.coverArt != null
-                                        ? Image.memory(widget.album.coverArt)
-                                        : null,
-                                    brightness: MediaQuery.of(context).platformBrightness,
-                                    hasLeadingIcon: false,
-                                    fn: () async {
-                                      try {
-                                        var playify = Playify();
-                                        await playify.setQueue(
-                                            songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
-                                            startIndex: index);
-                                        updateRecentSongs(widget.album.songs[index]);
-
-                                        Navigator.of(context).popUntil((route) => route.isFirst);
-                                      } catch (e) {
-                                        print(e);
-                                      }
-                                    });
-                              }),
-                        ),
-                      ],
-                    ),
                   );
                 } else {
                   return Container();
