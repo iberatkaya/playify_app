@@ -4,15 +4,18 @@ import 'dart:math';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/recentPlayedSong.dart';
 import 'package:playify_app/components/transitionbackground.dart';
 import 'package:playify_app/constant/animationAmount.dart';
+import 'package:playify_app/redux/currentsong/action.dart';
 import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/recentplayedsongs/action.dart';
 import 'package:playify_app/redux/store.dart';
+import 'package:playify_app/screens/list.dart';
 import 'package:playify_app/screens/menu.dart';
 import 'package:playify_app/utilities/jsonify.dart';
 import 'package:playify_app/utilities/utils.dart';
@@ -73,8 +76,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       curve: Curves.fastOutSlowIn,
     ))
       ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
+        if (status == AnimationStatus.forward) {
+          setState(() {
+            changing = true;
+          });
+        } else if (status == AnimationStatus.completed) {
           _controllerRight.reverse();
+        } else if (status == AnimationStatus.dismissed) {
+          _controllerRight.reverse();
+          setState(() {
+            changing = false;
+          });
         }
       });
     _controllerLeft = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
@@ -119,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (currentSong == null) return;
       var paletteGenerator = await PaletteGenerator.fromImageProvider(
         Image.memory(currentSong.album.coverArt).image,
-        maximumColorCount: 3,
+        maximumColorCount: 5,
       );
       if (paletteGenerator.colors.toList().length > 0) {
         Color tempColor1 = paletteGenerator.colors.toList()[0].withOpacity(0.3);
@@ -268,6 +280,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ? MediaQuery.of(context).size.width.toInt()
             : 800;
         var res = await playify.nowPlaying(coverArtSize: desiredWidth);
+        store.dispatch(setCurrentSongAction(res.song));
         setState(() {
           currentSong = res;
           updateBackgroundColor();
@@ -283,6 +296,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             : 800;
 
         res = await playify.nowPlaying(coverArtSize: desiredWidth);
+        store.dispatch(setCurrentSongAction(res.song));
         setState(() {
           currentSong = res;
           updateBackgroundColor();
@@ -366,7 +380,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       );
     }
 
-    return Container(
+    return StoreProvider(
+      store: store,
       child: Stack(
         children: [
           TransitionBackground(
@@ -423,147 +438,199 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           position: _animationOffsetLeft,
                           child: SlideTransition(
                             position: _animationOffsetRight,
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                if (updatedLibrary)
-                                  Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => MenuPage()));
-                              },
-                              onLongPress: () async {
-                                await showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        actions: [
-                                          FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text("OK"))
-                                        ],
-                                        shape:
-                                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                        backgroundColor: Colors.white,
-                                        titleTextStyle: TextStyle(
-                                            fontWeight: FontWeight.w400, fontSize: 16, color: Colors.black),
-                                        title: Container(
-                                          child: Text(
-                                            currentSong.song.title,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(color: Colors.black),
+                            child: StoreConnector<AppState, List<Artist>>(
+                              converter: (appstate) => appstate.state.artists,
+                              builder: (storeContext, artists) {
+                                return GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (updatedLibrary)
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(builder: (context) => MenuPage()));
+                                  },
+                                  onLongPress: () async {
+                                    await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            actions: [
+                                              FlatButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text("OK"))
+                                            ],
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12)),
+                                            backgroundColor: Colors.white,
+                                            titleTextStyle: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                            title: Container(
+                                              child: Text(
+                                                currentSong.song.title,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(color: Colors.black),
+                                              ),
+                                            ),
+                                            content: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  "Album: " + currentSong.album.title,
+                                                  style: TextStyle(color: Colors.black),
+                                                ),
+                                                Text(
+                                                  "Artist: " + currentSong.artist.name,
+                                                  style: TextStyle(color: Colors.black),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        });
+                                  },
+                                  onVerticalDragEnd: (details) async {
+                                    try {
+                                      if (currentSong == null) return;
+                                      setState(() {
+                                        changing = true;
+                                      });
+                                      const int sensitivity = 300;
+                                      if (details.primaryVelocity > sensitivity) {
+                                        var myalbum = artists
+                                            .where((element) => element.name == currentSong.artist.name)
+                                            .toList()
+                                            .first
+                                            .albums
+                                            .where((element) => element.title == currentSong.album.title)
+                                            .toList()
+                                            .first;
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => ListScreen(
+                                              album: myalbum,
+                                              listType: MusicListType.album,
+                                            ),
+                                          ),
+                                        );
+                                      } else if (details.primaryVelocity < -sensitivity) {
+                                        var myartist = artists
+                                            .where((element) => element.name == currentSong.artist.name)
+                                            .toList()
+                                            .first;
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => ListScreen(
+                                              artist: myartist,
+                                              listType: MusicListType.artist,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      setState(() {
+                                        changing = false;
+                                      });
+                                    } catch (e) {
+                                      print(e);
+                                      setState(() {
+                                        changing = false;
+                                      });
+                                    }
+                                  },
+                                  onHorizontalDragEnd: (details) async {
+                                    try {
+                                      setState(() {
+                                        changing = true;
+                                      });
+                                      const int sensitivity = 300;
+                                      if (details.primaryVelocity > sensitivity) {
+                                        _controllerRight.forward();
+                                        await playify.previous();
+                                      } else if (details.primaryVelocity < -sensitivity) {
+                                        _controllerLeft.forward();
+                                        await playify.next();
+                                      }
+                                      setState(() {
+                                        changing = false;
+                                      });
+                                    } catch (e) {
+                                      print(e);
+                                      setState(() {
+                                        changing = false;
+                                      });
+                                    }
+                                  },
+                                  child: Stack(children: [
+                                    if (currentSong != null)
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            image: currentSong.album.coverArt != null
+                                                ? DecorationImage(
+                                                    image: Image.memory(currentSong.album.coverArt).image)
+                                                : null,
+                                            borderRadius: BorderRadius.circular(8)),
+                                        height: MediaQuery.of(context).size.height * 0.5,
+                                        width: MediaQuery.of(context).size.height * 0.5,
+                                      )
+                                    else
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
+                                        height: MediaQuery.of(context).size.height * 0.5,
+                                        width: MediaQuery.of(context).size.height * 0.5,
+                                        alignment: Alignment.center,
+                                      ),
+                                    if (currentSong != null)
+                                      Positioned(
+                                          left: 10,
+                                          bottom: 35,
+                                          child: Container(
+                                            padding: EdgeInsets.all(4),
+                                            color: themeModeColor(
+                                                MediaQuery.of(context).platformBrightness, Colors.black),
+                                            child: Text(
+                                                currentSong != null
+                                                    ? substring(currentSong.song.title, 25)
+                                                    : "",
+                                                style: TextStyle(
+                                                    color: themeModeColor(
+                                                        MediaQuery.of(context).platformBrightness,
+                                                        Colors.white),
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 18)),
+                                          )),
+                                    if (currentSong != null)
+                                      Positioned(
+                                        left: 10,
+                                        bottom: 10,
+                                        child: Container(
+                                          padding: EdgeInsets.all(4),
+                                          color: themeModeColor(
+                                              MediaQuery.of(context).platformBrightness, Colors.black),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                  currentSong != null
+                                                      ? substring(currentSong.album.title, 25) +
+                                                          " - " +
+                                                          substring(currentSong.artist.name, 25)
+                                                      : "",
+                                                  style: TextStyle(
+                                                      color: themeModeColor(
+                                                          MediaQuery.of(context).platformBrightness,
+                                                          Colors.white),
+                                                      fontWeight: FontWeight.w500,
+                                                      fontSize: 12)),
+                                            ],
                                           ),
                                         ),
-                                        content: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              "Album: " + currentSong.album.title,
-                                              style: TextStyle(color: Colors.black),
-                                            ),
-                                            Text(
-                                              "Artist: " + currentSong.artist.name,
-                                              style: TextStyle(color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    });
-                              },
-                              onHorizontalDragEnd: (details) async {
-                                try {
-                                  setState(() {
-                                    changing = true;
-                                  });
-                                  const int sensitivity = 300;
-                                  if (details.primaryVelocity > sensitivity) {
-                                    _controllerRight.forward();
-                                    await playify.previous();
-                                    setState(() {
-                                      currentTime = 0;
-                                    });
-                                  } else if (details.primaryVelocity < -sensitivity) {
-                                    _controllerLeft.forward();
-                                    await playify.next();
-                                    setState(() {
-                                      currentTime = 0;
-                                    });
-                                  }
-                                  setState(() {
-                                    changing = false;
-                                  });
-                                } catch (e) {
-                                  print(e);
-                                  setState(() {
-                                    changing = false;
-                                  });
-                                }
-                              },
-                              child: Stack(children: [
-                                if (currentSong != null)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.rectangle,
-                                        image: currentSong.album.coverArt != null
-                                            ? DecorationImage(
-                                                image: Image.memory(currentSong.album.coverArt).image)
-                                            : null,
-                                        borderRadius: BorderRadius.circular(8)),
-                                    height: MediaQuery.of(context).size.height * 0.5,
-                                    width: MediaQuery.of(context).size.height * 0.5,
-                                  )
-                                else
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
-                                    height: MediaQuery.of(context).size.height * 0.5,
-                                    width: MediaQuery.of(context).size.height * 0.5,
-                                    alignment: Alignment.center,
-                                  ),
-                                if (currentSong != null)
-                                  Positioned(
-                                      left: 10,
-                                      bottom: 35,
-                                      child: Container(
-                                        padding: EdgeInsets.all(4),
-                                        color: themeModeColor(
-                                            MediaQuery.of(context).platformBrightness, Colors.black),
-                                        child: Text(
-                                            currentSong != null ? substring(currentSong.song.title, 25) : "",
-                                            style: TextStyle(
-                                                color: themeModeColor(
-                                                    MediaQuery.of(context).platformBrightness, Colors.white),
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 18)),
-                                      )),
-                                if (currentSong != null)
-                                  Positioned(
-                                    left: 10,
-                                    bottom: 10,
-                                    child: Container(
-                                      padding: EdgeInsets.all(4),
-                                      color: themeModeColor(
-                                          MediaQuery.of(context).platformBrightness, Colors.black),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                              currentSong != null
-                                                  ? substring(currentSong.album.title, 25) +
-                                                      " - " +
-                                                      substring(currentSong.artist.name, 25)
-                                                  : "",
-                                              style: TextStyle(
-                                                  color: themeModeColor(
-                                                      MediaQuery.of(context).platformBrightness,
-                                                      Colors.white),
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 12)),
-                                        ],
                                       ),
-                                    ),
-                                  ),
-                              ]),
+                                  ]),
+                                );
+                              },
                             ),
                           ),
                         ),

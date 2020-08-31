@@ -7,8 +7,9 @@ import 'package:playify_app/utilities/utils.dart';
 class ItemTile extends StatelessWidget {
   ItemTile({
     @required this.title,
-    @required this.icon,
     @required this.fn,
+    this.icon,
+    this.iosSongID,
     this.padding,
     this.brightness,
     this.subtitle,
@@ -17,6 +18,7 @@ class ItemTile extends StatelessWidget {
   });
   final String title;
   final String subtitle;
+  final String iosSongID;
   final Widget icon;
   final Function fn;
   final Brightness brightness;
@@ -67,23 +69,50 @@ class ItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreProvider(
       store: store,
-      child: StoreConnector<AppState, Settings>(
-          converter: (appstate) => appstate.state.settings,
-          builder: (context, settings) {
+      child: StoreConnector<AppState, AppState>(
+          converter: (appstate) => appstate.state,
+          builder: (context, appstate) {
             if (subtitle == null) {
               return Container(
                 padding: padding,
-                child: ListTile(
-                  title: Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: settings.listTileFontSize.toDouble(),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  leading: iconBuilder(),
+                child: GestureDetector(
                   onTap: fn,
+                  child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: iconBuilder(),
+                          ),
+                          if (appstate.currentSong.iOSSongID == iosSongID)
+                            Expanded(
+                              flex: 10,
+                              child: Text(
+                                title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: appstate.settings.listTileFontSize.toDouble(),
+                                  fontStyle: FontStyle.italic,
+                                  color: themeModeColor(brightness, Colors.purple[300]),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          else
+                            Expanded(
+                              flex: 10,
+                              child: Text(
+                                title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: appstate.settings.listTileFontSize.toDouble(),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                        ],
+                      )),
                 ),
               );
             }
@@ -92,8 +121,13 @@ class ItemTile extends StatelessWidget {
               child: ListTile(
                 title: Text(
                   title,
-                  style:
-                      TextStyle(fontWeight: FontWeight.w500, fontSize: settings.listTileFontSize.toDouble()),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: appstate.settings.listTileFontSize.toDouble(),
+                    color: (appstate.currentSong.iOSSongID == iosSongID)
+                        ? themeModeColor(brightness, Colors.purple[300])
+                        : null,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(subtitle),

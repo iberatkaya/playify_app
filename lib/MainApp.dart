@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
 import 'package:playify_app/redux/music/action.dart';
@@ -20,11 +21,32 @@ class _MainAppState extends State<MainApp> {
   int index = 0;
   bool loading = true;
   Playify playify = Playify();
+  bool intro;
 
   @override
   initState() {
     super.initState();
-    getSettings().then((_) => setStatusBarColor().then((_) => setState(() => loading = false)));
+    getSettings().then(
+        (_) => setStatusBarColor().then((_) => showIntro()).then((_) => setState(() => loading = false)));
+  }
+
+  Future<void> showIntro() async {
+    try {
+      var res = await SharedPreferences.getInstance();
+      bool show = res.getBool("showIntro");
+      if (show == null) {
+        setState(() {
+          intro = true;
+        });
+        await res.setBool("showIntro", true);
+      } else {
+        setState(() {
+          intro = false;
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> getSettings() async {
@@ -50,10 +72,42 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (intro != null && intro) {
+      return Scaffold(
+          body: Container(
+        padding: EdgeInsets.only(top: AppBar().preferredSize.height),
+        child: IntroductionScreen(
+            pages: [
+              PageViewModel(
+                image: Image.asset("assets/images/intro/1.png"),
+                body: "Start listening music with the best music player available!",
+                title: "Welcome To Playify",
+              ),
+              PageViewModel(
+                image: Image.asset("assets/images/intro/2.png"),
+                body:
+                    "The background color animation will change based on the song you listen. Click or swipe the album cover in any direction to interact!",
+                title: "Help",
+              ),
+            ],
+            done: Text(
+              "Done",
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            onDone: () {
+              print(intro);
+              setState(() {
+                intro = false;
+              });
+            }),
+      ));
+    }
+
     return Scaffold(
       body: IndexedStack(
         index: index,
-        children: (loading) ? [Container()] : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
+        children:
+            (loading || intro == null) ? [Container()] : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,

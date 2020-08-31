@@ -1,3 +1,4 @@
+import 'package:playify_app/redux/currentsong/action.dart';
 import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/recentplayedsongs/action.dart';
 import 'package:playify_app/redux/settings/action.dart';
@@ -15,6 +16,10 @@ AppState reducer(AppState state, dynamic action) {
   } else if (action.type == RecentPlayedSongsAction.setRecentPlayedSongs) {
     AppState newstate = AppState.copy(state);
     newstate.recentPlayedSongs = action.payload;
+    return newstate;
+  } else if (action.type == CurrentSongAction.setCurrentSong) {
+    AppState newstate = AppState.copy(state);
+    newstate.currentSong = action.payload;
     return newstate;
   }
   return state;

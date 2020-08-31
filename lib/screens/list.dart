@@ -71,7 +71,7 @@ class _ListScreenState extends State<ListScreen> {
     try {
       var paletteGenerator = await PaletteGenerator.fromImageProvider(
         Image.memory(widget.album.coverArt).image,
-        maximumColorCount: 1,
+        maximumColorCount: 5,
       );
       if (paletteGenerator.colors.toList().length > 0) {
         Color tempColor = paletteGenerator.colors.toList()[0];
@@ -219,6 +219,7 @@ class _ListScreenState extends State<ListScreen> {
                             icon: iconArt != null ? Image.memory(iconArt) : null,
                             brightness: MediaQuery.of(context).platformBrightness,
                             subtitle: songs[index].artistName,
+                            iosSongID: songs[index].iOSSongID,
                             fn: () async {
                               try {
                                 var playify = Playify();
@@ -363,13 +364,11 @@ class _ListScreenState extends State<ListScreen> {
                             return Divider(height: 0, color: Colors.grey);
                           }
                           return ItemTile(
-                            title: widget.album.songs[itemIndex].trackNumber.toString() +
-                                ". " +
-                                widget.album.songs[itemIndex].title,
-                            icon: widget.album.coverArt != null ? Image.memory(widget.album.coverArt) : null,
+                            title: widget.album.songs[itemIndex].title,
+                            iosSongID: widget.album.songs[itemIndex].iOSSongID,
+                            icon: Text(widget.album.songs[itemIndex].trackNumber.toString()),
                             padding: EdgeInsets.symmetric(vertical: 4),
                             brightness: MediaQuery.of(context).platformBrightness,
-                            hasLeadingIcon: false,
                             fn: () async {
                               try {
                                 var playify = Playify();

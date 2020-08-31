@@ -34,6 +34,7 @@ dependencies:
   permission_handler: ^5.0.1+1
   app_settings: ^4.0.3
   palette_generator: ^0.2.3
+  introduction_screen: ^1.0.9
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -56,8 +57,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/
+    - assets/images/
+    - assets/images/intro/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
