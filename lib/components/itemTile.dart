@@ -15,6 +15,7 @@ class ItemTile extends StatelessWidget {
     this.subtitle,
     this.rounded = true,
     this.hasLeadingIcon = true,
+    this.addLeadingSpace = false,
   });
   final String title;
   final String subtitle;
@@ -25,6 +26,7 @@ class ItemTile extends StatelessWidget {
   final EdgeInsets padding;
   final bool rounded;
   final bool hasLeadingIcon;
+  final bool addLeadingSpace;
 
   Widget iconBuilder() {
     if (!hasLeadingIcon) return null;
@@ -76,65 +78,85 @@ class ItemTile extends StatelessWidget {
               return Container(
                 padding: padding,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: fn,
                   child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                      child: Row(
-                        children: [
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: iconBuilder(),
+                        ),
+                        if (addLeadingSpace) Spacer(flex: 1),
+                        if (appstate.currentSong.iOSSongID == iosSongID)
                           Expanded(
-                            flex: 1,
-                            child: iconBuilder(),
-                          ),
-                          if (appstate.currentSong.iOSSongID == iosSongID)
-                            Expanded(
-                              flex: 10,
-                              child: Text(
-                                title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: appstate.settings.listTileFontSize.toDouble(),
-                                  fontStyle: FontStyle.italic,
-                                  color: themeModeColor(brightness, Colors.purple[300]),
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                            flex: 10,
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: appstate.settings.listTileFontSize.toDouble(),
+                                fontStyle: FontStyle.italic,
+                                color: themeModeColor(brightness, Colors.purple[300]),
                               ),
-                            )
-                          else
-                            Expanded(
-                              flex: 10,
-                              child: Text(
-                                title,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: appstate.settings.listTileFontSize.toDouble(),
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        else
+                          Expanded(
+                            flex: 10,
+                            child: Text(
+                              title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: appstate.settings.listTileFontSize.toDouble(),
                               ),
-                            )
-                        ],
-                      )),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
                 ),
               );
             }
-            return Container(
-              padding: padding,
-              child: ListTile(
-                title: Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: appstate.settings.listTileFontSize.toDouble(),
-                    color: (appstate.currentSong.iOSSongID == iosSongID)
-                        ? themeModeColor(brightness, Colors.purple[300])
-                        : null,
+            if (appstate.currentSong.iOSSongID == iosSongID) {
+              return Container(
+                padding: padding,
+                child: ListTile(
+                  title: Text(
+                    title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: appstate.settings.listTileFontSize.toDouble(),
+                        color: themeModeColor(brightness, Colors.purple[300]),
+                        fontStyle: FontStyle.italic),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  subtitle: Text(subtitle),
+                  leading: iconBuilder(),
+                  onTap: fn,
                 ),
-                subtitle: Text(subtitle),
-                leading: iconBuilder(),
-                onTap: fn,
-              ),
-            );
+              );
+            } else {
+              return Container(
+                padding: padding,
+                child: ListTile(
+                  title: Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: appstate.settings.listTileFontSize.toDouble(),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(subtitle),
+                  leading: iconBuilder(),
+                  onTap: fn,
+                ),
+              );
+            }
           }),
     );
   }

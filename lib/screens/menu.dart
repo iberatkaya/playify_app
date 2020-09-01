@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playify_app/components/itemTile.dart';
 import 'package:playify_app/icons/playify_icon_icons.dart';
+import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list.dart';
 import 'package:playify_app/screens/settings.dart';
 
@@ -27,6 +28,7 @@ class _MenuPageState extends State<MenuPage> {
                   size: 24,
                 ),
                 padding: EdgeInsets.only(top: 4),
+                addLeadingSpace: true,
                 brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(
@@ -35,7 +37,11 @@ class _MenuPageState extends State<MenuPage> {
             Divider(),
             ItemTile(
                 title: "Albums",
-                icon: Icon(PlayifyIcon.album, size: 24),
+                icon: Icon(
+                  PlayifyIcon.album,
+                  size: 24,
+                ),
+                addLeadingSpace: true,
                 brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(
@@ -44,7 +50,11 @@ class _MenuPageState extends State<MenuPage> {
             Divider(),
             ItemTile(
                 title: "Songs",
-                icon: Icon(PlayifyIcon.song, size: 24),
+                icon: Icon(
+                  PlayifyIcon.song,
+                  size: 24,
+                ),
+                addLeadingSpace: true,
                 brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(

@@ -165,7 +165,17 @@ class _ListScreenState extends State<ListScreen> {
                   List<Album> albums = [];
                   for (var i = 0; i < artists.length; i++) {
                     for (var j = 0; j < artists[i].albums.length; j++) {
-                      albums.add(artists[i].albums[j]);
+                      var albumExists = false;
+                      for (var k = 0; k < albums.length; k++) {
+                        if (artists[i].albums[j].title == albums[k].title &&
+                            albums[k].albumTrackCount == artists[i].albums[j].albumTrackCount) {
+                          artists[i].albums[j].songs.forEach((element) {
+                            albums[k].songs.add(element);
+                          });
+                          albumExists = true;
+                        }
+                      }
+                      if (!albumExists) albums.add(artists[i].albums[j]);
                     }
                   }
                   albums.sort((a, b) => a.title[0].toUpperCase().compareTo(b.title[0].toUpperCase()));
@@ -313,7 +323,10 @@ class _ListScreenState extends State<ListScreen> {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: substring(widget.album.artistName, 30) + " - ",
+                                  text: substring(widget.album.artistName, 30) +
+                                      ((widget.album.songs[0].releaseDate.microsecondsSinceEpoch != 0)
+                                          ? " - "
+                                          : ""),
                                   style: TextStyle(
                                     fontSize: 9,
                                     color: themeModeColor(
@@ -322,7 +335,8 @@ class _ListScreenState extends State<ListScreen> {
                                     ),
                                   ),
                                 ),
-                                TextSpan(
+                                if (widget.album.songs[0].releaseDate.microsecondsSinceEpoch != 0)
+                                  TextSpan(
                                     text: widget.album.songs[0].releaseDate.year.toString(),
                                     style: TextStyle(
                                       fontSize: 9,
@@ -330,7 +344,8 @@ class _ListScreenState extends State<ListScreen> {
                                         MediaQuery.of(context).platformBrightness,
                                         Colors.grey[500],
                                       ),
-                                    ))
+                                    ),
+                                  ),
                               ]),
                             ),
                           ),
