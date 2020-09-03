@@ -28,21 +28,6 @@ class _GraphDetailScreenState extends State<GraphDetailScreen> {
   Playify playify = Playify();
   int totalStatistics = 18;
 
-  @override
-  void initState() {
-    super.initState();
-    updateLibrary();
-  }
-
-  Future<void> updateLibrary() async {
-    try {
-      var res = await playify.getAllSongs(coverArtSize: 400);
-      store.dispatch(setMusicLibraryAction(res));
-    } catch (e) {
-      print(e);
-    }
-  }
-
   String title() {
     if (widget.graphType == GraphType.artist) {
       return "Artists";

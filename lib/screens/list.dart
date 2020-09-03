@@ -22,7 +22,12 @@ class ListScreen extends StatefulWidget {
   ///Use if an artist's content will be displayed
   final Artist artist;
 
-  const ListScreen({Key key, @required this.listType, this.album, this.artist}) : super(key: key);
+  ///Use if all songs of the album will be fetched
+  final bool fetchAllAlbumSongs;
+
+  const ListScreen(
+      {Key key, @required this.listType, this.album, this.artist, this.fetchAllAlbumSongs = false})
+      : super(key: key);
   @override
   _ListScreenState createState() => _ListScreenState();
 }
@@ -55,7 +60,7 @@ class _ListScreenState extends State<ListScreen> {
       ),
     );
     store.dispatch(setRecentPlayedSongsAction(recentSongs));
-    await prefs.setStringList("recentPlayed", recentlist);
+    await prefs.setStringList("recentPlayed", recentSongs.map((e) => e.iosSongId).toList());
   }
 
   int boundTo0and255(int val) {
@@ -170,12 +175,12 @@ class _ListScreenState extends State<ListScreen> {
                         if (artists[i].albums[j].title == albums[k].title &&
                             albums[k].albumTrackCount == artists[i].albums[j].albumTrackCount) {
                           artists[i].albums[j].songs.forEach((element) {
-                            albums[k].songs.add(element);
+                            albums[k].songs.add(copySong(element));
                           });
                           albumExists = true;
                         }
                       }
-                      if (!albumExists) albums.add(artists[i].albums[j]);
+                      if (!albumExists) albums.add(copyAlbum(artists[i].albums[j]));
                     }
                   }
                   albums.sort((a, b) => a.title[0].toUpperCase().compareTo(b.title[0].toUpperCase()));
@@ -207,7 +212,7 @@ class _ListScreenState extends State<ListScreen> {
                   for (var i = 0; i < artists.length; i++) {
                     for (var j = 0; j < artists[i].albums.length; j++) {
                       for (var k = 0; k < artists[i].albums[j].songs.length; k++) {
-                        songs.add(artists[i].albums[j].songs[k]);
+                        songs.add(copySong(artists[i].albums[j].songs[k]));
                       }
                     }
                   }
@@ -271,6 +276,28 @@ class _ListScreenState extends State<ListScreen> {
                         );
                       });
                 } else if (widget.listType == MusicListType.album) {
+                  List<Song> songs = [];
+                  if (widget.fetchAllAlbumSongs) {
+                    for (var i = 0; i < artists.length; i++) {
+                      for (var j = 0; j < artists[i].albums.length; j++) {
+                        if (artists[i].albums[j].title == widget.album.title) {
+                          for (var k = 0; k < artists[i].albums[j].songs.length; k++) {
+                            artists[i].albums[j].songs.forEach((element) {
+                              var songExists = false;
+                              for (var song in songs) {
+                                if (song.title == element.title && song.duration == element.duration)
+                                  songExists = true;
+                              }
+                              if (!songExists) songs.add(copySong(element));
+                            });
+                          }
+                        }
+                      }
+                    }
+                  } else {
+                    songs = [...widget.album.songs];
+                  }
+                  songs.sort((a, b) => a.trackNumber - b.trackNumber);
                   return CustomScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
                     slivers: [
@@ -282,9 +309,10 @@ class _ListScreenState extends State<ListScreen> {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                  songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
+                                  songIDs: songs.map((e) => e.iOSSongID).toList(),
                                   startIndex: 0,
                                 );
+                                updateRecentSongs(songs[0]);
                                 //Navigator.of(context).popUntil((route) => route.isFirst);
                               } catch (e) {
                                 print(e);
@@ -335,9 +363,9 @@ class _ListScreenState extends State<ListScreen> {
                                     ),
                                   ),
                                 ),
-                                if (widget.album.songs[0].releaseDate.microsecondsSinceEpoch != 0)
+                                if (songs[0].releaseDate.microsecondsSinceEpoch != 0)
                                   TextSpan(
-                                    text: widget.album.songs[0].releaseDate.year.toString(),
+                                    text: songs[0].releaseDate.year.toString(),
                                     style: TextStyle(
                                       fontSize: 9,
                                       color: themeModeColor(
@@ -379,18 +407,17 @@ class _ListScreenState extends State<ListScreen> {
                             return Divider(height: 0, color: Colors.grey);
                           }
                           return ItemTile(
-                            title: widget.album.songs[itemIndex].title,
-                            iosSongID: widget.album.songs[itemIndex].iOSSongID,
-                            icon: Text(widget.album.songs[itemIndex].trackNumber.toString()),
+                            title: songs[itemIndex].title,
+                            iosSongID: songs[itemIndex].iOSSongID,
+                            icon: Text(songs[itemIndex].trackNumber.toString()),
                             padding: EdgeInsets.symmetric(vertical: 4),
                             brightness: MediaQuery.of(context).platformBrightness,
                             fn: () async {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                    songIDs: widget.album.songs.map((e) => e.iOSSongID).toList(),
-                                    startIndex: itemIndex);
-                                updateRecentSongs(widget.album.songs[itemIndex]);
+                                    songIDs: songs.map((e) => e.iOSSongID).toList(), startIndex: itemIndex);
+                                updateRecentSongs(songs[itemIndex]);
 
                                 Navigator.of(context).popUntil((route) => route.isFirst);
                               } catch (e) {
@@ -398,7 +425,7 @@ class _ListScreenState extends State<ListScreen> {
                               }
                             },
                           );
-                        }, childCount: max(0, widget.album.songs.length * 2 - 1)),
+                        }, childCount: max(0, songs.length * 2 - 1)),
                       )
                     ],
                   );

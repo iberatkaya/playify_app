@@ -95,7 +95,6 @@ class _MainAppState extends State<MainApp> {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             onDone: () {
-              print(intro);
               setState(() {
                 intro = false;
               });

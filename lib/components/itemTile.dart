@@ -89,7 +89,7 @@ class ItemTile extends StatelessWidget {
                           child: iconBuilder(),
                         ),
                         if (addLeadingSpace) Spacer(flex: 1),
-                        if (appstate.currentSong.iOSSongID == iosSongID)
+                        if (appstate.currentSong != null && appstate.currentSong.iOSSongID == iosSongID)
                           Expanded(
                             flex: 10,
                             child: Text(

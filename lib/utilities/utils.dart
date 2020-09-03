@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
 
@@ -56,3 +58,30 @@ String substring(String val, int lastIndex) {
   if (val.length < lastIndex) return val;
   return val.substring(0, lastIndex - 3) + "...";
 }
+
+bool sameYear(DateTime d1, DateTime d2) {
+  return d1.year == d2.year;
+}
+
+Song copySong(Song temp) => Song(
+      albumTitle: temp.albumTitle,
+      artistName: temp.artistName,
+      discNumber: temp.discNumber,
+      duration: temp.duration,
+      genre: temp.genre,
+      iOSSongID: temp.iOSSongID,
+      isExplicit: temp.isExplicit,
+      playCount: temp.playCount,
+      releaseDate: temp.releaseDate,
+      title: temp.title,
+      trackNumber: temp.trackNumber,
+    );
+
+Album copyAlbum(Album temp) => Album(
+      albumTrackCount: temp.albumTrackCount,
+      artistName: temp.artistName,
+      coverArt: Uint8List.fromList([...temp.coverArt]),
+      diskCount: temp.diskCount,
+      songs: [...temp.songs],
+      title: temp.title,
+    );

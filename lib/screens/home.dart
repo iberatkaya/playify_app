@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } catch (e) {
       print(e);
       setState(() {
-        updatedLibrary = false;
+        updatedLibrary = true;
       });
     }
   }
@@ -230,7 +230,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
     store.dispatch(setRecentPlayedSongsAction(recentSongs));
-    await prefs.setStringList("recentPlayed", recentlist);
   }
 
   ///Create an animation for the background
@@ -280,7 +279,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ? MediaQuery.of(context).size.width.toInt()
             : 800;
         var res = await playify.nowPlaying(coverArtSize: desiredWidth);
-        store.dispatch(setCurrentSongAction(res.song));
+        if (res != null) {
+          store.dispatch(setCurrentSongAction(res.song));
+        }
         setState(() {
           currentSong = res;
           updateBackgroundColor();
@@ -510,9 +511,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (context) => ListScreen(
-                                              album: myalbum,
-                                              listType: MusicListType.album,
-                                            ),
+                                                album: myalbum,
+                                                listType: MusicListType.album,
+                                                fetchAllAlbumSongs: true),
                                           ),
                                         );
                                       } else if (details.primaryVelocity < -sensitivity) {
