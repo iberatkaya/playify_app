@@ -310,7 +310,7 @@ class _ListScreenState extends State<ListScreen> {
                                 var playify = Playify();
                                 await playify.setQueue(
                                   songIDs: songs.map((e) => e.iOSSongID).toList(),
-                                  startIndex: 0,
+                                  startPlaying: true,
                                 );
                                 updateRecentSongs(songs[0]);
                                 //Navigator.of(context).popUntil((route) => route.isFirst);
@@ -416,7 +416,9 @@ class _ListScreenState extends State<ListScreen> {
                               try {
                                 var playify = Playify();
                                 await playify.setQueue(
-                                    songIDs: songs.map((e) => e.iOSSongID).toList(), startIndex: itemIndex);
+                                  songIDs: songs.sublist(itemIndex).map((e) => e.iOSSongID).toList(),
+                                  startPlaying: true,
+                                );
                                 updateRecentSongs(songs[itemIndex]);
 
                                 Navigator.of(context).popUntil((route) => route.isFirst);

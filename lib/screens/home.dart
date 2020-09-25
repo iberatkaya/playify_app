@@ -29,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  double _animationImageSize = 0.9;
   AnimationController _controllerRight;
   AnimationController _controllerLeft;
   Animation<Offset> _animationOffsetRight;
@@ -52,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Timer timer;
 
   double spaceRatioPlayerAndTop = 0.12;
-  double topBarContainerHeightRatio = 0.25;
+  double topBarContainerHeightRatio = 0.20;
 
   @override
   void initState() {
@@ -262,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             setState(() {
               currentTime = res.truncate();
               playing = isplaying;
+              _animationImageSize = (isplaying) ? 0.9 : 0.86;
             });
           }
         } catch (e) {
@@ -324,7 +326,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final _width = MediaQuery.of(context).size.width;
     final _height = MediaQuery.of(context).size.height;
 
     if (permissionStatus == PermissionStatus.undetermined) {
@@ -565,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   },
                                   child: Stack(children: [
                                     if (currentSong != null)
-                                      Container(
+                                      AnimatedContainer(
                                         decoration: BoxDecoration(
                                             shape: BoxShape.rectangle,
                                             image: currentSong.album.coverArt != null
@@ -573,15 +574,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                     image: Image.memory(currentSong.album.coverArt).image)
                                                 : null,
                                             borderRadius: BorderRadius.circular(8)),
-                                        height: MediaQuery.of(context).size.height * 0.5,
-                                        width: MediaQuery.of(context).size.height * 0.5,
+                                        duration: Duration(milliseconds: 150),
+                                        height: MediaQuery.of(context).size.width * _animationImageSize,
+                                        width: MediaQuery.of(context).size.width * _animationImageSize,
                                       )
                                     else
                                       Container(
                                         decoration: BoxDecoration(
                                             color: Colors.grey[400], borderRadius: BorderRadius.circular(8)),
-                                        height: MediaQuery.of(context).size.height * 0.5,
-                                        width: MediaQuery.of(context).size.height * 0.5,
+                                        height: MediaQuery.of(context).size.width * 0.8,
+                                        width: MediaQuery.of(context).size.width * 0.8,
                                         alignment: Alignment.center,
                                       ),
                                     if (currentSong != null)
@@ -773,12 +775,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               }
                             },
                             child: Container(
-                                decoration: BoxDecoration(
-                                    color: themeModeColor(
-                                        MediaQuery.of(context).platformBrightness, Colors.blue[100]),
-                                    shape: BoxShape.circle),
-                                padding: EdgeInsets.all(16),
-                                child: Icon(!playing ? Icons.play_arrow : Icons.pause)),
+                              decoration: BoxDecoration(
+                                  color: themeModeColor(
+                                      MediaQuery.of(context).platformBrightness, Colors.blue[100]),
+                                  shape: BoxShape.circle),
+                              padding: EdgeInsets.all(16),
+                              child: Icon(!playing ? Icons.play_arrow : Icons.pause),
+                            ),
                           ),
                         ),
                       ),
@@ -803,18 +806,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               }
                             },
                             child: Container(
-                                decoration: BoxDecoration(
-                                    color: themeModeColor(
-                                        MediaQuery.of(context).platformBrightness, Colors.blue[100]),
-                                    shape: BoxShape.circle),
-                                padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
-                                child: Icon(Icons.arrow_forward_ios)),
+                              decoration: BoxDecoration(
+                                  color: themeModeColor(
+                                      MediaQuery.of(context).platformBrightness, Colors.blue[100]),
+                                  shape: BoxShape.circle),
+                              padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
+                              child: Icon(Icons.arrow_forward_ios),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
