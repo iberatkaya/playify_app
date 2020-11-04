@@ -46,11 +46,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         updatingLibrary = true;
       });
-      int desiredWidth =
-          ((MediaQuery.of(context).size.width / 2) < 400) ? (MediaQuery.of(context).size.width ~/ 2) : 400;
+      int desiredWidth = ((MediaQuery.of(context).size.width / 2) < 400)
+          ? (MediaQuery.of(context).size.width ~/ 2)
+          : 400;
       var playify = Playify();
       var res = await playify.getAllSongs(coverArtSize: desiredWidth);
-      List<Map<String, dynamic>> artistsMap = res.map((e) => artistToMap(e)).toList();
+      List<Map<String, dynamic>> artistsMap =
+          res.map((e) => artistToMap(e)).toList();
       var prefs = await SharedPreferences.getInstance();
       await prefs.setString("artists", json.encode(artistsMap));
       store.dispatch(setMusicLibraryAction(res));
@@ -83,9 +85,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       title: Text(
                         "Scan Library",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
-                      trailing: updatingLibrary ? CircularProgressIndicator() : null,
+                      trailing:
+                          updatingLibrary ? CircularProgressIndicator() : null,
                       onTap: () async {
                         await updateLibrary();
                       },
@@ -93,20 +97,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       title: Text(
                         "Font Size",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<String>(
                         value: fontSizeToString(settings.listTileFontSize),
-                        items: ["Smallest", "Small", "Medium", "Large", "Largest"]
-                            .map((i) => DropdownMenuItem(
-                                  child: Text(i),
-                                  value: i,
-                                ))
-                            .toList(),
+                        items:
+                            ["Smallest", "Small", "Medium", "Large", "Largest"]
+                                .map((i) => DropdownMenuItem(
+                                      child: Text(i),
+                                      value: i,
+                                    ))
+                                .toList(),
                         onChanged: (val) async {
                           try {
                             var newsettings = Settings.copy(settings);
-                            newsettings.listTileFontSize = stringToFontSize(val);
+                            newsettings.listTileFontSize =
+                                stringToFontSize(val);
                             store.dispatch(setSettingsAction(newsettings));
                             var prefs = await SharedPreferences.getInstance();
                             prefs.setString("settings", newsettings.toJson());
@@ -118,8 +125,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     ListTile(
                       title: Text(
-                        "Artist Statistics Number",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        "Total Artist Statistics",
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<int>(
                         value: settings.statisticNumberArtist,
@@ -144,8 +152,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     ListTile(
                       title: Text(
-                        "Album Statistics Number",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        "Total Album Statistics",
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<int>(
                         value: settings.statisticNumberAlbum,
@@ -170,8 +179,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     ListTile(
                       title: Text(
-                        "Song Statistics Number",
-                        style: TextStyle(fontSize: settings.listTileFontSize.toDouble()),
+                        "Total Song Statistics",
+                        style: TextStyle(
+                            fontSize: settings.listTileFontSize.toDouble()),
                       ),
                       trailing: DropdownButton<int>(
                         value: settings.statisticNumberSong,

@@ -8,24 +8,21 @@ import 'package:playify_app/constant/animationAmount.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list.dart';
 import 'package:playify_app/screens/settings.dart';
-import 'package:playify_app/utilities/moodUtility.dart';
 import 'package:playify_app/utilities/mostListened/mostListenedAlbum.dart';
-import './../components/profile/moodList.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   Animation animation; // Fading Animation
-  dynamic currentMood = HappyMood(); // Initiliaze CurrentMood With HappyMood till gets from SharedPref
   AnimationController animationController; // Fading Animation Controller
 
   @override
   void initState() {
     initAnimation();
-    getCurrentMood(); // Initiliaze When Profile Page is shown
     super.initState();
   }
 
@@ -48,18 +45,6 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       begin: beginAmount,
       end: endAmount,
     ).animate(animationController);
-  }
-
-  ///Function that returns current mood
-  getCurrentMood() async {
-    try {
-      var local = await getMood();
-      setState(() {
-        currentMood = local;
-      });
-    } catch (e) {
-      print(e);
-    }
   }
 
   @override
@@ -100,10 +85,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       ///Profile Picture Card
                       GestureDetector(
                         onTap: () {
+                          if (favAlbum == null) {
+                            return;
+                          }
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  ListScreen(listType: MusicListType.album, album: favAlbum),
+                              builder: (context) => ListScreen(
+                                  listType: MusicListType.album,
+                                  album: favAlbum),
                             ),
                           );
                         },
@@ -115,7 +104,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                 ? Image.memory(favAlbum.coverArt)
                                 : CircleAvatar(
                                     child: Text(favAlbum != null
-                                        ? favAlbum.title.substring(0, 2).toUpperCase()
+                                        ? favAlbum.title
+                                            .substring(0, 2)
+                                            .toUpperCase()
                                         : "Favorite Album Cover"),
                                   ),
                           ),
@@ -154,7 +145,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               margin: EdgeInsets.only(top: 10),
                               padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                favAlbum != null ? favAlbum.title : "", // Favorite Album Title
+                                favAlbum != null
+                                    ? favAlbum.title
+                                    : "", // Favorite Album Title
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -169,7 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               child: Opacity(
                                 opacity: 0.54,
                                 child: Text(
-                                  favAlbum != null ? favAlbum.artistName : "", // Favorite Song Artist
+                                  favAlbum != null
+                                      ? favAlbum.artistName
+                                      : "", // Favorite Song Artist
                                   textAlign: TextAlign.end,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
@@ -204,7 +199,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       ),
                       // Recent List
                       StoreConnector<AppState, List<RecentPlayedSong>>(
-                          converter: (appstate) => appstate.state.recentPlayedSongs,
+                          converter: (appstate) =>
+                              appstate.state.recentPlayedSongs,
                           builder: (storeContext, recentPlayedSongs) {
                             return Container(
                               height: height * 0.25,
@@ -214,14 +210,18 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                 itemBuilder: (context, index) {
                                   var songInfo = recentPlayedSongs[index];
                                   var album = artists
-                                      .where((element) => element.name == songInfo.artistName)
+                                      .where((element) =>
+                                          element.name == songInfo.artistName)
                                       .toList()[0]
                                       .albums
-                                      .where((element) => element.title == songInfo.albumName)
+                                      .where((element) =>
+                                          element.title == songInfo.albumName)
                                       .toList()[0];
                                   return GridItemTile(
                                     title: album.title,
-                                    icon: album.coverArt != null ? Image.memory(album.coverArt) : null,
+                                    icon: album.coverArt != null
+                                        ? Image.memory(album.coverArt)
+                                        : null,
                                     fn: () => Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => ListScreen(
@@ -235,7 +235,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                                 padding: EdgeInsets.only(left: 10),
                                 scrollDirection: Axis.horizontal,
                                 physics: ClampingScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 1,
                                   childAspectRatio: 1,
                                   crossAxisSpacing: 15,
@@ -254,7 +255,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       iconSize: 28,
                       icon: Icon(Icons.settings),
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SettingsScreen()));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SettingsScreen()));
                       }),
                 ),
               ],

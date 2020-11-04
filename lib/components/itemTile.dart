@@ -89,16 +89,19 @@ class ItemTile extends StatelessWidget {
                           child: iconBuilder(),
                         ),
                         if (addLeadingSpace) Spacer(flex: 1),
-                        if (appstate.currentSong != null && appstate.currentSong.iOSSongID == iosSongID)
+                        if (appstate.currentSong != null &&
+                            appstate.currentSong.iOSSongID == iosSongID)
                           Expanded(
                             flex: 10,
                             child: Text(
                               title,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                fontSize: appstate.settings.listTileFontSize.toDouble(),
+                                fontSize: appstate.settings.listTileFontSize
+                                    .toDouble(),
                                 fontStyle: FontStyle.italic,
-                                color: themeModeColor(brightness, Colors.purple[300]),
+                                color: themeModeColor(
+                                    brightness, Colors.purple[300]),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -110,7 +113,8 @@ class ItemTile extends StatelessWidget {
                               title,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                fontSize: appstate.settings.listTileFontSize.toDouble(),
+                                fontSize: appstate.settings.listTileFontSize
+                                    .toDouble(),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -121,7 +125,8 @@ class ItemTile extends StatelessWidget {
                 ),
               );
             }
-            if (appstate.currentSong.iOSSongID == iosSongID) {
+            if (appstate.currentSong != null &&
+                appstate.currentSong.iOSSongID == iosSongID) {
               return Container(
                 padding: padding,
                 child: ListTile(

@@ -19,8 +19,9 @@ Duration intToDuration(int totalSeconds) {
 }
 
 ///Return a string of the duration. Ex: 03:45, 01:03:45
-printDuration(Duration d) =>
-    d.inHours != 0 ? d.toString().split('.').first.padLeft(8, "0") : d.toString().substring(2, 7);
+printDuration(Duration d) => d.inHours != 0
+    ? d.toString().split('.').first.padLeft(8, "0")
+    : d.toString().substring(2, 7);
 
 ///Convert seconds to a string representation of a duration
 formatSongTime(int seconds) {
@@ -42,6 +43,8 @@ Color themeModeColor(Brightness brightness, Color color) {
       return Colors.white38;
     } else if (color == Colors.purple[600]) {
       return Colors.white;
+    } else if (color == Colors.purple[400]) {
+      return Colors.deepPurple;
     } else if (color == Colors.black87) {
       return Colors.white70;
     } else if (color == Colors.grey[500]) {
@@ -63,13 +66,18 @@ bool sameYear(DateTime d1, DateTime d2) {
   return d1.year == d2.year;
 }
 
+String tempa(Song s) {
+  print(s);
+  return s.iOSSongID;
+}
+
 Song copySong(Song temp) => Song(
       albumTitle: temp.albumTitle,
       artistName: temp.artistName,
       discNumber: temp.discNumber,
       duration: temp.duration,
       genre: temp.genre,
-      iOSSongID: temp.iOSSongID,
+      iOSSongID: temp.iOSSongID ?? tempa(temp),
       isExplicit: temp.isExplicit,
       playCount: temp.playCount,
       releaseDate: temp.releaseDate,
@@ -85,3 +93,6 @@ Album copyAlbum(Album temp) => Album(
       songs: [...temp.songs],
       title: temp.title,
     );
+
+Artist copyArtist(Artist temp) =>
+    Artist(albums: [...temp.albums], name: temp.name);

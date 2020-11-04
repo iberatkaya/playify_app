@@ -3,7 +3,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/constant/colors.dart';
-import 'package:playify_app/redux/music/action.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/utilities/statsUtilities/getTopAlbumsByPlayTime.dart';
 import 'package:playify_app/utilities/statsUtilities/getTopArtistByPlayTime.dart';
@@ -52,11 +51,14 @@ class _GraphDetailScreenState extends State<GraphDetailScreen> {
             builder: (storeContext, appstate) {
               Map<String, double> myobj;
               if (widget.graphType == GraphType.artist)
-                myobj = getTopArtistByPlayTime(appstate, showCounts: true, totalStatistics: totalStatistics);
+                myobj = getTopArtistByPlayTime(appstate,
+                    showCounts: true, totalStatistics: totalStatistics);
               else if (widget.graphType == GraphType.album)
-                myobj = getTopAlbumsByPlayTime(appstate, showCounts: true, totalStatistics: totalStatistics);
+                myobj = getTopAlbumsByPlayTime(appstate,
+                    showCounts: true, totalStatistics: totalStatistics);
               else
-                myobj = getTopSongsByPlayTime(appstate, showCounts: true, totalStatistics: totalStatistics);
+                myobj = getTopSongsByPlayTime(appstate,
+                    showCounts: true, totalStatistics: totalStatistics);
               return ListView(
                 children: [
                   Container(
@@ -76,7 +78,8 @@ class _GraphDetailScreenState extends State<GraphDetailScreen> {
                                       value: i,
                                     ))
                                 .toList(),
-                            onChanged: (val) => setState(() => totalStatistics = val)),
+                            onChanged: (val) =>
+                                setState(() => totalStatistics = val)),
                       ],
                     ),
                   ),
@@ -84,11 +87,15 @@ class _GraphDetailScreenState extends State<GraphDetailScreen> {
                     padding: EdgeInsets.symmetric(vertical: 24),
                     child: PieChart(
                       dataMap: myobj,
-                      colorList:
-                          colors.map((i) => Color(int.parse(i.replaceAll("#", ""), radix: 16))).toList(),
+                      colorList: colors
+                          .map((i) => Color(
+                              int.parse(i.replaceAll("#", ""), radix: 16)))
+                          .toList(),
                       chartValueStyle: TextStyle(
                         fontSize: 11,
-                        color: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.black),
+                        color: themeModeColor(
+                            MediaQuery.of(context).platformBrightness,
+                            Colors.black),
                       ),
                       legendPosition: LegendPosition.bottom,
                       chartRadius: MediaQuery.of(context).size.width,

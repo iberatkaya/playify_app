@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playify_app/components/itemTile.dart';
 import 'package:playify_app/icons/playify_icon_icons.dart';
-import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list.dart';
-import 'package:playify_app/screens/settings.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -31,8 +29,9 @@ class _MenuPageState extends State<MenuPage> {
                 addLeadingSpace: true,
                 brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.artists)));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ListScreen(listType: MusicListType.artists)));
                 }),
             Divider(),
             ItemTile(
@@ -44,8 +43,9 @@ class _MenuPageState extends State<MenuPage> {
                 addLeadingSpace: true,
                 brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.albums)));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ListScreen(listType: MusicListType.albums)));
                 }),
             Divider(),
             ItemTile(
@@ -57,8 +57,9 @@ class _MenuPageState extends State<MenuPage> {
                 addLeadingSpace: true,
                 brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ListScreen(listType: MusicListType.songs)));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ListScreen(listType: MusicListType.songs)));
                 }),
             Divider(),
           ],

@@ -1,5 +1,4 @@
 import 'package:playify/playify.dart';
-import 'package:playify_app/redux/store.dart';
 
 Album mostListenedAlbum(List<Artist> artists) {
   /// To sum all of songs of the album play count
@@ -14,7 +13,9 @@ Album mostListenedAlbum(List<Artist> artists) {
   albums.sort((a, b) => b.songs
       .map((e) => e.playCount)
       .reduce((value, element) => value += element)
-      .compareTo(a.songs.map((e) => e.playCount).reduce((value, element) => value += element)));
+      .compareTo(a.songs
+          .map((e) => e.playCount)
+          .reduce((value, element) => value += element)));
   if (albums.length == 0) {
     return null;
   }
