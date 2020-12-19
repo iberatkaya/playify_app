@@ -3,8 +3,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
-import 'package:playify_app/redux/music/action.dart';
-import 'package:playify_app/redux/settings/action.dart';
+import 'package:playify_app/redux/actions/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/home.dart';
 import 'package:playify_app/screens/profile.dart';
@@ -26,8 +25,9 @@ class _MainAppState extends State<MainApp> {
   @override
   initState() {
     super.initState();
-    getSettings().then(
-        (_) => setStatusBarColor().then((_) => showIntro()).then((_) => setState(() => loading = false)));
+    getSettings().then((_) => setStatusBarColor()
+        .then((_) => showIntro())
+        .then((_) => setState(() => loading = false)));
   }
 
   Future<void> showIntro() async {
@@ -80,7 +80,8 @@ class _MainAppState extends State<MainApp> {
             pages: [
               PageViewModel(
                 image: Image.asset("assets/images/intro/1.png"),
-                body: "Start listening music with the best music player available!",
+                body:
+                    "Start listening music with the best music player available!",
                 title: "Welcome To Playify",
               ),
               PageViewModel(
@@ -105,8 +106,9 @@ class _MainAppState extends State<MainApp> {
     return Scaffold(
       body: IndexedStack(
         index: index,
-        children:
-            (loading || intro == null) ? [Container()] : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
+        children: (loading || intro == null)
+            ? [Container()]
+            : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
@@ -114,27 +116,29 @@ class _MainAppState extends State<MainApp> {
           index = currentIndex;
         }),
         showSelectedLabels: false,
-        selectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.white),
-        unselectedItemColor: themeModeColor(MediaQuery.of(context).platformBrightness, Colors.white38),
+        selectedItemColor: themeModeColor(
+            MediaQuery.of(context).platformBrightness, Colors.white),
+        unselectedItemColor: themeModeColor(
+            MediaQuery.of(context).platformBrightness, Colors.white38),
         showUnselectedLabels: false,
         backgroundColor: Colors.deepPurple[300],
         items: [
           BottomNavigationBarItem(
-            title: Text("Home"),
+            label: "Home",
             icon: Icon(
               Icons.play_circle_outline,
               size: 32,
             ),
           ),
           BottomNavigationBarItem(
-            title: Text("Stats"),
+            label: "Stats",
             icon: Icon(
               Icons.data_usage,
               size: 32,
             ),
           ),
           BottomNavigationBarItem(
-            title: Text("Profile"),
+            label: "Profile",
             icon: Icon(
               Icons.account_circle,
               size: 32,

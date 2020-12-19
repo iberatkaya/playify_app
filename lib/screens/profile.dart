@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify/playify.dart';
-import 'package:playify_app/classes/recentPlayedSong.dart';
-import 'package:playify_app/components/gridItemTile.dart';
-import 'package:playify_app/components/transitionbackground.dart';
-import 'package:playify_app/constant/animationAmount.dart';
+import 'package:playify_app/classes/recent_played_song.dart';
+import 'package:playify_app/screens/widgets/grid_item_tile.dart';
+import 'package:playify_app/screens/widgets/transition_background.dart';
+import 'package:playify_app/constant/animation_amount.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list.dart';
 import 'package:playify_app/screens/settings.dart';
-import 'package:playify_app/utilities/mostListened/mostListenedAlbum.dart';
+import 'package:playify_app/utilities/most_listened/most_listened_album.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override

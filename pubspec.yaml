@@ -25,7 +25,10 @@ dependencies:
     sdk: flutter
   shared_preferences: ^0.5.8
   toast: ^0.1.5
-  playify: ^1.4.0+1
+  playify:
+    git:
+      url: https://github.com/iberatkaya/playify.git
+      ref: dev
   font_awesome_flutter: ^8.8.1
   flutter_redux: ^0.6.0
   redux: ^4.0.0+3

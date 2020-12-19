@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
-import 'package:playify_app/redux/music/action.dart';
-import 'package:playify_app/redux/settings/action.dart';
+import 'package:playify_app/redux/actions/music/action.dart';
+import 'package:playify_app/redux/actions/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
+import 'package:playify_app/redux/utility/utility.dart';
 import 'package:playify_app/utilities/jsonify.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,13 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       int desiredWidth = ((MediaQuery.of(context).size.width / 2) < 400)
           ? (MediaQuery.of(context).size.width ~/ 2)
           : 400;
-      var playify = Playify();
-      var res = await playify.getAllSongs(coverArtSize: desiredWidth);
-      List<Map<String, dynamic>> artistsMap =
-          res.map((e) => artistToMap(e)).toList();
-      var prefs = await SharedPreferences.getInstance();
-      await prefs.setString("artists", json.encode(artistsMap));
-      store.dispatch(setMusicLibraryAction(res));
+      await updateMusicLibrary(desiredWidth);
       setState(() {
         updatingLibrary = false;
       });

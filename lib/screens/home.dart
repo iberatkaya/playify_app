@@ -8,12 +8,13 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
-import 'package:playify_app/classes/recentPlayedSong.dart';
-import 'package:playify_app/components/transitionbackground.dart';
-import 'package:playify_app/constant/animationAmount.dart';
-import 'package:playify_app/redux/currentsong/action.dart';
-import 'package:playify_app/redux/music/action.dart';
-import 'package:playify_app/redux/recentplayedsongs/action.dart';
+import 'package:playify_app/classes/recent_played_song.dart';
+import 'package:playify_app/redux/actions/current_song/action.dart';
+import 'package:playify_app/redux/actions/music/action.dart';
+import 'package:playify_app/redux/actions/recent_played_songs/action.dart';
+import 'package:playify_app/redux/utility/utility.dart';
+import 'package:playify_app/screens/widgets/transition_background.dart';
+import 'package:playify_app/constant/animation_amount.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list.dart';
 import 'package:playify_app/screens/menu.dart';
@@ -41,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Color firstColor = Colors.indigo[400];
   Color secondColor = Colors.deepPurple[400];
 
-  SongInfo currentSong;
+  SongInformation currentSong;
 
   Playify playify = Playify();
 
@@ -180,14 +181,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       });
       //final stopwatch = Stopwatch()..start();
       var prefs = await SharedPreferences.getInstance();
-      var res = prefs.getString("artists");
-      if (res == null) {
+      var artistsJson = prefs.getString("artists");
+      var playlistsJson = prefs.getString("playlists");
+
+      if (artistsJson == null) {
         await updateLibrary();
       }
-      List<dynamic> artistsMap = json.decode(res);
+      List<dynamic> artistsMap = json.decode(artistsJson);
       List<Artist> artists =
           List<Artist>.from(artistsMap.map((e) => mapToArist(e)).toList());
-      store.dispatch(setMusicLibraryAction(artists));
+
+      List<dynamic> playlistsMap = json.decode(playlistsJson);
+      List<Playlist> playlists = List<Playlist>.from(
+          playlistsMap.map((e) => mapToPlaylist(e)).toList());
+
+      store.dispatch(setMusicLibraryAction(artists, playlists));
       //print('executed in ${stopwatch.elapsed.inMilliseconds}ms');
       setState(() {
         updatedLibrary = true;
@@ -206,12 +214,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       int desiredWidth = ((MediaQuery.of(context).size.width / 2) < 400)
           ? (MediaQuery.of(context).size.width ~/ 2)
           : 400;
-      var res = await playify.getAllSongs(coverArtSize: desiredWidth);
-      List<Map<String, dynamic>> artistsMap =
-          res.map((e) => artistToMap(e)).toList();
-      var prefs = await SharedPreferences.getInstance();
-      await prefs.setString("artists", json.encode(artistsMap));
-      store.dispatch(setMusicLibraryAction(res));
+      await updateMusicLibrary(desiredWidth);
       //print('executed in ${stopwatch.elapsed.inMilliseconds}ms');
       setState(() {
         updatedLibrary = true;

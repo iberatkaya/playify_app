@@ -89,7 +89,7 @@ Album copyAlbum(Album temp) => Album(
       albumTrackCount: temp.albumTrackCount,
       artistName: temp.artistName,
       coverArt: Uint8List.fromList([...temp.coverArt]),
-      diskCount: temp.diskCount,
+      discCount: temp.discCount,
       songs: [...temp.songs],
       title: temp.title,
     );

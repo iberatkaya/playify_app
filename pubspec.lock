@@ -201,10 +201,12 @@ packages:
   playify:
     dependency: "direct main"
     description:
-      name: playify
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.4.0+1"
+      path: "."
+      ref: dev
+      resolved-ref: "3a16a92934884f50be2d71af7e2c5f3320eaf7ce"
+      url: "https://github.com/iberatkaya/playify.git"
+    source: git
+    version: "1.5.0"
   plugin_platform_interface:
     dependency: transitive
     description:

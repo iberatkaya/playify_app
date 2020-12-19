@@ -4,9 +4,9 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/constant/colors.dart';
 import 'package:playify_app/redux/store.dart';
-import 'package:playify_app/utilities/statsUtilities/getTopAlbumsByPlayTime.dart';
-import 'package:playify_app/utilities/statsUtilities/getTopArtistByPlayTime.dart';
-import 'package:playify_app/utilities/statsUtilities/getTopSongsByPlayTime.dart';
+import 'package:playify_app/utilities/stat_utilities/get_top_albums.dart';
+import 'package:playify_app/utilities/stat_utilities/get_top_artists.dart';
+import 'package:playify_app/utilities/stat_utilities/get_top_songs.dart';
 import 'package:playify_app/utilities/utils.dart';
 
 enum GraphType {

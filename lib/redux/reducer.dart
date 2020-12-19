@@ -1,13 +1,15 @@
-import 'package:playify_app/redux/currentsong/action.dart';
-import 'package:playify_app/redux/music/action.dart';
-import 'package:playify_app/redux/recentplayedsongs/action.dart';
-import 'package:playify_app/redux/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
+
+import 'actions/current_song/action.dart';
+import 'actions/music/action.dart';
+import 'actions/recent_played_songs/action.dart';
+import 'actions/settings/action.dart';
 
 AppState reducer(AppState state, dynamic action) {
   if (action.type == MusicAction.setMusicLibrary) {
     AppState newstate = AppState.copy(state);
-    newstate.artists = action.payload;
+    newstate.artists = action.payload[0];
+    newstate.playlists = action.payload[1];
     return newstate;
   } else if (action.type == SettingsAction.setSettings) {
     AppState newstate = AppState.copy(state);

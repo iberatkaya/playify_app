@@ -1,7 +1,7 @@
 import 'package:playify_app/redux/store.dart';
 
 ///Get the top albums by play time (determined by play count).
-///@param totalStatistics overrides the value from settings.
+///[totalStatistics] overrides the value from settings.
 Map<String, double> getTopAlbumsByPlayTime(AppState appstate,
     {bool showCounts = false, int totalStatistics = 0}) {
   ///To sum all of songs of the album play time

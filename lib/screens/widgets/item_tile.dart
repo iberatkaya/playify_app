@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:playify_app/classes/settings.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/utilities/utils.dart';
 
