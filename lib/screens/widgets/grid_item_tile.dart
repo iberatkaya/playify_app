@@ -13,16 +13,14 @@ class GridItemTile extends StatelessWidget {
     @required this.fn,
     this.subtitle,
     this.padding,
-    this.brightness,
   });
   final String title;
   final String subtitle;
   final Widget icon;
   final Function fn;
-  final Brightness brightness;
   final EdgeInsets padding;
 
-  Widget iconBuilder() {
+  Widget iconBuilder(Brightness brightness) {
     if (icon is Image) {
       return Container(
         child: ClipRRect(
@@ -56,6 +54,8 @@ class GridItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+
     return StoreProvider(
       store: store,
       child: StoreConnector<AppState, Settings>(
@@ -68,7 +68,7 @@ class GridItemTile extends StatelessWidget {
                 padding: padding,
                 child: Column(
                   children: [
-                    Expanded(flex: 35, child: iconBuilder()),
+                    Expanded(flex: 35, child: iconBuilder(brightness)),
                     Spacer(
                       flex: 1,
                     ),
@@ -87,7 +87,8 @@ class GridItemTile extends StatelessWidget {
                               title,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                fontSize: (settings.listTileFontSize - 4).toDouble(),
+                                fontSize:
+                                    (settings.listTileFontSize - 4).toDouble(),
                               ),
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
@@ -99,13 +100,22 @@ class GridItemTile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (subtitle != null)
+                    if (subtitle != null) ...[
+                      Spacer(
+                        flex: 1,
+                      ),
                       Text(
                         subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            fontSize: (settings.listTileFontSize - 7).toDouble(),
-                            color: themeModeColor(brightness, Colors.grey[600])),
+                            fontSize:
+                                (settings.listTileFontSize - 7).toDouble(),
+                            color:
+                                themeModeColor(brightness, Colors.grey[700])),
+                        textAlign: TextAlign.center,
                       ),
+                    ]
                   ],
                 ),
               ),

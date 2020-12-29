@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/screens/list.dart';
+import 'package:playify_app/screens/widgets/item_tile.dart';
 
 class PlaylistsList extends StatelessWidget {
   final List<Playlist> playlists;
@@ -15,7 +17,17 @@ class PlaylistsList extends StatelessWidget {
         return Divider();
       },
       itemBuilder: (BuildContext listContext, int index) {
-        return ListTile(title: Text(playlists[index].title));
+        return ItemTile(
+          title: playlists[index].title,
+          hasLeadingIcon: false,
+          fn: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ListScreen(
+                      listType: MusicListType.playlist,
+                      playlist: playlists[index],
+                    )));
+          },
+        );
       },
     );
   }

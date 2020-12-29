@@ -8,10 +8,19 @@ import 'package:playify_app/screens/widgets/detail/artist_detail.dart';
 import 'package:playify_app/screens/widgets/lists/artists_list.dart';
 import 'package:playify_app/screens/widgets/detail/album_detail.dart';
 import 'package:playify_app/screens/widgets/lists/playlists_list.dart';
-import 'package:playify_app/screens/widgets/lists/songs_list.dart';
+import 'package:playify_app/screens/widgets/lists/all_songs_list.dart';
 import 'package:playify_app/redux/store.dart';
+import 'package:playify_app/screens/widgets/lists/songs_list.dart';
 
-enum MusicListType { artists, albums, songs, artist, album, playlists }
+enum MusicListType {
+  artists,
+  albums,
+  allSongs,
+  artist,
+  album,
+  playlists,
+  playlist
+}
 
 class ListScreen extends StatefulWidget {
   final MusicListType listType;
@@ -22,8 +31,11 @@ class ListScreen extends StatefulWidget {
   ///Use if an artist's content will be displayed.
   final Artist artist;
 
-  ///Use if a playlist's content will be displayed
+  ///Use if a playlist's content will be displayed.
   final List<Playlist> playlists;
+
+  ///Use if a playlist will be displayed.
+  final Playlist playlist;
 
   ///Use if all songs of the album will be fetched.
   final bool fetchAllAlbumSongs;
@@ -33,6 +45,7 @@ class ListScreen extends StatefulWidget {
     this.album,
     this.artist,
     this.playlists,
+    this.playlist,
     this.fetchAllAlbumSongs = false,
   });
   @override
@@ -84,8 +97,10 @@ class _ListScreenState extends State<ListScreen> {
       return "Albums";
     } else if (widget.listType == MusicListType.artists) {
       return "Artists";
-    } else if (widget.listType == MusicListType.songs) {
+    } else if (widget.listType == MusicListType.allSongs) {
       return "Songs";
+    } else if (widget.listType == MusicListType.playlist) {
+      return widget.playlist.title;
     } else if (widget.listType == MusicListType.album) {
       return widget.album.title;
     } else if (widget.listType == MusicListType.artist) {
@@ -101,11 +116,14 @@ class _ListScreenState extends State<ListScreen> {
   void initState() {
     super.initState();
     if (widget.listType == MusicListType.artist && widget.artist == null)
-      throw "Artist cannot be empty";
+      throw "Artist cannot be null";
     else if (widget.listType == MusicListType.album && widget.album == null)
-      throw "Album cannot be empty";
+      throw "Album cannot be null";
     else if (widget.listType == MusicListType.playlists &&
-        widget.playlists == null) throw "Playlist cannot be empty";
+        widget.playlists == null)
+      throw "Playlist cannot be null";
+    else if (widget.listType == MusicListType.playlist &&
+        widget.playlist == null) throw "Playlist cannot be null";
     if (widget.listType == MusicListType.album) {
       updateBackgroundColor();
     }
@@ -128,8 +146,8 @@ class _ListScreenState extends State<ListScreen> {
                   return ArtistsList(artists: artists);
                 } else if (widget.listType == MusicListType.albums) {
                   return AlbumsList(artists: artists);
-                } else if (widget.listType == MusicListType.songs) {
-                  return SongsList(artists: artists);
+                } else if (widget.listType == MusicListType.allSongs) {
+                  return AllSongsList(artists: artists);
                 } else if (widget.listType == MusicListType.artist) {
                   return ArtistDetail(albums: widget.artist.albums);
                 } else if (widget.listType == MusicListType.album) {
@@ -142,6 +160,10 @@ class _ListScreenState extends State<ListScreen> {
                 } else if (widget.listType == MusicListType.playlists) {
                   return PlaylistsList(
                     playlists: widget.playlists,
+                  );
+                } else if (widget.listType == MusicListType.playlist) {
+                  return SongsList(
+                    songs: widget.playlist.songs,
                   );
                 } else {
                   return Container();

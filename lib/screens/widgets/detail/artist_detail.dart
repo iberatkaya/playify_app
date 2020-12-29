@@ -94,7 +94,6 @@ class _ArtistDetailState extends State<ArtistDetail> {
                   icon: sortedAlbums[index].coverArt != null
                       ? Image.memory(sortedAlbums[index].coverArt)
                       : null,
-                  brightness: MediaQuery.of(context).platformBrightness,
                   fn: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ListScreen(

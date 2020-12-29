@@ -16,7 +16,7 @@ import 'package:playify_app/utilities/stat_utilities/get_top_albums.dart';
 import 'package:playify_app/utilities/stat_utilities/get_top_artists.dart';
 import 'package:playify_app/utilities/stat_utilities/get_top_songs.dart';
 import 'package:playify_app/utilities/utils.dart';
-import 'package:playify_app/utilities/jsonify.dart';
+import 'package:playify_app/utilities/extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -42,12 +42,10 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       setState(() {
         loading = true;
       });
-      //final stopwatch = Stopwatch()..start();
       int desiredWidth = ((MediaQuery.of(context).size.width / 2) < 400)
           ? (MediaQuery.of(context).size.width ~/ 2)
           : 400;
       await updateMusicLibrary(desiredWidth);
-      //print('executed in ${stopwatch.elapsed.inMilliseconds}ms');
       setState(() {
         loading = false;
       });

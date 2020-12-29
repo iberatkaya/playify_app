@@ -219,6 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .toList()[0];
                                   return GridItemTile(
                                     title: album.title,
+                                    subtitle: songInfo.songName,
                                     icon: album.coverArt != null
                                         ? Image.memory(album.coverArt)
                                         : null,

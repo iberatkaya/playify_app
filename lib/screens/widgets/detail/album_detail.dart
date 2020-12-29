@@ -6,6 +6,7 @@ import 'package:playify_app/screens/widgets/item_tile.dart';
 
 import 'package:playify_app/redux/utility/utility.dart';
 import 'package:playify_app/utilities/utils.dart';
+import 'package:playify_app/utilities/extensions.dart';
 
 class AlbumDetail extends StatefulWidget {
   final Album album;
@@ -30,35 +31,31 @@ class _AlbumDetailState extends State<AlbumDetail> {
   @override
   void initState() {
     super.initState();
-    {
-      if (widget.fetchAllAlbumSongs) {
-        for (var i = 0; i < widget.artists.length; i++) {
-          for (var j = 0; j < widget.artists[i].albums.length; j++) {
-            if (widget.artists[i].albums[j].title == widget.album.title) {
-              for (var k = 0;
-                  k < widget.artists[i].albums[j].songs.length;
-                  k++) {
-                widget.artists[i].albums[j].songs.forEach((element) {
-                  var songExists = false;
-                  for (var song in songs) {
-                    if (song.title == element.title &&
-                        song.duration == element.duration) songExists = true;
-                  }
-                  if (!songExists) songs.add(copySong(element));
-                });
-              }
+    if (widget.fetchAllAlbumSongs) {
+      for (var i = 0; i < widget.artists.length; i++) {
+        for (var j = 0; j < widget.artists[i].albums.length; j++) {
+          if (widget.artists[i].albums[j].title == widget.album.title) {
+            for (var k = 0; k < widget.artists[i].albums[j].songs.length; k++) {
+              widget.artists[i].albums[j].songs.forEach((element) {
+                var songExists = false;
+                for (var song in songs) {
+                  if (song.title == element.title &&
+                      song.duration == element.duration) songExists = true;
+                }
+                if (!songExists) songs.add(element.copy());
+              });
             }
           }
         }
-      } else {
-        songs = [...widget.album.songs];
       }
-      setState(() {
-        songs.sort((a, b) =>
-            (a.trackNumber - b.trackNumber) +
-            songs.length * (a.discNumber - b.discNumber));
-      });
+    } else {
+      songs = [...widget.album.songs];
     }
+    setState(() {
+      songs.sort((a, b) =>
+          (a.trackNumber - b.trackNumber) +
+          songs.length * (a.discNumber - b.discNumber));
+    });
   }
 
   @override
@@ -179,18 +176,15 @@ class _AlbumDetailState extends State<AlbumDetail> {
               iosSongID: songs[itemIndex].iOSSongID,
               icon: Text(songs[itemIndex].trackNumber.toString()),
               padding: EdgeInsets.symmetric(vertical: 4),
-              brightness: MediaQuery.of(context).platformBrightness,
               fn: () async {
                 try {
                   var playify = Playify();
                   await playify.setQueue(
-                    songIDs: songs
-                        .sublist(itemIndex)
-                        .map((e) => e.iOSSongID)
-                        .toList(),
+                    songIDs: songs.map((e) => e.iOSSongID).toList(),
                     startPlaying: true,
+                    startID: songs[itemIndex].iOSSongID,
                   );
-                  updateRecentSongs(songs[itemIndex]);
+                  await updateRecentSongs(songs[itemIndex]);
 
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 } catch (e) {

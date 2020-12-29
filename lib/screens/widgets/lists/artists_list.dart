@@ -36,7 +36,6 @@ class _ArtistsListState extends State<ArtistsList> {
           return ItemTile(
             padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
             title: sortedArtists[index].name,
-            brightness: MediaQuery.of(context).platformBrightness,
             subtitle: sortedArtists[index].albums.length.toString() +
                 ((sortedArtists[index].albums.length == 1)
                     ? " Album"

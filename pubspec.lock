@@ -107,6 +107,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_xlider:
+    dependency: "direct main"
+    description:
+      name: flutter_xlider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.4.0"
   font_awesome_flutter:
     dependency: "direct main"
     description:
@@ -202,11 +209,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: dev
-      resolved-ref: "3a16a92934884f50be2d71af7e2c5f3320eaf7ce"
+      ref: playlists
+      resolved-ref: aa8b9cbe00f62fa392313b9729c550c22a824a04
       url: "https://github.com/iberatkaya/playify.git"
     source: git
-    version: "1.5.0"
+    version: "1.5.0+1"
   plugin_platform_interface:
     dependency: transitive
     description:

@@ -10,7 +10,6 @@ class ItemTile extends StatelessWidget {
     this.icon,
     this.iosSongID,
     this.padding,
-    this.brightness,
     this.subtitle,
     this.rounded = true,
     this.hasLeadingIcon = true,
@@ -21,14 +20,13 @@ class ItemTile extends StatelessWidget {
   final String iosSongID;
   final Widget icon;
   final Function fn;
-  final Brightness brightness;
   final EdgeInsets padding;
   final bool rounded;
   final bool hasLeadingIcon;
   final bool addLeadingSpace;
 
-  Widget iconBuilder() {
-    if (!hasLeadingIcon) return null;
+  Widget iconBuilder(Brightness brightness) {
+    if (!hasLeadingIcon) return Container();
     if (icon is Image) {
       return Container(
         width: 60,
@@ -68,6 +66,8 @@ class ItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+
     return StoreProvider(
       store: store,
       child: StoreConnector<AppState, AppState>(
@@ -85,7 +85,7 @@ class ItemTile extends StatelessWidget {
                       children: [
                         Expanded(
                           flex: 1,
-                          child: iconBuilder(),
+                          child: iconBuilder(brightness),
                         ),
                         if (addLeadingSpace) Spacer(flex: 1),
                         if (appstate.currentSong != null &&
@@ -139,7 +139,7 @@ class ItemTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(subtitle),
-                  leading: iconBuilder(),
+                  leading: iconBuilder(brightness),
                   onTap: fn,
                 ),
               );
@@ -156,7 +156,7 @@ class ItemTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(subtitle),
-                  leading: iconBuilder(),
+                  leading: iconBuilder(brightness),
                   onTap: fn,
                 ),
               );

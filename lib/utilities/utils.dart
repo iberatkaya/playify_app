@@ -19,12 +19,12 @@ Duration intToDuration(int totalSeconds) {
 }
 
 ///Return a string of the duration. Ex: 03:45, 01:03:45
-printDuration(Duration d) => d.inHours != 0
+String printDuration(Duration d) => d.inHours != 0
     ? d.toString().split('.').first.padLeft(8, "0")
     : d.toString().substring(2, 7);
 
 ///Convert seconds to a string representation of a duration
-formatSongTime(int seconds) {
+String formatSongTime(int seconds) {
   return printDuration(intToDuration(seconds));
 }
 
@@ -66,33 +66,16 @@ bool sameYear(DateTime d1, DateTime d2) {
   return d1.year == d2.year;
 }
 
-String tempa(Song s) {
-  print(s);
-  return s.iOSSongID;
+Uint8List getCoverArtFromSong(List<Artist> artists, Song song) {
+  final albums = artists
+      .firstWhere((element) => element.name == song.artistName, orElse: () {
+    print("Error finding ${song.artistName} while finding album art");
+    return null;
+  })?.albums;
+  var iconArt = albums
+      ?.firstWhere((element) => element.title == song.albumTitle, orElse: () {
+    print("Error finding ${song.albumTitle} while finding album art");
+    return null;
+  })?.coverArt;
+  return iconArt;
 }
-
-Song copySong(Song temp) => Song(
-      albumTitle: temp.albumTitle,
-      artistName: temp.artistName,
-      discNumber: temp.discNumber,
-      duration: temp.duration,
-      genre: temp.genre,
-      iOSSongID: temp.iOSSongID ?? tempa(temp),
-      isExplicit: temp.isExplicit,
-      playCount: temp.playCount,
-      releaseDate: temp.releaseDate,
-      title: temp.title,
-      trackNumber: temp.trackNumber,
-    );
-
-Album copyAlbum(Album temp) => Album(
-      albumTrackCount: temp.albumTrackCount,
-      artistName: temp.artistName,
-      coverArt: Uint8List.fromList([...temp.coverArt]),
-      discCount: temp.discCount,
-      songs: [...temp.songs],
-      title: temp.title,
-    );
-
-Artist copyArtist(Artist temp) =>
-    Artist(albums: [...temp.albums], name: temp.name);

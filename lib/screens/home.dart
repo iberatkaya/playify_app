@@ -5,6 +5,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
@@ -13,18 +14,18 @@ import 'package:playify_app/redux/actions/current_song/action.dart';
 import 'package:playify_app/redux/actions/music/action.dart';
 import 'package:playify_app/redux/actions/recent_played_songs/action.dart';
 import 'package:playify_app/redux/utility/utility.dart';
+import 'package:playify_app/screens/widgets/control_button/control_button.dart';
 import 'package:playify_app/screens/widgets/transition_background.dart';
 import 'package:playify_app/constant/animation_amount.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list.dart';
 import 'package:playify_app/screens/menu.dart';
-import 'package:playify_app/utilities/jsonify.dart';
+import 'package:playify_app/screens/widgets/volume_slider/volume_slider.dart';
+import 'package:playify_app/utilities/extensions.dart';
 import 'package:playify_app/utilities/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key key}) : super(key: key);
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -49,7 +50,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool playing = false;
 
   bool changing = false;
+  bool seeking = false;
+
   int currentTime = 0;
+  double volume = 0;
+  Shuffle shuffle = Shuffle.off;
+  Repeat repeat = Repeat.none;
 
   Timer timer;
 
@@ -118,6 +124,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           });
   }
 
+  Offset _tapPosition;
+
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+
   @override
   void setState(fn) {
     if (this.mounted) {
@@ -179,24 +191,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       setState(() {
         updatedLibrary = false;
       });
-      //final stopwatch = Stopwatch()..start();
       var prefs = await SharedPreferences.getInstance();
+
+      //Used to update the library on updates
+      var update = prefs.getBool("update4");
+
       var artistsJson = prefs.getString("artists");
       var playlistsJson = prefs.getString("playlists");
 
-      if (artistsJson == null) {
+      if (artistsJson == null || update == null) {
+        await prefs.setBool("update4", true);
         await updateLibrary();
+      } else {
+        List<dynamic> artistsMap = json.decode(artistsJson);
+        List<Artist> artists = List<Artist>.from(
+            artistsMap.map((e) => ArtistX.mapToArist(e)).toList());
+
+        List<dynamic> playlistsMap = json.decode(playlistsJson);
+        List<Playlist> playlists = List<Playlist>.from(
+            playlistsMap.map((e) => PlaylistX.mapToPlaylist(e)).toList());
+
+        store.dispatch(setMusicLibraryAction(artists, playlists));
       }
-      List<dynamic> artistsMap = json.decode(artistsJson);
-      List<Artist> artists =
-          List<Artist>.from(artistsMap.map((e) => mapToArist(e)).toList());
-
-      List<dynamic> playlistsMap = json.decode(playlistsJson);
-      List<Playlist> playlists = List<Playlist>.from(
-          playlistsMap.map((e) => mapToPlaylist(e)).toList());
-
-      store.dispatch(setMusicLibraryAction(artists, playlists));
-      //print('executed in ${stopwatch.elapsed.inMilliseconds}ms');
       setState(() {
         updatedLibrary = true;
       });
@@ -276,13 +292,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           if (changing) return;
           await fetchCurrentSong();
           var isplaying = await isPlaying();
-          Playify myplayify = Playify();
+          shuffle = await playify.getShuffleMode();
+          repeat = await playify.getRepeatMode();
           if (!changing) {
-            var res = await myplayify.getPlaybackTime();
+            var res = await playify.getPlaybackTime();
+            var myVolume = await playify.getVolume();
             setState(() {
               currentTime = res.truncate();
               playing = isplaying;
               _animationImageSize = (isplaying) ? 0.9 : 0.86;
+              volume = myVolume * 100;
             });
           }
         } catch (e) {
@@ -309,9 +328,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         });
         return;
       }
+      var res = await playify.nowPlaying(coverArtSize: 1);
+
       //Check if the song is not the same, if not request a new version with a high res cover
       //This is done in order to speed up the periodic timer
-      var res = await playify.nowPlaying(coverArtSize: 1);
       if (!isEqual(currentSong.song, res.song)) {
         int desiredWidth = (MediaQuery.of(context).size.width.toInt() < 800)
             ? MediaQuery.of(context).size.width.toInt()
@@ -405,60 +425,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     return StoreProvider(
       store: store,
-      child: Stack(
-        children: [
-          TransitionBackground(
-            opacity: animation,
-            color1: firstColor,
-            color2: secondColor,
-          ),
-
-          /// Top Container
-          Container(
-            height: _height * topBarContainerHeightRatio,
-            decoration: BoxDecoration(
-              color: Theme.of(context)
-                  .primaryColor, // The color should be checked!
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(25),
-                bottomRight: Radius.circular(25),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  offset: Offset(0, 3),
-                  blurRadius: 3,
-                  color: Colors.black26,
-                ),
-              ],
+      child: IgnorePointer(
+        ignoring: changing || seeking,
+        child: Stack(
+          children: [
+            TransitionBackground(
+              opacity: animation,
+              color1: firstColor,
+              color2: secondColor,
             ),
-            padding: EdgeInsets.only(top: _height * 0.05),
-            alignment: Alignment.topCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Playify",
-                  textScaleFactor: 1.5,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade100,
-                    fontWeight: FontWeight.w700,
+            Container(
+              height: _height * topBarContainerHeightRatio,
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .primaryColor, // The color should be checked!
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(25),
+                  bottomRight: Radius.circular(25),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(0, 3),
+                    blurRadius: 3,
+                    color: Colors.black26,
                   ),
-                ),
-              ],
+                ],
+              ),
+              padding: EdgeInsets.only(top: _height * 0.05),
+              alignment: Alignment.topCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Playify",
+                    textScaleFactor: 1.5,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey.shade100,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-
-          Container(
-            padding: EdgeInsets.only(top: (_height * spaceRatioPlayerAndTop)),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  child: Column(
-                    children: [
-                      IgnorePointer(
-                        ignoring: changing,
-                        child: SlideTransition(
+            SingleChildScrollView(
+              padding: EdgeInsets.only(top: (_height * spaceRatioPlayerAndTop)),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Column(
+                      children: [
+                        SlideTransition(
                           position: _animationOffsetLeft,
                           child: SlideTransition(
                             position: _animationOffsetRight,
@@ -555,52 +572,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         );
                                       } else if (details.primaryVelocity <
                                           -sensitivity) {
-                                        var artistContainedAlbums = artists
+                                        var myartist = artists
                                             .where((element) =>
-                                                element.name.contains(
-                                                    currentSong.artist.name) ||
-                                                currentSong.artist.name
-                                                    .contains(element.name))
-                                            .toList();
-                                        var myartist = copyArtist(
-                                            artistContainedAlbums
-                                                .where((element) =>
-                                                    element.name ==
-                                                    currentSong.artist.name)
-                                                .first);
-                                        myartist.albums = myartist.albums
-                                            .map((e) => copyAlbum(e))
-                                            .toList();
+                                                element.name ==
+                                                currentSong.artist.name)
+                                            .first
+                                            .copy();
 
-                                        artistContainedAlbums.forEach((artist) {
-                                          if (artist.name !=
-                                              currentSong.artist.name) {
-                                            artist.albums.forEach((album) {
-                                              bool alreadyExists = false;
-                                              myartist.albums.forEach(
-                                                  (alreadyExistingAlbum) {
-                                                if (alreadyExistingAlbum
-                                                        .title ==
-                                                    album.title) {
-                                                  alreadyExists = true;
-                                                  album.songs.forEach((song) {
-                                                    alreadyExistingAlbum.songs
-                                                        .add(song);
-                                                  });
-                                                }
-                                              });
-                                              if (!alreadyExists) {
-                                                myartist.albums.add(album);
-                                              }
-                                            });
-                                          }
-                                        });
-
-                                        print(artists
-                                            .where((element) => element.name
-                                                .contains(
-                                                    currentSong.artist.name))
-                                            .toList());
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (context) => ListScreen(
@@ -645,90 +623,66 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       });
                                     }
                                   },
-                                  child: Stack(children: [
-                                    if (currentSong != null)
-                                      AnimatedContainer(
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.rectangle,
-                                            image: currentSong.album.coverArt !=
-                                                    null
-                                                ? DecorationImage(
-                                                    image: Image.memory(
-                                                            currentSong
-                                                                .album.coverArt)
-                                                        .image)
-                                                : null,
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        duration: Duration(milliseconds: 150),
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                _animationImageSize,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                _animationImageSize,
-                                      )
-                                    else
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey[400],
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        height:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        alignment: Alignment.center,
-                                      ),
-                                    if (currentSong != null)
-                                      Positioned(
-                                          left: 10,
-                                          bottom: 35,
-                                          child: Container(
-                                            padding: EdgeInsets.all(4),
-                                            color: themeModeColor(
-                                                MediaQuery.of(context)
-                                                    .platformBrightness,
-                                                Colors.black),
-                                            child: Text(
-                                                currentSong != null
-                                                    ? substring(
-                                                        currentSong.song.title,
-                                                        25)
-                                                    : "",
-                                                style: TextStyle(
-                                                    color: themeModeColor(
-                                                        MediaQuery.of(context)
-                                                            .platformBrightness,
-                                                        Colors.white),
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 18)),
-                                          )),
-                                    if (currentSong != null)
-                                      Positioned(
-                                        left: 10,
-                                        bottom: 10,
-                                        child: Container(
-                                          padding: EdgeInsets.all(4),
-                                          color: themeModeColor(
-                                              MediaQuery.of(context)
-                                                  .platformBrightness,
-                                              Colors.black),
-                                          child: Column(
-                                            children: [
-                                              Text(
+                                  child: Stack(
+                                    children: [
+                                      if (currentSong != null)
+                                        AnimatedContainer(
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              image:
+                                                  currentSong.album.coverArt !=
+                                                          null
+                                                      ? DecorationImage(
+                                                          image: Image.memory(
+                                                                  currentSong
+                                                                      .album
+                                                                      .coverArt)
+                                                              .image)
+                                                      : null,
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          duration: Duration(milliseconds: 150),
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              _animationImageSize,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              _animationImageSize,
+                                        )
+                                      else
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey[400],
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          alignment: Alignment.center,
+                                        ),
+                                      if (currentSong != null)
+                                        Positioned(
+                                            left: 10,
+                                            bottom: 35,
+                                            child: Container(
+                                              padding: EdgeInsets.all(4),
+                                              color: themeModeColor(
+                                                  MediaQuery.of(context)
+                                                      .platformBrightness,
+                                                  Colors.black),
+                                              child: Text(
                                                   currentSong != null
                                                       ? substring(
-                                                              currentSong
-                                                                  .album.title,
-                                                              25) +
-                                                          " - " +
-                                                          substring(
-                                                              currentSong
-                                                                  .artist.name,
-                                                              25)
+                                                          currentSong
+                                                              .song.title,
+                                                          25)
                                                       : "",
                                                   style: TextStyle(
                                                       color: themeModeColor(
@@ -736,25 +690,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                               .platformBrightness,
                                                           Colors.white),
                                                       fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 12)),
-                                            ],
+                                                          FontWeight.w700,
+                                                      fontSize: 18)),
+                                            )),
+                                      if (currentSong != null)
+                                        Positioned(
+                                          left: 10,
+                                          bottom: 10,
+                                          child: Container(
+                                            padding: EdgeInsets.all(4),
+                                            color: themeModeColor(
+                                                MediaQuery.of(context)
+                                                    .platformBrightness,
+                                                Colors.black),
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                    currentSong != null
+                                                        ? substring(
+                                                                currentSong
+                                                                    .album
+                                                                    .title,
+                                                                25) +
+                                                            " - " +
+                                                            substring(
+                                                                currentSong
+                                                                    .artist
+                                                                    .name,
+                                                                25)
+                                                        : "",
+                                                    style: TextStyle(
+                                                        color: themeModeColor(
+                                                            MediaQuery.of(
+                                                                    context)
+                                                                .platformBrightness,
+                                                            Colors.white),
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 12)),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                  ]),
+                                    ],
+                                  ),
                                 );
                               },
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  child: IgnorePointer(
-                    ignoring: currentSong == null || changing,
+                  Container(
                     child: Row(
                       children: [
                         Expanded(
@@ -804,9 +792,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               try {
                                 setState(() {
                                   changing = true;
+                                  //Set the selected time
                                   currentTime = val.toInt();
                                 });
-                                //Set the selected time
                               } catch (e) {
                                 print(e);
                               }
@@ -829,15 +817,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                ),
-                Container(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: IgnorePointer(
-                          ignoring: changing,
-                          child: GestureDetector(
+                  Container(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: ControlButton(
+                            onLongPressStart: (e) async {
+                              try {
+                                setState(() {
+                                  seeking = true;
+                                });
+                                await playify.seekBackward();
+                              } catch (e) {
+                                print(e);
+                                setState(() {
+                                  seeking = false;
+                                });
+                              }
+                            },
+                            onLongPressEnd: (e) async {
+                              try {
+                                await playify.endSeeking();
+                                setState(() {
+                                  seeking = false;
+                                });
+                              } catch (e) {
+                                print(e);
+                                setState(() {
+                                  seeking = false;
+                                });
+                              }
+                            },
                             onTap: () async {
                               try {
                                 setState(() {
@@ -853,25 +864,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 print(e);
                               }
                             },
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: themeModeColor(
-                                        MediaQuery.of(context)
-                                            .platformBrightness,
-                                        Colors.blue[100]),
-                                    shape: BoxShape.circle),
-                                padding: EdgeInsets.fromLTRB(12, 16, 16, 16),
-                                child: Icon(
-                                  Icons.arrow_back_ios,
-                                )),
+                            padding: EdgeInsets.fromLTRB(24, 16, 16, 16),
+                            icon: Icon(Icons.arrow_back_ios),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: IgnorePointer(
-                          ignoring: changing,
-                          child: GestureDetector(
+                        Expanded(
+                          flex: 1,
+                          child: ControlButton(
                             onTap: () async {
                               try {
                                 setState(() {
@@ -893,24 +892,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 });
                               }
                             },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: themeModeColor(
-                                      MediaQuery.of(context).platformBrightness,
-                                      Colors.blue[100]),
-                                  shape: BoxShape.circle),
-                              padding: EdgeInsets.all(16),
-                              child: Icon(
-                                  !playing ? Icons.play_arrow : Icons.pause),
-                            ),
+                            padding: EdgeInsets.fromLTRB(14, 16, 16, 16),
+                            icon:
+                                Icon(!playing ? Icons.play_arrow : Icons.pause),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: IgnorePointer(
-                          ignoring: changing,
-                          child: GestureDetector(
+                        Expanded(
+                          flex: 3,
+                          child: ControlButton(
+                            onLongPressStart: (e) async {
+                              try {
+                                setState(() {
+                                  seeking = true;
+                                });
+                                await playify.seekForward();
+                              } catch (e) {
+                                print(e);
+                                setState(() {
+                                  seeking = false;
+                                });
+                              }
+                            },
+                            onLongPressEnd: (e) async {
+                              try {
+                                await playify.endSeeking();
+                                setState(() {
+                                  seeking = false;
+                                });
+                              } catch (e) {
+                                print(e);
+                                setState(() {
+                                  seeking = false;
+                                });
+                              }
+                            },
                             onTap: () async {
                               try {
                                 setState(() {
@@ -926,25 +941,187 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 print(e);
                               }
                             },
+                            padding: EdgeInsets.fromLTRB(24, 16, 16, 16),
+                            icon: Icon(Icons.arrow_forward_ios),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 24),
+                    child: Row(
+                      children: [
+                        Spacer(),
+                        Expanded(
+                          flex: 3,
+                          child: GestureDetector(
+                            onTapDown: _storePosition,
+                            onTap: () async {
+                              final RenderBox overlay = Overlay.of(context)
+                                  .context
+                                  .findRenderObject();
+
+                              await showMenu(
+                                context: context,
+                                items: <PopupMenuEntry>[
+                                  SliderEntry(
+                                    defaultVolume: volume,
+                                  ),
+                                ],
+                                position: RelativeRect.fromRect(
+                                    _tapPosition & const Size(0, 0),
+                                    Offset.zero & overlay.size),
+                              );
+                            },
                             child: Container(
                               decoration: BoxDecoration(
                                   color: themeModeColor(
                                       MediaQuery.of(context).platformBrightness,
                                       Colors.blue[100]),
-                                  shape: BoxShape.circle),
-                              padding: EdgeInsets.fromLTRB(16, 16, 12, 16),
-                              child: Icon(Icons.arrow_forward_ios),
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 3),
+                                    child: Text("Volume"),
+                                  ),
+                                  Divider(
+                                    height: 1,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 16),
+                                    alignment: Alignment.bottomCenter,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.volume_up, size: 16),
+                                        Text(
+                                          volume.toStringAsFixed(0) + "%",
+                                          style: TextStyle(fontSize: 12),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        Spacer(),
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: themeModeColor(
+                                  MediaQuery.of(context).platformBrightness,
+                                  Colors.blue[100]),
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 3),
+                                  child: Text("Shuffle"),
+                                ),
+                                Divider(
+                                  height: 1,
+                                ),
+                                DropdownButton<Shuffle>(
+                                  icon: Icon(Icons.shuffle, size: 16),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: themeModeColor(
+                                          MediaQuery.of(context)
+                                              .platformBrightness,
+                                          Colors.black)),
+                                  underline: Container(),
+                                  items: <Shuffle>[...Shuffle.values]
+                                      .map((Shuffle value) {
+                                    return DropdownMenuItem<Shuffle>(
+                                      value: value,
+                                      child: Text(value.getValue()),
+                                    );
+                                  }).toList(),
+                                  value: shuffle,
+                                  onChanged: (val) async {
+                                    try {
+                                      setState(() {
+                                        shuffle = val;
+                                      });
+                                      await playify.setShuffleMode(val);
+                                    } catch (e) {
+                                      print(e);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: themeModeColor(
+                                  MediaQuery.of(context).platformBrightness,
+                                  Colors.blue[100]),
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 3),
+                                  child: Text("Repeat"),
+                                ),
+                                Divider(
+                                  height: 1,
+                                ),
+                                DropdownButton<Repeat>(
+                                  icon: Icon(Icons.repeat, size: 16),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: themeModeColor(
+                                          MediaQuery.of(context)
+                                              .platformBrightness,
+                                          Colors.black)),
+                                  underline: Container(),
+                                  items: <Repeat>[...Repeat.values]
+                                      .map((Repeat value) {
+                                    return DropdownMenuItem<Repeat>(
+                                      value: value,
+                                      child: Text(value.getValue()),
+                                    );
+                                  }).toList(),
+                                  value: repeat,
+                                  onChanged: (val) async {
+                                    try {
+                                      setState(() {
+                                        repeat = val;
+                                      });
+                                      await playify.setRepeatMode(val);
+                                    } catch (e) {
+                                      print(e);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

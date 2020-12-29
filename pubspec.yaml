@@ -28,7 +28,7 @@ dependencies:
   playify:
     git:
       url: https://github.com/iberatkaya/playify.git
-      ref: dev
+      ref: playlists
   font_awesome_flutter: ^8.8.1
   flutter_redux: ^0.6.0
   redux: ^4.0.0+3
@@ -38,6 +38,7 @@ dependencies:
   app_settings: ^4.0.3
   palette_generator: ^0.2.3
   introduction_screen: ^1.0.9
+  flutter_xlider: ^3.4.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

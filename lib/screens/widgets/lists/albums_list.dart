@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
-import 'package:playify_app/utilities/utils.dart';
+import 'package:playify_app/utilities/extensions.dart';
 
 import '../../list.dart';
 import '../grid_item_tile.dart';
@@ -27,12 +27,12 @@ class _AlbumsListState extends State<AlbumsList> {
               albums[k].albumTrackCount ==
                   widget.artists[i].albums[j].albumTrackCount) {
             widget.artists[i].albums[j].songs.forEach((element) {
-              albums[k].songs.add(copySong(element));
+              albums[k].songs.add(element.copy());
             });
             albumExists = true;
           }
         }
-        if (!albumExists) albums.add(copyAlbum(widget.artists[i].albums[j]));
+        if (!albumExists) albums.add(widget.artists[i].albums[j].copy());
       }
     }
     setState(() {
@@ -59,7 +59,6 @@ class _AlbumsListState extends State<AlbumsList> {
             icon: albums[index].coverArt != null
                 ? Image.memory(albums[index].coverArt)
                 : null,
-            brightness: MediaQuery.of(context).platformBrightness,
             fn: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => ListScreen(

@@ -28,7 +28,6 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 padding: EdgeInsets.only(top: 4),
                 addLeadingSpace: true,
-                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
@@ -42,7 +41,6 @@ class _MenuPageState extends State<MenuPage> {
                   size: 24,
                 ),
                 addLeadingSpace: true,
-                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
@@ -56,11 +54,10 @@ class _MenuPageState extends State<MenuPage> {
                   size: 24,
                 ),
                 addLeadingSpace: true,
-                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
-                          ListScreen(listType: MusicListType.songs)));
+                          ListScreen(listType: MusicListType.allSongs)));
                 }),
             Divider(),
             ItemTile(
@@ -70,7 +67,6 @@ class _MenuPageState extends State<MenuPage> {
                   size: 24,
                 ),
                 addLeadingSpace: true,
-                brightness: MediaQuery.of(context).platformBrightness,
                 fn: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => ListScreen(
