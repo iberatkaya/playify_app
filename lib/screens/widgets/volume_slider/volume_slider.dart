@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:playify/playify.dart';
+import 'package:playify_app/utilities/utils.dart';
 
 class SliderEntry extends PopupMenuEntry {
   final double defaultVolume;
@@ -54,7 +55,8 @@ class SliderEntryState extends State<SliderEntry> {
         max: 100,
         tooltip: FlutterSliderTooltip(
             custom: (val) => Container(
-                color: Colors.white,
+                color: themeModeColor(
+                    MediaQuery.of(context).platformBrightness, Colors.white),
                 padding: EdgeInsets.all(8),
                 child: Text(
                   (val as double).toStringAsFixed(0) + "%",

@@ -469,6 +469,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
             SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.only(top: (_height * spaceRatioPlayerAndTop)),
               child: Column(
                 children: <Widget>[

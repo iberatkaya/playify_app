@@ -156,8 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ),
                             ),
                             Container(
-                              alignment: Alignment.topRight,
-                              margin: EdgeInsets.only(right: 15),
+                              alignment: Alignment.center,
                               padding: const EdgeInsets.all(5.0),
                               child: Opacity(
                                 opacity: 0.54,
@@ -217,6 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .where((element) =>
                                           element.title == songInfo.albumName)
                                       .toList()[0];
+
                                   return GridItemTile(
                                     title: album.title,
                                     subtitle: songInfo.songName,
