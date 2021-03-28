@@ -7,13 +7,13 @@ import '../item_tile.dart';
 class ArtistsList extends StatefulWidget {
   final List<Artist> artists;
 
-  const ArtistsList({@required this.artists});
+  const ArtistsList({required this.artists});
   @override
   _ArtistsListState createState() => _ArtistsListState();
 }
 
 class _ArtistsListState extends State<ArtistsList> {
-  List<Artist> sortedArtists;
+  late List<Artist> sortedArtists;
   @override
   void initState() {
     super.initState();
@@ -41,7 +41,7 @@ class _ArtistsListState extends State<ArtistsList> {
                     ? " Album"
                     : " Albums"),
             icon: sortedArtists[index].albums[0].coverArt != null
-                ? Image.memory(sortedArtists[index].albums[0].coverArt)
+                ? Image.memory(sortedArtists[index].albums[0].coverArt!)
                 : null,
             fn: () => Navigator.of(context).push(
               MaterialPageRoute(

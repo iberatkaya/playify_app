@@ -6,8 +6,9 @@ import 'package:playify_app/screens/widgets/item_tile.dart';
 class PlaylistsList extends StatelessWidget {
   final List<Playlist> playlists;
   const PlaylistsList({
-    this.playlists,
+    required this.playlists,
   });
+
   @override
   Widget build(BuildContext context) {
     return ListView.separated(

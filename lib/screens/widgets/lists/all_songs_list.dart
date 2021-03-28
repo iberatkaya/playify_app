@@ -9,7 +9,7 @@ import '../item_tile.dart';
 class AllSongsList extends StatefulWidget {
   final List<Artist> artists;
   const AllSongsList({
-    @required this.artists,
+    required this.artists,
   });
   @override
   _AllSongsListState createState() => _AllSongsListState();

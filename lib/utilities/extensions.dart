@@ -71,7 +71,7 @@ extension AlbumX on Album {
   Album copy() => Album(
         albumTrackCount: albumTrackCount,
         artistName: artistName,
-        coverArt: Uint8List.fromList([...coverArt]),
+        coverArt: coverArt != null ? Uint8List.fromList([...coverArt!]) : null,
         discCount: discCount,
         songs: songs.map((i) => i.copy()).toList(),
         title: title,

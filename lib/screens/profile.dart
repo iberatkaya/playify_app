@@ -17,8 +17,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  Animation animation; // Fading Animation
-  AnimationController animationController; // Fading Animation Controller
+  late Animation<double> animation; // Fading Animation
+  late AnimationController animationController; // Fading Animation Controller
 
   @override
   void initState() {
@@ -62,8 +62,8 @@ class _ProfileScreenState extends State<ProfileScreen>
               children: <Widget>[
                 TransitionBackground(
                   opacity: animation,
-                  color1: Colors.indigo[400],
-                  color2: Colors.deepPurple[400],
+                  color1: Colors.indigo.shade400,
+                  color2: Colors.deepPurple.shade400,
                 ),
 
                 ///All Profile UI
@@ -100,8 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                           height: height * 0.35,
                           margin: EdgeInsets.only(top: 25),
                           child: Container(
-                            child: favAlbum != null
-                                ? Image.memory(favAlbum.coverArt)
+                            child: favAlbum != null && favAlbum.coverArt != null
+                                ? Image.memory(favAlbum.coverArt!)
                                 : CircleAvatar(
                                     child: Text(favAlbum != null
                                         ? favAlbum.title
@@ -221,7 +221,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     title: album.title,
                                     subtitle: songInfo.songName,
                                     icon: album.coverArt != null
-                                        ? Image.memory(album.coverArt)
+                                        ? Image.memory(album.coverArt!)
                                         : null,
                                     fn: () => Navigator.of(context).push(
                                       MaterialPageRoute(

@@ -11,7 +11,7 @@ import '../item_tile.dart';
 class SongsList extends StatefulWidget {
   final List<Song> songs;
   const SongsList({
-    @required this.songs,
+    required this.songs,
   });
   @override
   _SongsListState createState() => _SongsListState();

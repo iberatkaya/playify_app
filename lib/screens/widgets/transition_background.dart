@@ -5,7 +5,8 @@ class TransitionBackground extends StatefulWidget {
   final Color color1;
   final Color color2;
 
-  TransitionBackground({@required this.opacity, @required this.color1, @required this.color2});
+  TransitionBackground(
+      {required this.opacity, required this.color1, required this.color2});
 
   @override
   _TransitionBackgroundState createState() => _TransitionBackgroundState();

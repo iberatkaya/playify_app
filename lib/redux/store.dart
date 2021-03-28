@@ -17,14 +17,14 @@ class AppState {
   List<Artist> artists;
   List<Playlist> playlists;
   Settings settings;
-  Song currentSong;
+  Song? currentSong;
   List<RecentPlayedSong> recentPlayedSongs;
   AppState(
-      {@required this.artists,
-      @required this.playlists,
-      @required this.settings,
-      @required this.recentPlayedSongs,
-      @required this.currentSong});
+      {required this.artists,
+      required this.playlists,
+      required this.settings,
+      required this.recentPlayedSongs,
+      required this.currentSong});
 
   static copy(AppState appstate) {
     return AppState(

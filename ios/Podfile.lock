@@ -2,9 +2,7 @@ PODS:
   - "app_settings (3.0.0+1)":
     - Flutter
   - Flutter (1.0.0)
-  - flutter_statusbarcolor (0.0.1):
-    - Flutter
-  - "permission_handler (5.0.1+1)":
+  - "permission_handler (5.1.0+2)":
     - Flutter
   - playify (0.0.1):
     - Flutter
@@ -14,7 +12,6 @@ PODS:
 DEPENDENCIES:
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - Flutter (from `Flutter`)
-  - flutter_statusbarcolor (from `.symlinks/plugins/flutter_statusbarcolor/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - playify (from `.symlinks/plugins/playify/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
@@ -24,8 +21,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_settings/ios"
   Flutter:
     :path: Flutter
-  flutter_statusbarcolor:
-    :path: ".symlinks/plugins/flutter_statusbarcolor/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
   playify:
@@ -35,9 +30,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_settings: d103828c9f5d515c4df9ee754dabd443f7cedcf3
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
-  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   playify: 011a349ff3652284046a563c0866e0bed7751ca8
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
 

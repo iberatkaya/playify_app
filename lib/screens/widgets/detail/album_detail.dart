@@ -15,10 +15,10 @@ class AlbumDetail extends StatefulWidget {
   final bool fetchAllAlbumSongs;
 
   AlbumDetail({
-    @required this.album,
-    @required this.color,
-    @required this.fetchAllAlbumSongs,
-    @required this.artists,
+    required this.album,
+    required this.color,
+    required this.fetchAllAlbumSongs,
+    required this.artists,
   });
 
   @override
@@ -70,8 +70,11 @@ class _AlbumDetailState extends State<AlbumDetail> {
               onPressed: () async {
                 try {
                   var playify = Playify();
+                  final songIDs = songs.map((e) => e.iOSSongID).toList();
+
                   await playify.setQueue(
-                    songIDs: songs.map((e) => e.iOSSongID).toList(),
+                    songIDs: songIDs,
+                    startID: songIDs.first,
                     startPlaying: true,
                   );
                   updateRecentSongs(songs[0]);
@@ -134,7 +137,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
                         fontSize: 9,
                         color: themeModeColor(
                           MediaQuery.of(context).platformBrightness,
-                          Colors.grey[500],
+                          Colors.grey.shade500,
                         ),
                       ),
                     ),
@@ -143,7 +146,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
             ),
             centerTitle: true,
             background: widget.album.coverArt != null
-                ? Image.memory(widget.album.coverArt)
+                ? Image.memory(widget.album.coverArt!)
                 : AspectRatio(
                     aspectRatio: 1,
                     child: Container(

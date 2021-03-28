@@ -5,7 +5,6 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
@@ -32,18 +31,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   double _animationImageSize = 0.9;
-  AnimationController _controllerRight;
-  AnimationController _controllerLeft;
-  Animation<Offset> _animationOffsetRight;
-  Animation<Offset> _animationOffsetLeft;
-  Animation animation; // Fading Animation
-  AnimationController animationController; // Fading Animation Controller
-  PermissionStatus permissionStatus = PermissionStatus.undetermined;
+  late AnimationController _controllerRight;
+  late AnimationController _controllerLeft;
+  late Animation<Offset> _animationOffsetRight;
+  late Animation<Offset> _animationOffsetLeft;
+  late Animation<double> animation; // Fading Animation
+  late AnimationController animationController; // Fading Animation Controller
+  PermissionStatus? permissionStatus;
   bool updatedLibrary = false;
-  Color firstColor = Colors.indigo[400];
-  Color secondColor = Colors.deepPurple[400];
+  Color firstColor = Colors.indigo.shade400;
+  Color secondColor = Colors.deepPurple.shade400;
 
-  SongInformation currentSong;
+  SongInformation? currentSong;
 
   Playify playify = Playify();
 
@@ -57,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Shuffle shuffle = Shuffle.off;
   Repeat repeat = Repeat.none;
 
-  Timer timer;
+  Timer? timer;
 
   double spaceRatioPlayerAndTop = 0.12;
   double topBarContainerHeightRatio = 0.16;
@@ -124,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           });
   }
 
-  Offset _tapPosition;
+  Offset? _tapPosition;
 
   void _storePosition(TapDownDetails details) {
     _tapPosition = details.globalPosition;
@@ -148,9 +147,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> updateBackgroundColor() async {
     try {
-      if (currentSong == null) return;
+      if (currentSong == null && currentSong!.album.coverArt != null) return;
       var paletteGenerator = await PaletteGenerator.fromImageProvider(
-        Image.memory(currentSong.album.coverArt).image,
+        Image.memory(currentSong!.album.coverArt!).image,
         maximumColorCount: 5,
       );
       if (paletteGenerator.colors.toList().length > 0) {
@@ -194,12 +193,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       var prefs = await SharedPreferences.getInstance();
 
       //Used to update the library on updates
-      var update = prefs.getBool("update4");
+      var update = prefs.getBool("update4") ?? false;
 
       var artistsJson = prefs.getString("artists");
       var playlistsJson = prefs.getString("playlists");
 
-      if (artistsJson == null || update == null) {
+      if (artistsJson == null || playlistsJson == null || update) {
         await prefs.setBool("update4", true);
         await updateLibrary();
       } else {
@@ -247,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> getRecentSongs() async {
     var prefs = await SharedPreferences.getInstance();
     List<String> recentlist = prefs.getStringList("recentPlayed") != null
-        ? prefs.getStringList("recentPlayed")
+        ? prefs.getStringList("recentPlayed")!
         : [];
     List<RecentPlayedSong> recentSongs = [];
     recentlist.forEach(
@@ -301,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               currentTime = res.truncate();
               playing = isplaying;
               _animationImageSize = (isplaying) ? 0.9 : 0.86;
-              volume = myVolume * 100;
+              if (myVolume != null) volume = myVolume * 100;
             });
           }
         } catch (e) {
@@ -330,15 +329,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
       var res = await playify.nowPlaying(coverArtSize: 1);
 
-      //Check if the song is not the same, if not request a new version with a high res cover
-      //This is done in order to speed up the periodic timer
-      if (!isEqual(currentSong.song, res.song)) {
+      if (res == null) {
+        return;
+      }
+
+      //Check if the song is not the same, if not request a new version with a high res cover.
+      //This is done in order to speed up the periodic timer.
+      if (!isEqual(currentSong!.song, res.song)) {
         int desiredWidth = (MediaQuery.of(context).size.width.toInt() < 800)
             ? MediaQuery.of(context).size.width.toInt()
             : 800;
 
         res = await playify.nowPlaying(coverArtSize: desiredWidth);
+
+        if (res == null) {
+          return;
+        }
         store.dispatch(setCurrentSongAction(res.song));
+
         setState(() {
           currentSong = res;
           updateBackgroundColor();
@@ -367,14 +375,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final _height = MediaQuery.of(context).size.height;
 
-    if (permissionStatus == PermissionStatus.undetermined) {
+    if (permissionStatus == null) {
       return Container(
         child: Stack(
           children: [
             TransitionBackground(
               opacity: animation,
-              color1: Colors.indigo[400],
-              color2: Colors.deepPurple[400],
+              color1: Colors.indigo.shade400,
+              color2: Colors.deepPurple.shade400,
             ),
           ],
         ),
@@ -385,8 +393,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: [
             TransitionBackground(
               opacity: animation,
-              color1: Colors.indigo[400],
-              color2: Colors.deepPurple[400],
+              color1: Colors.indigo.shade400,
+              color2: Colors.deepPurple.shade400,
             ),
             Positioned.fill(
               child: Container(
@@ -514,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 color: Colors.black),
                                             title: Container(
                                               child: Text(
-                                                currentSong.song.title,
+                                                currentSong?.song.title ?? "",
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     color: Colors.black),
@@ -527,13 +535,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               children: [
                                                 Text(
                                                   "Album: " +
-                                                      currentSong.album.title,
+                                                      (currentSong
+                                                              ?.album.title ??
+                                                          ""),
                                                   style: TextStyle(
                                                       color: Colors.black),
                                                 ),
                                                 Text(
                                                   "Artist: " +
-                                                      currentSong.artist.name,
+                                                      (currentSong
+                                                              ?.artist.name ??
+                                                          ""),
                                                   style: TextStyle(
                                                       color: Colors.black),
                                                 ),
@@ -544,23 +556,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   },
                                   onVerticalDragEnd: (details) async {
                                     try {
+                                      if (details.primaryVelocity == null)
+                                        return;
                                       if (currentSong == null) return;
                                       setState(() {
                                         changing = true;
                                       });
                                       const int sensitivity = 300;
-                                      if (details.primaryVelocity >
+                                      if (details.primaryVelocity! >
                                           sensitivity) {
                                         var myalbum = artists
                                             .where((element) =>
                                                 element.name ==
-                                                currentSong.artist.name)
+                                                currentSong!.artist.name)
                                             .toList()
                                             .first
                                             .albums
                                             .where((element) =>
                                                 element.title ==
-                                                currentSong.album.title)
+                                                currentSong!.album.title)
                                             .toList()
                                             .first;
                                         Navigator.of(context).push(
@@ -571,12 +585,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 fetchAllAlbumSongs: true),
                                           ),
                                         );
-                                      } else if (details.primaryVelocity <
+                                      } else if (details.primaryVelocity! <
                                           -sensitivity) {
                                         var myartist = artists
                                             .where((element) =>
                                                 element.name ==
-                                                currentSong.artist.name)
+                                                currentSong!.artist.name)
                                             .first
                                             .copy();
 
@@ -601,15 +615,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   },
                                   onHorizontalDragEnd: (details) async {
                                     try {
+                                      if (details.primaryVelocity == null)
+                                        return;
                                       setState(() {
                                         changing = true;
                                       });
                                       const int sensitivity = 300;
-                                      if (details.primaryVelocity >
+                                      if (details.primaryVelocity! >
                                           sensitivity) {
                                         _controllerRight.forward();
                                         await playify.previous();
-                                      } else if (details.primaryVelocity <
+                                      } else if (details.primaryVelocity! <
                                           -sensitivity) {
                                         _controllerLeft.forward();
                                         await playify.next();
@@ -630,16 +646,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         AnimatedContainer(
                                           decoration: BoxDecoration(
                                               shape: BoxShape.rectangle,
-                                              image:
-                                                  currentSong.album.coverArt !=
-                                                          null
-                                                      ? DecorationImage(
-                                                          image: Image.memory(
-                                                                  currentSong
-                                                                      .album
-                                                                      .coverArt)
-                                                              .image)
-                                                      : null,
+                                              image: currentSong!
+                                                          .album.coverArt !=
+                                                      null
+                                                  ? DecorationImage(
+                                                      image: Image.memory(
+                                                              currentSong!.album
+                                                                  .coverArt!)
+                                                          .image)
+                                                  : null,
                                               borderRadius:
                                                   BorderRadius.circular(8)),
                                           duration: Duration(milliseconds: 150),
@@ -655,7 +670,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       else
                                         Container(
                                           decoration: BoxDecoration(
-                                              color: Colors.grey[400],
+                                              color: Colors.grey.shade400,
                                               borderRadius:
                                                   BorderRadius.circular(8)),
                                           height: MediaQuery.of(context)
@@ -681,7 +696,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               child: Text(
                                                   currentSong != null
                                                       ? substring(
-                                                          currentSong
+                                                          currentSong!
                                                               .song.title,
                                                           25)
                                                       : "",
@@ -709,13 +724,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 Text(
                                                     currentSong != null
                                                         ? substring(
-                                                                currentSong
+                                                                currentSong!
                                                                     .album
                                                                     .title,
                                                                 25) +
                                                             " - " +
                                                             substring(
-                                                                currentSong
+                                                                currentSong!
                                                                     .artist
                                                                     .name,
                                                                 25)
@@ -761,24 +776,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: Slider(
                             label: formatSongTime(currentTime),
                             divisions: currentSong != null
-                                ? currentSong.song.duration.toInt()
+                                ? currentSong!.song.duration.toInt()
                                 : 100,
                             value: (currentSong != null)
                                 ? ((currentTime.toDouble() <
-                                        currentSong.song.duration)
+                                        currentSong!.song.duration)
                                     ? currentTime.toDouble()
                                     : 0)
                                 : 0,
                             min: 0,
                             activeColor: Theme.of(context).primaryColor,
                             max: currentSong != null
-                                ? currentSong.song.duration
+                                ? currentSong!.song.duration
                                 : 99,
                             onChangeStart: (val) {
                               setState(() {
                                 //While changing, cancel the timer so that the time doesn't jump while or right after changing the time
                                 changing = true;
-                                timer.cancel();
+                                timer?.cancel();
                               });
                             },
                             onChangeEnd: (val) async {
@@ -809,7 +824,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             child: Text(
                               currentSong != null
                                   ? formatSongTime(
-                                      currentSong.song.duration.truncate())
+                                      currentSong!.song.duration.truncate())
                                   : "00:00",
                               style: TextStyle(fontWeight: FontWeight.w500),
                             ),
@@ -959,27 +974,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           child: GestureDetector(
                             onTapDown: _storePosition,
                             onTap: () async {
-                              final RenderBox overlay = Overlay.of(context)
-                                  .context
+                              final overlay = Overlay.of(context)
+                                  ?.context
                                   .findRenderObject();
 
-                              await showMenu(
-                                context: context,
-                                items: <PopupMenuEntry>[
-                                  SliderEntry(
-                                    defaultVolume: volume,
-                                  ),
-                                ],
-                                position: RelativeRect.fromRect(
-                                    _tapPosition & const Size(0, 0),
-                                    Offset.zero & overlay.size),
-                              );
+                              if (overlay != null && _tapPosition != null) {
+                                await showMenu(
+                                  context: context,
+                                  items: <PopupMenuEntry>[
+                                    SliderEntry(
+                                      defaultVolume: volume,
+                                    ),
+                                  ],
+                                  position: RelativeRect.fromRect(
+                                      _tapPosition! & const Size(0, 0),
+                                      Offset.zero & overlay.paintBounds.size),
+                                );
+                              }
                             },
                             child: Container(
                               decoration: BoxDecoration(
                                   color: themeModeColor(
                                       MediaQuery.of(context).platformBrightness,
-                                      Colors.blue[100]),
+                                      Colors.blue.shade100),
                                   borderRadius: BorderRadius.circular(8)),
                               child: Column(
                                 children: [
@@ -1019,7 +1036,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               borderRadius: BorderRadius.circular(8),
                               color: themeModeColor(
                                   MediaQuery.of(context).platformBrightness,
-                                  Colors.blue[100]),
+                                  Colors.blue.shade100),
                             ),
                             child: Column(
                               children: [
@@ -1048,13 +1065,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   }).toList(),
                                   value: shuffle,
                                   onChanged: (val) async {
-                                    try {
-                                      setState(() {
-                                        shuffle = val;
-                                      });
-                                      await playify.setShuffleMode(val);
-                                    } catch (e) {
-                                      print(e);
+                                    if (val != null) {
+                                      try {
+                                        setState(() {
+                                          shuffle = val;
+                                        });
+                                        await playify.setShuffleMode(val);
+                                      } catch (e) {
+                                        print(e);
+                                      }
                                     }
                                   },
                                 ),
@@ -1071,7 +1090,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               borderRadius: BorderRadius.circular(8),
                               color: themeModeColor(
                                   MediaQuery.of(context).platformBrightness,
-                                  Colors.blue[100]),
+                                  Colors.blue.shade100),
                             ),
                             child: Column(
                               children: [
@@ -1100,13 +1119,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   }).toList(),
                                   value: repeat,
                                   onChanged: (val) async {
-                                    try {
-                                      setState(() {
-                                        repeat = val;
-                                      });
-                                      await playify.setRepeatMode(val);
-                                    } catch (e) {
-                                      print(e);
+                                    if (val != null) {
+                                      try {
+                                        setState(() {
+                                          repeat = val;
+                                        });
+                                        await playify.setRepeatMode(val);
+                                      } catch (e) {
+                                        print(e);
+                                      }
                                     }
                                   },
                                 ),

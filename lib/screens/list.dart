@@ -26,22 +26,22 @@ class ListScreen extends StatefulWidget {
   final MusicListType listType;
 
   ///Use if an album's content will be displayed.
-  final Album album;
+  final Album? album;
 
   ///Use if an artist's content will be displayed.
-  final Artist artist;
+  final Artist? artist;
 
   ///Use if a playlist's content will be displayed.
-  final List<Playlist> playlists;
+  final List<Playlist>? playlists;
 
   ///Use if a playlist will be displayed.
-  final Playlist playlist;
+  final Playlist? playlist;
 
   ///Use if all songs of the album will be fetched.
   final bool fetchAllAlbumSongs;
 
   const ListScreen({
-    @required this.listType,
+    required this.listType,
     this.album,
     this.artist,
     this.playlists,
@@ -53,7 +53,7 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
-  Color color = Colors.grey[50];
+  Color color = Colors.grey.shade50;
 
   int boundTo0and255(int val) {
     if (val > 255)
@@ -66,33 +66,36 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> updateBackgroundColor() async {
     try {
-      var paletteGenerator = await PaletteGenerator.fromImageProvider(
-        Image.memory(widget.album.coverArt).image,
-        maximumColorCount: 5,
-      );
-      if (paletteGenerator.colors.toList().length > 0) {
-        Color tempColor = paletteGenerator.colors.toList()[0];
-        var rnd = Random();
-        const randomness = 8;
-        Color newColor = Color.fromRGBO(
-          boundTo0and255(tempColor.red +
-              rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
-          boundTo0and255(tempColor.green +
-              rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
-          boundTo0and255(tempColor.blue +
-              rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
-          0.5,
+      final coverArt = widget.album?.coverArt;
+      if (coverArt != null) {
+        var paletteGenerator = await PaletteGenerator.fromImageProvider(
+          Image.memory(coverArt).image,
+          maximumColorCount: 5,
         );
-        setState(() {
-          color = newColor;
-        });
+        if (paletteGenerator.colors.toList().length > 0) {
+          Color tempColor = paletteGenerator.colors.toList()[0];
+          var rnd = Random();
+          const randomness = 8;
+          Color newColor = Color.fromRGBO(
+            boundTo0and255(tempColor.red +
+                rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+            boundTo0and255(tempColor.green +
+                rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+            boundTo0and255(tempColor.blue +
+                rnd.nextInt(randomness) * (rnd.nextBool() ? 1 : -1)),
+            0.5,
+          );
+          setState(() {
+            color = newColor;
+          });
+        }
       }
     } catch (e) {
       print(e);
     }
   }
 
-  String listTypeTitle() {
+  String? listTypeTitle() {
     if (widget.listType == MusicListType.albums) {
       return "Albums";
     } else if (widget.listType == MusicListType.artists) {
@@ -100,15 +103,13 @@ class _ListScreenState extends State<ListScreen> {
     } else if (widget.listType == MusicListType.allSongs) {
       return "Songs";
     } else if (widget.listType == MusicListType.playlist) {
-      return widget.playlist.title;
+      return widget.playlist?.title;
     } else if (widget.listType == MusicListType.album) {
-      return widget.album.title;
+      return widget.album?.title;
     } else if (widget.listType == MusicListType.artist) {
-      return widget.artist.name;
+      return widget.artist?.name;
     } else if (widget.listType == MusicListType.playlists) {
       return "Playlists";
-    } else {
-      return null;
     }
   }
 
@@ -134,7 +135,7 @@ class _ListScreenState extends State<ListScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text(listTypeTitle()),
+        title: Text(listTypeTitle() ?? ""),
       ),
       body: Container(
         child: StoreProvider(
@@ -148,22 +149,26 @@ class _ListScreenState extends State<ListScreen> {
                   return AlbumsList(artists: artists);
                 } else if (widget.listType == MusicListType.allSongs) {
                   return AllSongsList(artists: artists);
-                } else if (widget.listType == MusicListType.artist) {
-                  return ArtistDetail(albums: widget.artist.albums);
-                } else if (widget.listType == MusicListType.album) {
+                } else if (widget.listType == MusicListType.artist &&
+                    widget.artist != null) {
+                  return ArtistDetail(albums: widget.artist!.albums);
+                } else if (widget.listType == MusicListType.album &&
+                    widget.album != null) {
                   return AlbumDetail(
-                    album: widget.album,
+                    album: widget.album!,
                     artists: artists,
                     color: color,
                     fetchAllAlbumSongs: widget.fetchAllAlbumSongs,
                   );
-                } else if (widget.listType == MusicListType.playlists) {
+                } else if (widget.listType == MusicListType.playlists &&
+                    widget.playlists != null) {
                   return PlaylistsList(
-                    playlists: widget.playlists,
+                    playlists: widget.playlists!,
                   );
-                } else if (widget.listType == MusicListType.playlist) {
+                } else if (widget.listType == MusicListType.playlist &&
+                    widget.playlist != null) {
                   return SongsList(
-                    songs: widget.playlist.songs,
+                    songs: widget.playlist!.songs,
                   );
                 } else {
                   return Container();

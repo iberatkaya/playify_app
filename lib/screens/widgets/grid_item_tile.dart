@@ -8,17 +8,17 @@ import 'package:playify_app/utilities/utils.dart';
 
 class GridItemTile extends StatelessWidget {
   GridItemTile({
-    @required this.title,
-    @required this.icon,
-    @required this.fn,
+    required this.title,
+    required this.icon,
+    required this.fn,
     this.subtitle,
     this.padding,
   });
   final String title;
-  final String subtitle;
-  final Widget icon;
-  final Function fn;
-  final EdgeInsets padding;
+  final String? subtitle;
+  final Widget? icon;
+  final void Function() fn;
+  final EdgeInsets? padding;
 
   Widget iconBuilder(Brightness brightness) {
     if (icon is Image) {
@@ -49,7 +49,7 @@ class GridItemTile extends StatelessWidget {
         ),
       );
     }
-    return icon;
+    return icon!;
   }
 
   @override
@@ -105,14 +105,14 @@ class GridItemTile extends StatelessWidget {
                         flex: 1,
                       ),
                       Text(
-                        subtitle,
+                        subtitle!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontSize:
                                 (settings.listTileFontSize - 7).toDouble(),
-                            color:
-                                themeModeColor(brightness, Colors.grey[700])),
+                            color: themeModeColor(
+                                brightness, Colors.grey.shade700)),
                         textAlign: TextAlign.center,
                       ),
                     ]

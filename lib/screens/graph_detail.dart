@@ -17,7 +17,7 @@ enum GraphType {
 
 class GraphDetailScreen extends StatefulWidget {
   final GraphType graphType;
-  GraphDetailScreen({@required this.graphType});
+  GraphDetailScreen({required this.graphType});
 
   @override
   _GraphDetailScreenState createState() => _GraphDetailScreenState();
@@ -78,8 +78,10 @@ class _GraphDetailScreenState extends State<GraphDetailScreen> {
                                       value: i,
                                     ))
                                 .toList(),
-                            onChanged: (val) =>
-                                setState(() => totalStatistics = val)),
+                            onChanged: (val) {
+                              if (val != null)
+                                setState(() => totalStatistics = val);
+                            }),
                       ],
                     ),
                   ),
@@ -91,13 +93,17 @@ class _GraphDetailScreenState extends State<GraphDetailScreen> {
                           .map((i) => Color(
                               int.parse(i.replaceAll("#", ""), radix: 16)))
                           .toList(),
-                      chartValueStyle: TextStyle(
-                        fontSize: 11,
-                        color: themeModeColor(
-                            MediaQuery.of(context).platformBrightness,
-                            Colors.black),
+                      chartValuesOptions: ChartValuesOptions(
+                        chartValueStyle: TextStyle(
+                          fontSize: 11,
+                          color: themeModeColor(
+                              MediaQuery.of(context).platformBrightness,
+                              Colors.black),
+                        ),
                       ),
-                      legendPosition: LegendPosition.bottom,
+                      legendOptions: LegendOptions(
+                        legendPosition: LegendPosition.bottom,
+                      ),
                       chartRadius: MediaQuery.of(context).size.width,
                     ),
                   )

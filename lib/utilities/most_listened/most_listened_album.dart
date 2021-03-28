@@ -1,6 +1,6 @@
 import 'package:playify/playify.dart';
 
-Album mostListenedAlbum(List<Artist> artists) {
+Album? mostListenedAlbum(List<Artist> artists) {
   /// To sum all of songs of the album play count
   List<Album> albums = [];
   for (var i = 0; i < artists.length; i++) {

@@ -8,13 +8,13 @@ import '../grid_item_tile.dart';
 class ArtistDetail extends StatefulWidget {
   final List<Album> albums;
 
-  const ArtistDetail({@required this.albums});
+  const ArtistDetail({required this.albums});
   @override
   _ArtistDetailState createState() => _ArtistDetailState();
 }
 
 class _ArtistDetailState extends State<ArtistDetail> {
-  List<Album> sortedAlbums;
+  late List<Album> sortedAlbums;
   @override
   void initState() {
     super.initState();
@@ -42,7 +42,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                     borderRadius: BorderRadius.circular(8)),
                 color: themeModeColor(
                   MediaQuery.of(context).platformBrightness,
-                  Colors.purple[400],
+                  Colors.purple.shade400,
                 ),
                 onPressed: () async {
                   try {
@@ -52,7 +52,8 @@ class _ArtistDetailState extends State<ArtistDetail> {
                         .toList()
                         .expand((element) => element)
                         .toList();
-                    await playify.setQueue(songIDs: songIDs);
+                    await playify.setQueue(
+                        songIDs: songIDs, startID: songIDs.first);
                   } catch (e) {
                     print(e);
                   }
@@ -92,7 +93,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                           .toString(),
                   padding: EdgeInsets.only(bottom: 12),
                   icon: sortedAlbums[index].coverArt != null
-                      ? Image.memory(sortedAlbums[index].coverArt)
+                      ? Image.memory(sortedAlbums[index].coverArt!)
                       : null,
                   fn: () => Navigator.of(context).push(
                     MaterialPageRoute(

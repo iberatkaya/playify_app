@@ -11,7 +11,7 @@ import '../store.dart';
 Future<void> updateRecentSongs(Song selectedSong) async {
   var prefs = await SharedPreferences.getInstance();
   List<String> recentlist = prefs.getStringList("recentPlayed") != null
-      ? prefs.getStringList("recentPlayed")
+      ? prefs.getStringList("recentPlayed")!
       : [];
   if (recentlist.contains(selectedSong.iOSSongID)) {
     recentlist.remove(selectedSong.iOSSongID);
@@ -50,11 +50,13 @@ Future<void> updateMusicLibrary(int desiredWidth) async {
 
   List<Map<String, dynamic>> artistsMap =
       allSongs.map((e) => e.toJson()).toList();
-  List<Map<String, dynamic>> playlistsMap =
-      allPlaylists.map((e) => e.toJson()).toList();
+  List<Map<String, dynamic>>? playlistsMap =
+      allPlaylists?.map((e) => e.toJson()).toList();
 
   var prefs = await SharedPreferences.getInstance();
   await prefs.setString("artists", json.encode(artistsMap));
-  await prefs.setString("playlists", json.encode(playlistsMap));
-  store.dispatch(setMusicLibraryAction(allSongs, allPlaylists));
+  if (playlistsMap != null)
+    await prefs.setString("playlists", json.encode(playlistsMap));
+  if (allPlaylists != null)
+    store.dispatch(setMusicLibraryAction(allSongs, allPlaylists));
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
@@ -20,7 +20,7 @@ class _MainAppState extends State<MainApp> {
   int index = 0;
   bool loading = true;
   Playify playify = Playify();
-  bool intro;
+  bool? intro;
 
   @override
   initState() {
@@ -33,12 +33,13 @@ class _MainAppState extends State<MainApp> {
   Future<void> showIntro() async {
     try {
       var res = await SharedPreferences.getInstance();
-      bool show = res.getBool("showIntro");
-      if (show == null) {
+      bool? show = res.getBool("showIntro");
+      print("show: $show");
+      if (show != null && show) {
         setState(() {
           intro = true;
         });
-        await res.setBool("showIntro", true);
+        await res.setBool("showIntro", false);
       } else {
         setState(() {
           intro = false;
@@ -52,7 +53,7 @@ class _MainAppState extends State<MainApp> {
   Future<void> getSettings() async {
     try {
       var prefs = await SharedPreferences.getInstance();
-      String settingsJson = prefs.getString("settings");
+      String? settingsJson = prefs.getString("settings");
       if (settingsJson == null) return;
       Settings mysettings = Settings.parseJson(settingsJson);
       store.dispatch(setSettingsAction(mysettings));
@@ -63,8 +64,8 @@ class _MainAppState extends State<MainApp> {
 
   Future<void> setStatusBarColor() async {
     try {
-      await FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-      await FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     } catch (e) {
       print(e);
     }
@@ -72,11 +73,15 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (intro != null && intro) {
+    if (intro != null && intro!) {
       return Scaffold(
           body: Container(
         padding: EdgeInsets.only(top: AppBar().preferredSize.height),
         child: IntroductionScreen(
+            next: TextButton(
+              child: Text("Next"),
+              onPressed: () {},
+            ),
             pages: [
               PageViewModel(
                 image: Image.asset("assets/images/intro/1.png"),

@@ -2,7 +2,7 @@ import 'package:playify_app/redux/store.dart';
 
 ///Get the top songs by play time (determined by play count).
 ///[totalStatistics] overrides the value from settings.
-Map<String, dynamic> getTopSongsByPlayTime(AppState appstate,
+Map<String, double> getTopSongsByPlayTime(AppState appstate,
     {bool showCounts = false, int totalStatistics = 0}) {
   List<Map<String, dynamic>> songs = [];
 

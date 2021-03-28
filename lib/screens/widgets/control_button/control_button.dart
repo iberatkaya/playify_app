@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:playify_app/utilities/utils.dart';
 
 class ControlButton extends StatelessWidget {
-  final void Function() onTap;
-  final void Function(LongPressStartDetails) onLongPressStart;
-  final void Function(LongPressEndDetails) onLongPressEnd;
+  final void Function()? onTap;
+  final void Function(LongPressStartDetails)? onLongPressStart;
+  final void Function(LongPressEndDetails)? onLongPressEnd;
   final Icon icon;
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
   const ControlButton(
-      {@required this.onTap,
+      {required this.onTap,
       this.onLongPressStart,
       this.onLongPressEnd,
       this.padding,
-      @required this.icon});
+      required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +23,8 @@ class ControlButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-            color: themeModeColor(
-                MediaQuery.of(context).platformBrightness, Colors.blue[100]),
+            color: themeModeColor(MediaQuery.of(context).platformBrightness,
+                Colors.blue.shade100),
             shape: BoxShape.circle),
         padding: padding ?? EdgeInsets.zero,
         child: icon,

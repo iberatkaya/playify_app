@@ -5,8 +5,8 @@ import 'package:playify_app/utilities/utils.dart';
 
 class ItemTile extends StatelessWidget {
   ItemTile({
-    @required this.title,
-    @required this.fn,
+    required this.title,
+    required this.fn,
     this.icon,
     this.iosSongID,
     this.padding,
@@ -16,11 +16,11 @@ class ItemTile extends StatelessWidget {
     this.addLeadingSpace = false,
   });
   final String title;
-  final String subtitle;
-  final String iosSongID;
-  final Widget icon;
-  final Function fn;
-  final EdgeInsets padding;
+  final String? subtitle;
+  final String? iosSongID;
+  final Widget? icon;
+  final void Function() fn;
+  final EdgeInsets? padding;
   final bool rounded;
   final bool hasLeadingIcon;
   final bool addLeadingSpace;
@@ -61,7 +61,7 @@ class ItemTile extends StatelessWidget {
         ),
       );
     }
-    return icon;
+    return icon!;
   }
 
   @override
@@ -89,7 +89,7 @@ class ItemTile extends StatelessWidget {
                         ),
                         if (addLeadingSpace) Spacer(flex: 1),
                         if (appstate.currentSong != null &&
-                            appstate.currentSong.iOSSongID == iosSongID)
+                            appstate.currentSong!.iOSSongID == iosSongID)
                           Expanded(
                             flex: 10,
                             child: Text(
@@ -100,7 +100,7 @@ class ItemTile extends StatelessWidget {
                                     .toDouble(),
                                 fontStyle: FontStyle.italic,
                                 color: themeModeColor(
-                                    brightness, Colors.purple[300]),
+                                    brightness, Colors.purple.shade300),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -125,7 +125,7 @@ class ItemTile extends StatelessWidget {
               );
             }
             if (appstate.currentSong != null &&
-                appstate.currentSong.iOSSongID == iosSongID) {
+                appstate.currentSong!.iOSSongID == iosSongID) {
               return Container(
                 padding: padding,
                 child: ListTile(
@@ -134,11 +134,12 @@ class ItemTile extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: appstate.settings.listTileFontSize.toDouble(),
-                        color: themeModeColor(brightness, Colors.purple[300]),
+                        color:
+                            themeModeColor(brightness, Colors.purple.shade300),
                         fontStyle: FontStyle.italic),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  subtitle: Text(subtitle),
+                  subtitle: subtitle != null ? Text(subtitle!) : null,
                   leading: iconBuilder(brightness),
                   onTap: fn,
                 ),
@@ -155,7 +156,7 @@ class ItemTile extends StatelessWidget {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  subtitle: Text(subtitle),
+                  subtitle: subtitle != null ? Text(subtitle!) : null,
                   leading: iconBuilder(brightness),
                   onTap: fn,
                 ),

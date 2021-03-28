@@ -36,9 +36,9 @@ Color themeModeColor(Brightness brightness, Color color) {
     } else if (color == Colors.black) {
       return Colors.white;
     } else if (color == Colors.blue[900]) {
-      return Colors.blue[200];
+      return Colors.blue.shade200;
     } else if (color == Colors.blue[100]) {
-      return Colors.blueGrey[400];
+      return Colors.blueGrey.shade400;
     } else if (color == Colors.black12) {
       return Colors.white38;
     } else if (color == Colors.purple[600]) {
@@ -48,9 +48,9 @@ Color themeModeColor(Brightness brightness, Color color) {
     } else if (color == Colors.black87) {
       return Colors.white70;
     } else if (color == Colors.grey[500]) {
-      return Colors.grey[600];
+      return Colors.grey.shade600;
     } else if (color == Colors.grey[600]) {
-      return Colors.grey[400];
+      return Colors.grey.shade400;
     }
   }
   return color;
@@ -66,16 +66,10 @@ bool sameYear(DateTime d1, DateTime d2) {
   return d1.year == d2.year;
 }
 
-Uint8List getCoverArtFromSong(List<Artist> artists, Song song) {
-  final albums = artists
-      .firstWhere((element) => element.name == song.artistName, orElse: () {
-    print("Error finding ${song.artistName} while finding album art");
-    return null;
-  })?.albums;
-  var iconArt = albums
-      ?.firstWhere((element) => element.title == song.albumTitle, orElse: () {
-    print("Error finding ${song.albumTitle} while finding album art");
-    return null;
-  })?.coverArt;
+Uint8List? getCoverArtFromSong(List<Artist> artists, Song song) {
+  final albums =
+      artists.firstWhere((element) => element.name == song.artistName).albums;
+  var iconArt =
+      albums.firstWhere((element) => element.title == song.albumTitle).coverArt;
   return iconArt;
 }

@@ -26,8 +26,8 @@ class StatisticsScreen extends StatefulWidget {
 
 class _StatisticsScreenState extends State<StatisticsScreen>
     with TickerProviderStateMixin {
-  Animation animation; // Fading Animation
-  AnimationController animationController; // Fading Animation Controller
+  late Animation<double> animation; // Fading Animation
+  late AnimationController animationController; // Fading Animation Controller
   bool loading = false;
 
   @override
@@ -92,8 +92,8 @@ class _StatisticsScreenState extends State<StatisticsScreen>
             children: [
               TransitionBackground(
                 opacity: animation,
-                color1: Colors.indigo[400],
-                color2: Colors.deepPurple[400],
+                color1: Colors.indigo.shade400,
+                color2: Colors.deepPurple.shade400,
               ),
               Container(
                 child: StoreConnector<AppState, AppState>(
@@ -156,14 +156,18 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                                           i.replaceAll("#", ""),
                                           radix: 16)))
                                       .toList(),
-                                  chartValueStyle: TextStyle(
-                                    fontSize: 11,
-                                    color: themeModeColor(
-                                        MediaQuery.of(context)
-                                            .platformBrightness,
-                                        Colors.black),
+                                  chartValuesOptions: ChartValuesOptions(
+                                    chartValueStyle: TextStyle(
+                                      fontSize: 11,
+                                      color: themeModeColor(
+                                          MediaQuery.of(context)
+                                              .platformBrightness,
+                                          Colors.black),
+                                    ),
                                   ),
-                                  legendPosition: LegendPosition.bottom,
+                                  legendOptions: LegendOptions(
+                                    legendPosition: LegendPosition.bottom,
+                                  ),
                                   chartRadius:
                                       MediaQuery.of(context).size.width * 0.90,
                                 ),
@@ -200,13 +204,17 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                                           i.replaceAll("#", ""),
                                           radix: 16)))
                                       .toList(),
-                                  chartValueStyle: TextStyle(
-                                      fontSize: 11,
-                                      color: themeModeColor(
-                                          MediaQuery.of(context)
-                                              .platformBrightness,
-                                          Colors.black)),
-                                  legendPosition: LegendPosition.bottom,
+                                  chartValuesOptions: ChartValuesOptions(
+                                    chartValueStyle: TextStyle(
+                                        fontSize: 11,
+                                        color: themeModeColor(
+                                            MediaQuery.of(context)
+                                                .platformBrightness,
+                                            Colors.black)),
+                                  ),
+                                  legendOptions: LegendOptions(
+                                    legendPosition: LegendPosition.bottom,
+                                  ),
                                   chartRadius:
                                       MediaQuery.of(context).size.width * 0.90,
                                 ),
@@ -243,13 +251,17 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                                           i.replaceAll("#", ""),
                                           radix: 16)))
                                       .toList(),
-                                  chartValueStyle: TextStyle(
-                                      fontSize: 10,
-                                      color: themeModeColor(
-                                          MediaQuery.of(context)
-                                              .platformBrightness,
-                                          Colors.black)),
-                                  legendPosition: LegendPosition.bottom,
+                                  chartValuesOptions: ChartValuesOptions(
+                                    chartValueStyle: TextStyle(
+                                        fontSize: 10,
+                                        color: themeModeColor(
+                                            MediaQuery.of(context)
+                                                .platformBrightness,
+                                            Colors.black)),
+                                  ),
+                                  legendOptions: LegendOptions(
+                                    legendPosition: LegendPosition.bottom,
+                                  ),
                                   chartRadius:
                                       MediaQuery.of(context).size.width * 0.90,
                                 ),

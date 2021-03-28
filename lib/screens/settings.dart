@@ -105,15 +105,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ))
                                 .toList(),
                         onChanged: (val) async {
-                          try {
-                            var newsettings = Settings.copy(settings);
-                            newsettings.listTileFontSize =
-                                stringToFontSize(val);
-                            store.dispatch(setSettingsAction(newsettings));
-                            var prefs = await SharedPreferences.getInstance();
-                            prefs.setString("settings", newsettings.toJson());
-                          } catch (e) {
-                            print(e);
+                          if (val != null) {
+                            try {
+                              var newsettings = Settings.copy(settings);
+                              newsettings.listTileFontSize =
+                                  stringToFontSize(val);
+                              store.dispatch(setSettingsAction(newsettings));
+                              var prefs = await SharedPreferences.getInstance();
+                              prefs.setString("settings", newsettings.toJson());
+                            } catch (e) {
+                              print(e);
+                            }
                           }
                         },
                       ),
@@ -133,14 +135,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ))
                             .toList(),
                         onChanged: (val) async {
-                          try {
-                            var newsettings = Settings.copy(settings);
-                            newsettings.statisticNumberArtist = val;
-                            store.dispatch(setSettingsAction(newsettings));
-                            var prefs = await SharedPreferences.getInstance();
-                            prefs.setString("settings", newsettings.toJson());
-                          } catch (e) {
-                            print(e);
+                          if (val != null) {
+                            try {
+                              var newsettings = Settings.copy(settings);
+                              newsettings.statisticNumberArtist = val;
+                              store.dispatch(setSettingsAction(newsettings));
+                              var prefs = await SharedPreferences.getInstance();
+                              prefs.setString("settings", newsettings.toJson());
+                            } catch (e) {
+                              print(e);
+                            }
                           }
                         },
                       ),
@@ -160,14 +164,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ))
                             .toList(),
                         onChanged: (val) async {
-                          try {
-                            var newsettings = Settings.copy(settings);
-                            newsettings.statisticNumberAlbum = val;
-                            store.dispatch(setSettingsAction(newsettings));
-                            var prefs = await SharedPreferences.getInstance();
-                            prefs.setString("settings", newsettings.toJson());
-                          } catch (e) {
-                            print(e);
+                          if (val != null) {
+                            try {
+                              var newsettings = Settings.copy(settings);
+                              newsettings.statisticNumberAlbum = val;
+                              store.dispatch(setSettingsAction(newsettings));
+                              var prefs = await SharedPreferences.getInstance();
+                              prefs.setString("settings", newsettings.toJson());
+                            } catch (e) {
+                              print(e);
+                            }
                           }
                         },
                       ),
@@ -187,14 +193,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ))
                             .toList(),
                         onChanged: (val) async {
-                          try {
-                            var newsettings = Settings.copy(settings);
-                            newsettings.statisticNumberSong = val;
-                            store.dispatch(setSettingsAction(newsettings));
-                            var prefs = await SharedPreferences.getInstance();
-                            prefs.setString("settings", newsettings.toJson());
-                          } catch (e) {
-                            print(e);
+                          if (val != null) {
+                            try {
+                              var newsettings = Settings.copy(settings);
+                              newsettings.statisticNumberSong = val;
+                              store.dispatch(setSettingsAction(newsettings));
+                              var prefs = await SharedPreferences.getInstance();
+                              prefs.setString("settings", newsettings.toJson());
+                            } catch (e) {
+                              print(e);
+                            }
                           }
                         },
                       ),

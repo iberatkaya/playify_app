@@ -8,7 +8,7 @@ import '../grid_item_tile.dart';
 class AlbumsList extends StatefulWidget {
   final List<Artist> artists;
 
-  const AlbumsList({@required this.artists});
+  const AlbumsList({required this.artists});
   @override
   _AlbumsListState createState() => _AlbumsListState();
 }
@@ -57,7 +57,7 @@ class _AlbumsListState extends State<AlbumsList> {
                     : albums[index].songs[0].releaseDate.year.toString(),
             padding: EdgeInsets.only(bottom: 12),
             icon: albums[index].coverArt != null
-                ? Image.memory(albums[index].coverArt)
+                ? Image.memory(albums[index].coverArt!)
                 : null,
             fn: () => Navigator.of(context).push(
               MaterialPageRoute(
