@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/utilities/utils.dart';
 
-import '../../list.dart';
-import '../grid_item_tile.dart';
+import '../list.dart';
+import '../../widgets/grid_item_tile.dart';
 
 class ArtistDetail extends StatefulWidget {
   final List<Album> albums;

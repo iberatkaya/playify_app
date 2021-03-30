@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
 
-import '../../list.dart';
-import '../item_tile.dart';
+import '../list.dart';
+import '../../widgets/item_tile.dart';
 
 class ArtistsList extends StatefulWidget {
   final List<Artist> artists;

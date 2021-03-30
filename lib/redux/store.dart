@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/recent_played_song.dart';
 import 'package:playify_app/classes/settings.dart';

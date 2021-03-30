@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:playify/playify.dart';
-import 'package:playify_app/screens/widgets/lists/albums_list.dart';
-import 'package:playify_app/screens/widgets/detail/artist_detail.dart';
-import 'package:playify_app/screens/widgets/lists/artists_list.dart';
-import 'package:playify_app/screens/widgets/detail/album_detail.dart';
-import 'package:playify_app/screens/widgets/lists/playlists_list.dart';
-import 'package:playify_app/screens/widgets/lists/all_songs_list.dart';
+import 'package:playify_app/screens/list/widgets/albums_list.dart';
+import 'package:playify_app/screens/list/widgets/artist_detail.dart';
+import 'package:playify_app/screens/list/widgets/artists_list.dart';
+import 'package:playify_app/screens/list/widgets/album_detail.dart';
+import 'package:playify_app/screens/list/widgets/playlists_list.dart';
+import 'package:playify_app/screens/list/widgets/all_songs_list.dart';
 import 'package:playify_app/redux/store.dart';
-import 'package:playify_app/screens/widgets/lists/songs_list.dart';
+import 'package:playify_app/screens/list/widgets/songs_list.dart';
 
 enum MusicListType {
   artists,

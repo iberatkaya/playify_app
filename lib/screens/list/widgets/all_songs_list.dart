@@ -4,7 +4,7 @@ import 'package:playify_app/redux/utility/utility.dart';
 import 'package:playify_app/utilities/extensions.dart';
 import 'package:playify_app/utilities/utils.dart';
 
-import '../item_tile.dart';
+import '../../widgets/item_tile.dart';
 
 class AllSongsList extends StatefulWidget {
   final List<Artist> artists;

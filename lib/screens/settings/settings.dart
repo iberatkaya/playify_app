@@ -1,14 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
-import 'package:playify_app/redux/actions/music/action.dart';
 import 'package:playify_app/redux/actions/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/redux/utility/utility.dart';
-import 'package:playify_app/utilities/extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {

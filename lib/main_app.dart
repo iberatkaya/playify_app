@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 import 'package:playify/playify.dart';
 import 'package:playify_app/classes/settings.dart';
 import 'package:playify_app/redux/actions/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
-import 'package:playify_app/screens/home.dart';
-import 'package:playify_app/screens/profile.dart';
-import 'package:playify_app/screens/statistics.dart';
+import 'package:playify_app/screens/home/home.dart';
+import 'package:playify_app/screens/introduction_screen/introduction_screen.dart';
+import 'package:playify_app/screens/profile/profile.dart';
+import 'package:playify_app/screens/statistics/statistics.dart';
 import 'package:playify_app/utilities/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -75,37 +75,17 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     if (intro != null && intro!) {
       return Scaffold(
-          body: Container(
-        padding: EdgeInsets.only(top: AppBar().preferredSize.height),
-        child: IntroductionScreen(
-            next: TextButton(
-              child: Text("Next"),
-              onPressed: () {},
-            ),
-            pages: [
-              PageViewModel(
-                image: Image.asset("assets/images/intro/1.png"),
-                body:
-                    "Start listening music with the best music player available!",
-                title: "Welcome To Playify",
-              ),
-              PageViewModel(
-                image: Image.asset("assets/images/intro/2.png"),
-                body:
-                    "The background color animation will change based on the song you listen. Click or swipe the album cover in any direction to interact!",
-                title: "Help",
-              ),
-            ],
-            done: Text(
-              "Done",
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
+        body: Container(
+          padding: EdgeInsets.only(top: AppBar().preferredSize.height),
+          child: IntroductionScreen(
             onDone: () {
               setState(() {
                 intro = false;
               });
-            }),
-      ));
+            },
+          ),
+        ),
+      );
     }
 
     return Scaffold(

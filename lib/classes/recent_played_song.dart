@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
-
 class RecentPlayedSong {
   String iosSongId;
   String artistName;

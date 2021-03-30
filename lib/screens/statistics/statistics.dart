@@ -1,23 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'package:playify/playify.dart';
-import 'package:playify_app/redux/actions/music/action.dart';
 import 'package:playify_app/redux/utility/utility.dart';
 import 'package:playify_app/screens/widgets/transition_background.dart';
 import 'package:playify_app/constant/animation_amount.dart';
 import 'package:playify_app/constant/colors.dart';
 import 'package:playify_app/icons/playify_icon_icons.dart';
 import 'package:playify_app/redux/store.dart';
-import 'package:playify_app/screens/graph_detail.dart';
+import 'package:playify_app/screens/graph_detail/graph_detail.dart';
 import 'package:playify_app/utilities/stat_utilities/get_top_albums.dart';
 import 'package:playify_app/utilities/stat_utilities/get_top_artists.dart';
 import 'package:playify_app/utilities/stat_utilities/get_top_songs.dart';
 import 'package:playify_app/utilities/utils.dart';
-import 'package:playify_app/utilities/extensions.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class StatisticsScreen extends StatefulWidget {
   @override

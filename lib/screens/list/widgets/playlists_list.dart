@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playify/playify.dart';
-import 'package:playify_app/screens/list.dart';
+import 'package:playify_app/screens/list/list.dart';
 import 'package:playify_app/screens/widgets/item_tile.dart';
 
 class PlaylistsList extends StatelessWidget {

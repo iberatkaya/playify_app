@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/widgets/item_tile.dart';
 import 'package:playify_app/icons/playify_icon_icons.dart';
-import 'package:playify_app/screens/list.dart';
+import 'package:playify_app/screens/list/list.dart';
 
 class MenuPage extends StatefulWidget {
   @override

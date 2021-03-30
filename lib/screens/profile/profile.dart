@@ -6,8 +6,8 @@ import 'package:playify_app/screens/widgets/grid_item_tile.dart';
 import 'package:playify_app/screens/widgets/transition_background.dart';
 import 'package:playify_app/constant/animation_amount.dart';
 import 'package:playify_app/redux/store.dart';
-import 'package:playify_app/screens/list.dart';
-import 'package:playify_app/screens/settings.dart';
+import 'package:playify_app/screens/list/list.dart';
+import 'package:playify_app/screens/settings/settings.dart';
 import 'package:playify_app/utilities/most_listened/most_listened_album.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -70,18 +70,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SafeArea(
                   child: ListView(
                     children: <Widget>[
-                      /// Edit Icon
-                      /*Container(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            // Bottom Sheet Will Be Shown for Changing Mood
-                            showBottomToSaveMood(context, getCurrentMood);
-                          },
-                        ),
-                      ),*/
-
                       ///Profile Picture Card
                       GestureDetector(
                         onTap: () {
@@ -119,28 +107,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            /*Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Wrap(
-                                children: <Widget>[
-                                  Text(
-                                    "${currentMood.moodText}",
-                                    style: TextStyle(
-                                      color: currentMood.moodTextColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: fontsize * 35,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(top: 6),
-                                    child: currentMood.moodIcon,
-                                  ),
-                                ],
-                              ),
-                            ),*/
                             Container(
                               margin: EdgeInsets.only(top: 10),
                               padding: const EdgeInsets.all(5.0),
