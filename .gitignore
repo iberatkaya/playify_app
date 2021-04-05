@@ -11,6 +11,13 @@
 .fvm/
 .vscode/settings.json
 
+# fastlane specific
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/README.md
+**/fastlane/screenshots
+**/fastlane/test_output
+
 # IntelliJ related
 *.iml
 *.ipr
