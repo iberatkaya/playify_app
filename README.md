@@ -1,6 +1,6 @@
 <h1 align="center">Welcome to Playify 👋</h1>
 
-> Playify is a Music Player Mobile App that lets users play/pause/seek songs and browse their music library. Developed with Flutter and currently only available on iOS.
+Playify is a Music Player Mobile App that lets users play/pause/seek songs and browse their music library. Developed with Flutter and currently only available on iOS.
 
 ### 🏠 [App Store](https://apps.apple.com/us/app/playify-music-player/id1529006344)
 
