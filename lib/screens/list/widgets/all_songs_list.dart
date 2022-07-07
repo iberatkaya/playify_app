@@ -49,14 +49,14 @@ class _AllSongsListState extends State<AllSongsList> {
               title: songs[index].title,
               icon: iconArt != null ? Image.memory(iconArt) : null,
               subtitle: songs[index].artistName,
-              iosSongID: songs[index].iOSSongID,
+              songID: songs[index].songID,
               fn: () async {
                 try {
                   var playify = Playify();
                   await playify.setQueue(
-                    songIDs: songs.map((e) => e.iOSSongID).toList(),
+                    songIDs: songs.map((e) => e.songID).toList(),
                     startPlaying: true,
-                    startID: songs[index].iOSSongID,
+                    startID: songs[index].songID,
                   );
                   updateRecentSongs(songs[index]);
                   Navigator.of(context).popUntil((route) => route.isFirst);

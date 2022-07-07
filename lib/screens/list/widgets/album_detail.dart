@@ -70,7 +70,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
               onPressed: () async {
                 try {
                   var playify = Playify();
-                  final songIDs = songs.map((e) => e.iOSSongID).toList();
+                  final songIDs = songs.map((e) => e.songID).toList();
 
                   await playify.setQueue(
                     songIDs: songIDs,
@@ -176,16 +176,16 @@ class _AlbumDetailState extends State<AlbumDetail> {
             }
             return ItemTile(
               title: songs[itemIndex].title,
-              iosSongID: songs[itemIndex].iOSSongID,
+              songID: songs[itemIndex].songID,
               icon: Text(songs[itemIndex].trackNumber.toString()),
               padding: EdgeInsets.symmetric(vertical: 4),
               fn: () async {
                 try {
                   var playify = Playify();
                   await playify.setQueue(
-                    songIDs: songs.map((e) => e.iOSSongID).toList(),
+                    songIDs: songs.map((e) => e.songID).toList(),
                     startPlaying: true,
-                    startID: songs[itemIndex].iOSSongID,
+                    startID: songs[itemIndex].songID,
                   );
                   await updateRecentSongs(songs[itemIndex]);
 

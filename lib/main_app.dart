@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:playify/playify.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:playify_app/classes/settings.dart';
 import 'package:playify_app/redux/actions/settings/action.dart';
 import 'package:playify_app/redux/store.dart';
@@ -9,9 +11,15 @@ import 'package:playify_app/screens/introduction_screen/introduction_screen.dart
 import 'package:playify_app/screens/profile/profile.dart';
 import 'package:playify_app/screens/statistics/statistics.dart';
 import 'package:playify_app/utilities/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainApp extends StatefulWidget {
+  final bool homeAnimationEnabled;
+
+  const MainApp({
+    Key? key,
+    this.homeAnimationEnabled = true,
+  }) : super(key: key);
+
   @override
   _MainAppState createState() => _MainAppState();
 }
@@ -92,8 +100,14 @@ class _MainAppState extends State<MainApp> {
       body: IndexedStack(
         index: index,
         children: (loading || intro == null)
-            ? [Container()]
-            : [HomeScreen(), StatisticsScreen(), ProfileScreen()],
+            ? [
+                Container(),
+              ]
+            : [
+                HomeScreen(animationEnabled: widget.homeAnimationEnabled),
+                StatisticsScreen(),
+                ProfileScreen()
+              ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,

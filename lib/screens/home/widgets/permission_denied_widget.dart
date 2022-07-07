@@ -3,12 +3,12 @@ import 'package:playify_app/screens/widgets/transition_background.dart';
 
 class PermissionDeniedWidget extends StatelessWidget {
   final void Function()? onPressed;
-  final Animation<double> animation;
+  final Animation<double>? animation;
 
   const PermissionDeniedWidget({
     Key? key,
     required this.onPressed,
-    required this.animation,
+    this.animation,
   }) : super(key: key);
 
   @override

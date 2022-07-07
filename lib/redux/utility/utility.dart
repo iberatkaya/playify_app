@@ -13,11 +13,11 @@ Future<void> updateRecentSongs(Song selectedSong) async {
   List<String> recentlist = prefs.getStringList("recentPlayed") != null
       ? prefs.getStringList("recentPlayed")!
       : [];
-  if (recentlist.contains(selectedSong.iOSSongID)) {
-    recentlist.remove(selectedSong.iOSSongID);
-    recentlist.insert(0, selectedSong.iOSSongID);
+  if (recentlist.contains(selectedSong.songID)) {
+    recentlist.remove(selectedSong.songID);
+    recentlist.insert(0, selectedSong.songID);
   } else {
-    recentlist.insert(0, selectedSong.iOSSongID);
+    recentlist.insert(0, selectedSong.songID);
     if (recentlist.length > 6) {
       recentlist.removeAt(recentlist.length - 1);
     }
@@ -26,10 +26,10 @@ Future<void> updateRecentSongs(Song selectedSong) async {
   recentlist.forEach(
     (i) => store.state.artists.forEach(
       (j) => j.albums.forEach(
-        (k) => k.songs.forEach((l) => (l.iOSSongID == i)
+        (k) => k.songs.forEach((l) => (l.songID == i)
             ? recentSongs.add(RecentPlayedSong(
                 albumName: k.title,
-                iosSongId: i,
+                songID: i,
                 coverArt: k.coverArt,
                 artistName: j.name,
                 songName: l.title,
@@ -40,7 +40,7 @@ Future<void> updateRecentSongs(Song selectedSong) async {
   );
   store.dispatch(setRecentPlayedSongsAction(recentSongs));
   await prefs.setStringList(
-      "recentPlayed", recentSongs.map((e) => e.iosSongId).toList());
+      "recentPlayed", recentSongs.map((e) => e.songID).toList());
 }
 
 Future<void> updateMusicLibrary(int desiredWidth) async {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,10 +9,14 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:playify/playify.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:playify_app/classes/recent_played_song.dart';
+import 'package:playify_app/constant/animation_amount.dart';
 import 'package:playify_app/redux/actions/current_song/action.dart';
 import 'package:playify_app/redux/actions/music/action.dart';
 import 'package:playify_app/redux/actions/recent_played_songs/action.dart';
+import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/redux/utility/utility.dart';
 import 'package:playify_app/screens/home/widgets/album_cover.dart';
 import 'package:playify_app/screens/home/widgets/controls.dart';
@@ -22,16 +27,19 @@ import 'package:playify_app/screens/home/widgets/song_info_dialog.dart';
 import 'package:playify_app/screens/home/widgets/song_subtitle_widget.dart';
 import 'package:playify_app/screens/home/widgets/song_title_widget.dart';
 import 'package:playify_app/screens/home/widgets/time_slider.dart';
-import 'package:playify_app/screens/widgets/transition_background.dart';
-import 'package:playify_app/constant/animation_amount.dart';
-import 'package:playify_app/redux/store.dart';
 import 'package:playify_app/screens/list/list.dart';
 import 'package:playify_app/screens/menu/menu.dart';
+import 'package:playify_app/screens/widgets/transition_background.dart';
 import 'package:playify_app/utilities/extensions.dart';
 import 'package:playify_app/utilities/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
+  final bool animationEnabled;
+
+  const HomeScreen({
+    Key? key,
+    this.animationEnabled = true,
+  }) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -42,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controllerLeft;
   late Animation<Offset> _animationOffsetRight;
   late Animation<Offset> _animationOffsetLeft;
-  late Animation<double> animation;
+  Animation<double>? animation;
   late AnimationController animationController;
   PermissionStatus? permissionStatus;
   bool updatedLibrary = false;
@@ -122,6 +130,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               });
             }
           });
+  }
+
+  @override
+  void dispose() {
+    _controllerRight.dispose();
+    _controllerLeft.dispose();
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -249,10 +265,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     recentlist.forEach(
       (i) => store.state.artists.forEach(
         (j) => j.albums.forEach(
-          (k) => k.songs.forEach((l) => (l.iOSSongID == i)
+          (k) => k.songs.forEach((l) => (l.songID == i)
               ? recentSongs.add(RecentPlayedSong(
                   albumName: k.title,
-                  iosSongId: i,
+                  songID: i,
                   coverArt: k.coverArt,
                   artistName: j.name,
                   songName: l.title,
@@ -272,11 +288,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         seconds: 2,
       ),
     )..repeat(reverse: true);
-
-    animation = Tween(
-      begin: beginAmount,
-      end: endAmount,
-    ).animate(animationController);
+    print("animation enabled: ${widget.animationEnabled}");
+    if (widget.animationEnabled) {
+      animation = Tween(
+        begin: beginAmount,
+        end: endAmount,
+      ).animate(animationController);
+    }
   }
 
   void setTimer() {

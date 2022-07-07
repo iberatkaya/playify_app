@@ -8,7 +8,7 @@ class ItemTile extends StatelessWidget {
     required this.title,
     required this.fn,
     this.icon,
-    this.iosSongID,
+    this.songID,
     this.padding,
     this.subtitle,
     this.rounded = true,
@@ -17,7 +17,7 @@ class ItemTile extends StatelessWidget {
   });
   final String title;
   final String? subtitle;
-  final String? iosSongID;
+  final String? songID;
   final Widget? icon;
   final void Function() fn;
   final EdgeInsets? padding;
@@ -89,7 +89,7 @@ class ItemTile extends StatelessWidget {
                         ),
                         if (addLeadingSpace) Spacer(flex: 1),
                         if (appstate.currentSong != null &&
-                            appstate.currentSong!.iOSSongID == iosSongID)
+                            appstate.currentSong!.songID == songID)
                           Expanded(
                             flex: 10,
                             child: Text(
@@ -125,7 +125,7 @@ class ItemTile extends StatelessWidget {
               );
             }
             if (appstate.currentSong != null &&
-                appstate.currentSong!.iOSSongID == iosSongID) {
+                appstate.currentSong!.songID == songID) {
               return Container(
                 padding: padding,
                 child: ListTile(

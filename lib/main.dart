@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+
 import 'package:playify_app/main_app.dart';
 
-void main() {
-  runApp(PlayifyApp());
+void main({bool homeAnimationEnabled = true}) {
+  runApp(PlayifyApp(
+    homeAnimationEnabled: homeAnimationEnabled,
+  ));
 }
 
 class PlayifyApp extends StatelessWidget {
+  final bool homeAnimationEnabled;
+
+  const PlayifyApp({
+    Key? key,
+    this.homeAnimationEnabled = true,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +30,9 @@ class PlayifyApp extends StatelessWidget {
         dividerTheme: DividerThemeData(color: Colors.white),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      home: MainApp(),
+      home: MainApp(
+        homeAnimationEnabled: homeAnimationEnabled,
+      ),
     );
   }
 }

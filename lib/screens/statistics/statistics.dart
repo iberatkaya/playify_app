@@ -67,6 +67,12 @@ class _StatisticsScreenState extends State<StatisticsScreen>
   }
 
   @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,

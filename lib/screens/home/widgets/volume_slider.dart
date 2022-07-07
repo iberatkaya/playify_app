@@ -37,6 +37,7 @@ class SliderEntryState extends State<SliderEntry> {
       child: RotatedBox(
         quarterTurns: 3,
         child: Slider(
+          key: ValueKey("volume_slider"),
           value: volume,
           min: 0,
           max: 100,

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 class RecentPlayedSong {
-  String iosSongId;
+  String songID;
   String artistName;
   String albumName;
   Uint8List? coverArt;
@@ -11,7 +11,7 @@ class RecentPlayedSong {
     required this.artistName,
     required this.albumName,
     required this.coverArt,
-    required this.iosSongId,
+    required this.songID,
     required this.songName,
   });
 }

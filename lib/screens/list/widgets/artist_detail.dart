@@ -48,7 +48,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                   try {
                     var playify = Playify();
                     List<String> songIDs = sortedAlbums
-                        .map((e) => e.songs.map((e) => e.iOSSongID).toList())
+                        .map((e) => e.songs.map((e) => e.songID).toList())
                         .toList()
                         .expand((element) => element)
                         .toList();

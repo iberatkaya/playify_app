@@ -34,6 +34,7 @@ class Controls extends StatelessWidget {
           Expanded(
             flex: 1,
             child: ControlButton(
+              key: ValueKey("play_button"),
               onTap: onPlayTap,
               padding: EdgeInsets.fromLTRB(14, 16, 16, 16),
               icon: Icon(!playing ? Icons.play_arrow : Icons.pause),
